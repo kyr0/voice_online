@@ -3,3 +3,6 @@
 
 # Webstorm
 .idea/workspace.xml
+
+# NPM
+npm-debug.log
