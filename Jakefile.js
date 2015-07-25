@@ -15,7 +15,7 @@
     task("version", function(){
         console.log("Chrcking Node version: .");
         var packageJson = require("./package.json");
-        var expectedVersion = "v" + packageJson.engines.node;
+        var expectedVersion = packageJson.engines.node;
 
         var actualVersion = process.version;
         if (semver.neq(expectedVersion, actualVersion)) {
