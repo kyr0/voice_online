@@ -11,7 +11,7 @@
     var startTime = Date.now();
 
     desc("Lint and test");
-    task("default", [ "version", "lint" ], function(){
+    task("default", [ "version", "lint", "test" ], function(){
         var elapsedSeconds = (Date.now() - startTime) / 1000;
         console.log("\n\nBUILD OK (" + elapsedSeconds.toFixed(2) + "s)");
     });
@@ -38,11 +38,16 @@
         }, complete, fail);
     }, {async: true});
 
+    // *** TEST
+    desc("Test everything");
+    task("test", [], function(){
+        console.log("tests go here");
+    });
 
     // *** CHECK VERSION
     desc("Check Node version");
     task("version", function(){
-        process.stdout.write("Checking Node.js version: .");
+        process.stdout.write("Checking Node.js version: .\n");
         version.check({
             name: "Node",
             expected: require("../../package.json").engines.node,
