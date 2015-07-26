@@ -41,7 +41,8 @@
     // *** TEST
     desc("Test everything");
     task("test", [], function(){
-        console.log("tests go here");
+        var reporter = require("nodeunit").reporters["default"];
+        reporter.run(['./src/server/_server_test.js']);
     });
 
     // *** CHECK VERSION
