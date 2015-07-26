@@ -3,7 +3,9 @@
  */
 "use strict";
 
+var server = require("./server.js");
+
 exports.testNothing = function(test) {
-    test.ok(true, "hello");
+    test.equals(3, server.number(),"Test the number on server.js is = 3");
     test.done();
 }

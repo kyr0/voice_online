@@ -1,3 +1,20 @@
 General
 - add LICENCE.txt
 - create js template file for boilerplate
+
+Minimum Marketing Features:
+* marketing homepage
+- lesson practice page
+
+User Stories:
+* "Hello world server"
+- "Hello world client" (one browser)
+- support multiple browsers
+- marketing copy
+
+Engineering Tasks:
++ Auto build
++ statis code analysis (lint)
+- CI
+- server side testing
+- client side testing
