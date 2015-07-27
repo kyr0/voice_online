@@ -32,7 +32,7 @@
     task("lintClient", function() {
         process.stdout.write("Linting browser code:");
         jshint.checkFiles({
-            files: [ "src/client/**/*.js"],
+            files: ["src/client/**/*.js", "spikes/**/*.js"],
             options: jshintConfig.clientOptions,
             globals: jshintConfig.clientGlobals
         }, complete, fail);
