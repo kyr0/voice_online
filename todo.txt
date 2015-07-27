@@ -16,5 +16,6 @@ Engineering Tasks:
 + Auto build
 + statis code analysis (lint)
 - CI
-- server side testing
+- create simple http server
++ server side testing
 - client side testing
