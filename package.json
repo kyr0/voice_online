@@ -6,7 +6,6 @@
     "node": "0.12.7"
   },
   "devDependencies": {
-    "bower": "^1.4.1",
     "browserify": "^11.0.0",
     "jake": "^8.0.12",
     "jshint": "^2.8.0",
