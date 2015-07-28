@@ -1,3 +1,6 @@
-/**
- * Created by jaboing on 2015-07-27.
- */
+require(['some-dependency'], function(dependency) {
+
+    //Your script goes here
+    //some-dependency.js is fetched.
+    //Then your script is executed
+});

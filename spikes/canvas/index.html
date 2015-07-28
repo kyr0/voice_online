@@ -1,10 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title></title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="fabric.js"></script>
 </head>
 <body>
+<canvas id="c" width="300" height="300" style="border:1px solid #ccc"></canvas>
+<script>
+    (function() {
+        var xUnitNum = 8;
+        var yUnitNum = 6;
+        var canvas = new fabric.Canvas('c');
+        var yGridUnit = canvas.getHeight() / yUnitNum;
+        var xGridUnit = canvas.getWidth() / xUnitNum;
+        for (i = 0; i < xUnitNum; i++) {
+            canvas.add(
+                    new fabric.Line([xGridUnit*i,0, xGridUnit*i,canvas.getHeight()], {
+                        stroke: '#000000',
+                        strokeWidth: 1,
+                        selectable: false
+                    })
+            );
+        }
 
+        canvas.add(
+                // Arc description: http://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands
+                new fabric.Path("M 50 50" + // startPoint = curX = gridX[1], curY = gridY[1]
+                        "A 25 25 0 1 0 50 100" + // arc 1 (rad, rad, 0, 1, 0, curX, curY(rad*2)
+                        "L 100 100" +  // x = curX(50) + widthTarget(xGridUnit * numBeats) - rad*2, y = curY
+                        "A 25 25 0 1 0 100 50 z"   // arc 2  (rad, rad, 0, 1, 0,
+                        , {
+                    stroke: 'red',
+                    strokeWidth: 2,
+                    fill: "none"
+                })
+                );
+    })();
+</script>
 </body>
 </html>
