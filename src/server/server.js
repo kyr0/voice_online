@@ -16,4 +16,4 @@ exports.start = function(portNumber) {
 
 exports.stop = function(callback){
     server.close(callback);
-}
+};

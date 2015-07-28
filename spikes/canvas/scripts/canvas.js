@@ -4,19 +4,26 @@
 
     function(fabric) {
 
-        var canvas = makeCanvas(700, 400, 8, 14);
+        var xUnitNum = 8;
+        var yUnitNum = 14;
+
+        var canvas = makeCanvas(700, 400, xUnitNum, yUnitNum);
+
+        var xGridUnit = canvas.getWidth() / xUnitNum;
+        var yGridUnit = canvas.getHeight() / yUnitNum;
+
+        drawGrid(canvas, xUnitNum, yUnitNum);
 
         function makeCanvas(cvsWidth, cvsHeight, xUnitNum, yUnitNum) {
             var cvs = new fabric.Canvas('c', {selection: false});
             cvs.setDimensions({width: cvsWidth, height: cvsHeight});
-            _drawGrid(cvs, xUnitNum, yUnitNum);
+
             return cvs;
 
         }
 
-        function _drawGrid(cvs, xUnitNum, yUnitNum) {
-            var xGridUnit = cvs.getWidth() / xUnitNum;
-            var yGridUnit = cvs.getHeight() / yUnitNum;
+        function drawGrid(cvs, xUnitNum, yUnitNum) {
+
             var lineOpts = {
                 stroke: '#000000',
                 strokeWidth: 0.2,
@@ -44,40 +51,51 @@
                     " L " + (x + width - radius) + " " + (y + height) +
                     " A " + radius + " " + radius + " 0 1 0 " + (x + width - radius) + " " + y + " z";
                 //console.log(path);
+                options.selectable = false;
                 this.callSuper('initialize', path, options);
 
             },
 
-            animateGradient: function () {
-            }, // TODO: implement this
+            animateGradient: function () { // TODO: implement this
+            },
             _render: function(ctx) {
                 this.callSuper('_render', ctx);
             }
         });
 
+
+
+        // test to see if rect / path overlap in the corners
         canvas.add(
             new fabric.Rect({
-                width: 100, height: 50,
-                left: 50, top: 50,
+                width: (xGridUnit*3), height: yGridUnit,
+                left: xGridUnit, top: yGridUnit,
                 fill: 'yellow'
             }),
-            new Bubble(50, 50, 100, 50, {
+            new Bubble(xGridUnit, yGridUnit, (xGridUnit*2), yGridUnit, {
                 fill: "green"
             })
         );
 
-            //canvas.add(
-            //    // Arc description: http://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands
-            //    new fabric.Path("M 50 50" + // startPoint = curX = gridX[1], curY = gridY[1]
-            //        "A 25 25 0 1 0 50 100" + // arc 1 (rad, rad, 0, 1, 0, curX, curY + (rad*2)
-            //        "L 100 100" +  // x = curX(50) + widthTarget(xGridUnit * numBeats) - rad*2, y = curY
-            //        "A 25 25 0 1 0 100 50 z",   // arc 2  (rad, rad, 0, 1, 0,
-            //        {
-            //            stroke: 'red',
-            //            strokeWidth: 2,
-            //            fill: "none",
-            //            selectable: false
-            //        })
-            //);
+        var point = new fabric.Point(4*xGridUnit, 2*yGridUnit);
+        var objArr = [];
+        canvas.forEachObject(function(obj) {
+            if (obj.containsPoint(point)) {
+                objArr.push(obj);
+            }
+            if (obj.type === "line") {
+
+                if (obj.left === xGridUnit) {
+                    console.log(obj.left);
+                }
+                if (obj.top === yGridUnit) {
+                    console.log(obj.top);
+                }
+            }
+        });
+        for (var obj in objArr) {
+            console.log(objArr[obj].toString());
+            console.log(xGridUnit + " " + yGridUnit)
+        }
 
     })();
