@@ -1,8 +1,9 @@
 "use strict";
 
-    requirejs(['fabric'],
-
-    function(fabric) {
+    var fabric = require('./bower_components/fabric/dist/fabric.require.js');
+    //requirejs(['fabric'],
+    //
+    //function(fabric) {
 
         var xUnitNum = 8;
         var yUnitNum = 14;
@@ -93,9 +94,9 @@
                 }
             }
         });
-        for (var obj in objArr) {
-            console.log(objArr[obj].toString());
-            console.log(xGridUnit + " " + yGridUnit)
+        for (var i = 0; i < objArr.length; i++) {
+            console.log(objArr[i].toString());
+            console.log(xGridUnit + " " + yGridUnit);
         }
 
-    })();
+    //})();

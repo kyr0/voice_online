@@ -30,7 +30,8 @@
 	});
 
 	exports.clientOptions = merge(universalOptions, {
-		browser: true
+		browser: true,
+		devel: true
 	});
 
 	var universalGlobals = {

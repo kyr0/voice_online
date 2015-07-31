@@ -10,7 +10,7 @@ exports.tearDown = function(done) {
     server.stop(function(){
         done();
     });
-}
+};
 
 
 exports.test_serverReturnsHelloWorld = function(test) {
@@ -20,7 +20,7 @@ exports.test_serverReturnsHelloWorld = function(test) {
         var receivedData = false;
         response.setEncoding("utf8");
 
-        test.equals(200, response.statusCode, "status code")
+        test.equals(200, response.statusCode, "status code");
         response.on("data", function(chunk){
             receivedData = true;
             test.equals("Hello World", chunk, "response text");
