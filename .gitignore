@@ -10,3 +10,8 @@ node_modules/**/.bin/
 
 # Browserify bundles
 *.bundle.js
+
+# Mochify && Phantomjs build artifacts
+node_modules/mochify/node_modules/watchify/node_modules/chokidar/node_modules/fsevents/build/
+node_modules/phantomjs/lib/location.js
+node_modules/phantomjs/lib/phantom/

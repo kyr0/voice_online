@@ -7,7 +7,6 @@
   },
   "devDependencies": {
     "browserify": "^11.0.0",
-    "fabric-browserify": "^1.4.13",
     "jake": "^8.0.12",
     "jshint": "^2.8.0",
     "mocha": "^2.2.5",
@@ -16,7 +15,13 @@
     "object-merge": "^2.5.1",
     "phantomjs": "^1.9.17",
     "semver": "^5.0.1",
-    "simplebuild-jshint": "^1.0.1",
-    "tape": "^4.0.1"
+    "simplebuild-jshint": "^1.0.1"
+  },
+  "scripts"         : {
+    "start"         : "mochify --watch",
+    "phantom"       : "mochify",
+    "wd"            : "mochify --wd",
+    "cover"         : "mochify --cover",
+    "test"          : "npm run phantom && npm run wd && npm run cover"
   }
 }
