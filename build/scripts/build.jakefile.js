@@ -32,7 +32,9 @@
     task("lintClient", function() {
         process.stdout.write("Linting browser code:");
         jshint.checkFiles({
-            files: ["src/**/*.js", "spikes/**/*canvas*.js"],
+            files: ["src/**/*.js",
+                "spikes/canvas/scripts/canvas.js",
+                "spikes/canvas/scripts/_canvas_test.js"],
             options: jshintConfig.clientOptions,
             globals: jshintConfig.clientGlobals
         }, complete, fail);

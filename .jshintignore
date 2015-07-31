@@ -1,0 +1,5 @@
+# Any Bower module
+bower_components/**
+
+# Any browserify bundle
+*.bundle.js
