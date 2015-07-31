@@ -7,3 +7,6 @@
 # NPM
 npm-debug.log
 node_modules/**/.bin/
+
+# Browserify bundles
+*.bundle.js
