@@ -11,8 +11,10 @@
     "jake": "^8.0.12",
     "jshint": "^2.8.0",
     "mocha": "^2.2.5",
+    "mochify": "^2.12.0",
     "nodeunit": "^0.9.1",
     "object-merge": "^2.5.1",
+    "phantomjs": "^1.9.17",
     "semver": "^5.0.1",
     "simplebuild-jshint": "^1.0.1",
     "tape": "^4.0.1"
