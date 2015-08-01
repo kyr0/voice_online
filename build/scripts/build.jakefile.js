@@ -44,12 +44,13 @@
     desc("Test everything");
     task("test", [], function(){
         var reporter = require("nodeunit").reporters["default"];
-        reporter.run(['./src/server/_server_test.js'], null, function(failures){
+        reporter.run(['./src/server/test/_server_test.js'], null, function(failures){
             console.log("Tests complete.");
             if (failures) fail("Tests failed.");
             complete();
         });
     }, {async: true});
+
 
     // *** CHECK VERSION
     desc("Check Node version");

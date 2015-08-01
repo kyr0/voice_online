@@ -3,7 +3,7 @@
  */
 "use strict";
 
-var server = require("./server.js");
+var server = require("../server.js");
 var http = require("http");
 
 exports.tearDown = function(done) {
