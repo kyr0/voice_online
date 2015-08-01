@@ -22,7 +22,7 @@
     task("lint", [ "lintNode", "lintClient" ]);
 
     task("lintNode", function() {
-        process.stdout.write("Linting Node.js code:");
+        process.stdout.write("\nLinting Node.js code:");
         jshint.checkFiles({
             files: [ "build/**/*.js"],
             options: jshintConfig.nodeOptions,
@@ -31,7 +31,7 @@
     }, {async: true});
 
     task("lintClient", function() {
-        process.stdout.write("Linting browser code:");
+        process.stdout.write("\nLinting browser code:");
         jshint.checkFiles({
             files: ["src/**/*.js",
                 "spikes/canvas/scripts/canvas.js",
@@ -46,23 +46,27 @@
     task("test", [ "testNode", "testBrowser" ]);
 
     task("testNode", [], function(){
-        process.stdout.write("Testing node server code:");
+        process.stdout.write("\nTesting node server code:\n");
         var reporter = require("nodeunit").reporters["default"];
         reporter.run(['./src/server/test/_server_test.js'], null, function(failures){
-            console.log("Tests complete.");
-            if (failures) fail("Tests failed.");
-            complete();
+            if (failures) fail("Node server has failing tests.");
+            else complete();
         });
     }, {async: true});
 
     task("testBrowser", function(){
-        process.stdout.write("Testing browser code:");
-        console.log(mochify('./test/*.js',{
+        process.stdout.write("\n\nTesting browser code:\n\n");
+        var brwfy = mochify('./test/*.js',{
             phantomjs: "./node_modules/.bin/phantomjs",
             recursive: true,
             ui: "tdd"
-        }).bundle());
-
+        }).bundle(function(err,buf){
+            console.log(buf.toString());
+            if (buf.toString().search("failing") >= 0) {
+                fail("Browser has failing tests.");
+            }
+            else complete();
+            });
     }, {async: true});
 
 
