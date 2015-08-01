@@ -10,12 +10,13 @@
 
     // Content is the root of the object hierarchy
     var content = {toString: function(){return "content";}};
-    //console.log(content.toString());
+    module.exports.content = content;
 
     // landingpages inherits from content
     var landingpages = Object.create(content, {toString: {
         value: function(){return content.toString() + ".landingpages";}}});
     //console.log(landingpages.toString());
+    module.exports.landingpages = landingpages;
 
     // podcast inherits from landingpages and provides functions to help keep her babies kangaroo style
     var podcast = Object.create(landingpages, {
@@ -102,12 +103,13 @@
         podcast.createPodcast(podcastTitles[h]);
     }
 
+    // test we can access each individual element of the list
+    //for (var k = 0; k < podcast.getKeyList().length; k++){
+    //    console.log(podcast.getKeyList()[k] + "\n");
+    //}
 
-    for (var k = 0; k < podcast.getKeyList().length; k++){
-        console.log(podcast.getKeyList()[k] + "\n");
-    }
-
-    console.log(podcast.getKeyList());
+    // test we're getting the list as an array
+    //console.log(podcast.getKeyList());
 
 
 })();
