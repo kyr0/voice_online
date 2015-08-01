@@ -7,6 +7,7 @@
     var version = require("../util/version_checker.js");
     var jshint = require("simplebuild-jshint");
     var jshintConfig = require("../config/jshint.conf.js");
+    var karmaConfig = require("../config/karma.conf.js");
     var mochify = require("mochify");
 
     var startTime = Date.now();
@@ -56,7 +57,7 @@
 
     task("testBrowser", function(){
         process.stdout.write("\n\nTesting browser code:\n\n");
-        var brwfy = mochify('./test/*.js',{
+        var brwfy = mochify('./test/**/*.js',{
             phantomjs: "./node_modules/.bin/phantomjs",
             recursive: true,
             ui: "tdd"
