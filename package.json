@@ -5,6 +5,9 @@
   "engines": {
     "node": "0.12.7"
   },
+  "dependencies": {
+    "mocha": "^2.2.5"
+  },
   "devDependencies": {
     "browserify": "^11.0.0",
     "jake": "^8.0.12",
@@ -17,11 +20,11 @@
     "semver": "^5.0.1",
     "simplebuild-jshint": "^1.0.1"
   },
-  "scripts"         : {
-    "start"         : "mochify --watch",
-    "phantom"       : "mochify",
-    "wd"            : "mochify --wd",
-    "cover"         : "mochify --cover",
-    "test"          : "npm run phantom && npm run wd && npm run cover"
+  "scripts": {
+    "start": "mochify --watch",
+    "phantom": "mochify",
+    "wd": "mochify --wd",
+    "cover": "mochify --cover",
+    "test": "npm run phantom && npm run wd && npm run cover"
   }
 }

@@ -7,6 +7,7 @@
     var version = require("../util/version_checker.js");
     var jshint = require("simplebuild-jshint");
     var jshintConfig = require("../config/jshint.conf.js");
+    var mochify = require("mochify");
 
     var startTime = Date.now();
 
@@ -42,13 +43,26 @@
 
     // *** TEST
     desc("Test everything");
-    task("test", [], function(){
+    task("test", [ "testNode", "testBrowser" ]);
+
+    task("testNode", [], function(){
+        process.stdout.write("Testing node server code:");
         var reporter = require("nodeunit").reporters["default"];
         reporter.run(['./src/server/test/_server_test.js'], null, function(failures){
             console.log("Tests complete.");
             if (failures) fail("Tests failed.");
             complete();
         });
+    }, {async: true});
+
+    task("testBrowser", function(){
+        process.stdout.write("Testing browser code:");
+        console.log(mochify('./test/*.js',{
+            phantomjs: "./node_modules/.bin/phantomjs",
+            recursive: true,
+            ui: "tdd"
+        }).bundle());
+
     }, {async: true});
 
 
