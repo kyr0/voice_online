@@ -8,7 +8,11 @@
   "devDependencies": {
     "browserify": "^11.0.0",
     "jake": "^8.0.12",
+    "jasmine-core": "^2.3.4",
     "jshint": "^2.8.0",
+    "karma": "^0.13.3",
+    "karma-chrome-launcher": "^0.2.0",
+    "karma-jasmine": "^0.3.6",
     "mocha": "^2.2.5",
     "mochify": "^2.12.0",
     "nodeunit": "^0.9.1",
