@@ -44,6 +44,7 @@
 
     // *** TEST
     desc("Test everything");
+    //task("test", [ "testNode", "testBrowser", "karmaTest" ]);
     task("test", [ "testNode", "testBrowser" ]);
 
     task("testNode", [], function(){
@@ -69,6 +70,8 @@
             else complete();
             });
     }, {async: true});
+
+    //task("karmaTest", function(){}, {async: true});
 
 
     // *** CHECK VERSION
