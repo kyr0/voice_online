@@ -35,8 +35,7 @@
         process.stdout.write("\nLinting browser code:");
         jshint.checkFiles({
             files: ["src/**/*.js",
-                "spikes/canvas/scripts/canvas.js",
-                "spikes/canvas/scripts/_canvas_test.js"],
+                "!src/**/*.bundle.js"],
             options: jshintConfig.clientOptions,
             globals: jshintConfig.clientGlobals
         }, complete, fail);
