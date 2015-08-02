@@ -25,7 +25,8 @@
     "object-merge": "^2.5.1",
     "phantomjs": "^1.9.17",
     "semver": "^5.0.1",
-    "simplebuild-jshint": "^1.0.1"
+    "simplebuild-jshint": "^1.0.1",
+    "underscore": "^1.8.3"
   },
   "scripts": {
     "start": "mochify --watch",

@@ -51,17 +51,34 @@ suite('ContentObject', function() {
         test('getKeyList should return an array', function() {
             assert.equal(true, Array.isArray(contentKeyPage.podcast.getKeyList()));
         });
-        test('getKeyList() should return an array of length getKeyListCount()', function() {
-            contentKeyPage.podcast.getKeyListCount();
-            //assert.equal(true, Array.isArray(contentKeyPage.podcast.getKeyList()));
+        var baseNum = 31; // The number of elements we expect getKeyListCount to return
+        test('getKeyListCount() should return an value of (1 + (repertoireLength * (members+1))', function() {
+            assert.equal(baseNum, contentKeyPage.podcast.getKeyListCount());
+        });
+        test('getKeyList()[0] should be the podcast container, function()', function() {
+            assert.equal("content.landingpages.podcast", contentKeyPage.podcast.getKeyList()[0]);
         });
         test('.createPodcast should add an array of strings to repertoire.titles with a length of getEnumerableCount()' +
             ' + 1', function() {
             contentKeyPage.podcast.createPodcast("test");
-            assert.equal("content.landingpages.podcast.test",
-                contentKeyPage.podcast.repertoire[contentKeyPage.podcast.repertoire.length - 1].titles[0]);
             assert.equal(contentKeyPage.podcast.getEnumerableCount() + 1,
                 contentKeyPage.podcast.repertoire[contentKeyPage.podcast.repertoire.length - 1].titles.length);
+        });
+        test('Titles should have their container element contained in the first index' +
+            ' + 1', function() {
+            assert.equal("content.landingpages.podcast.test",
+                contentKeyPage.podcast.repertoire[contentKeyPage.podcast.repertoire.length - 1].titles[0]);
+        });
+        test('Titles should contain the enumerable members inherited from podcast type (check code)' +
+            ' + 1', function() {
+            assert.equal("content.landingpages.podcast.test.code",
+                contentKeyPage.podcast.repertoire[contentKeyPage.podcast.repertoire.length - 1].titles[1]);
+        });
+        test('Test getKeyListCount() updates properly after new elements are added', function() {
+            assert.equal(baseNum + 5, contentKeyPage.podcast.getKeyListCount());
+        });
+        test('Test getKeyListCount() updates properly after elements are removed', function() {
+            assert.equal(baseNum, contentKeyPage.podcast.getKeyListCount());
         });
 
     });
