@@ -51,7 +51,10 @@ suite('ContentObject', function() {
         test('getKeyList should return an array', function() {
             assert.equal(true, Array.isArray(contentKeyPage.podcast.getKeyList()));
         });
+
         var baseNum = 31; // The number of elements we expect getKeyListCount to return
+        var numMembers = 4; // the number of hard coded members
+
         test('getKeyListCount() should return an value of (1 + (repertoireLength * (members+1))', function() {
             assert.equal(baseNum, contentKeyPage.podcast.getKeyListCount());
         });
@@ -62,24 +65,33 @@ suite('ContentObject', function() {
             ' + 1', function() {
             contentKeyPage.podcast.createPodcast("test");
             assert.equal(contentKeyPage.podcast.getEnumerableCount() + 1,
-                contentKeyPage.podcast.repertoire[contentKeyPage.podcast.repertoire.length - 1].titles.length);
+                contentKeyPage.podcast.repertoire[contentKeyPage.podcast.repertoire.length - 1].title.length);
         });
         test('Titles should have their container element contained in the first index' +
             ' + 1', function() {
             assert.equal("content.landingpages.podcast.test",
-                contentKeyPage.podcast.repertoire[contentKeyPage.podcast.repertoire.length - 1].titles[0]);
+                contentKeyPage.podcast.repertoire[contentKeyPage.podcast.repertoire.length - 1].title[0]);
         });
-        test('Titles should contain the enumerable members inherited from podcast type (check code)' +
-            ' + 1', function() {
-            assert.equal("content.landingpages.podcast.test.code",
-                contentKeyPage.podcast.repertoire[contentKeyPage.podcast.repertoire.length - 1].titles[1]);
+        test('Titles should contain the enumerable members inherited from podcast type (check code)', function() {
+            assert.equal("code", contentKeyPage.podcast.splitPath("content.landingpages.podcast.test.code")[4]);
         });
-        test('Test getKeyListCount() updates properly after new elements are added', function() {
-            assert.equal(baseNum + 5, contentKeyPage.podcast.getKeyListCount());
+        test('getKeyListCount() should update after a new element is added', function() {
+            assert.equal(baseNum + numMembers + 1, contentKeyPage.podcast.getKeyListCount());
         });
-        test('Test getKeyListCount() updates properly after elements are removed', function() {
+        test('splitPath() should have "content" in [0]', function() {
+            assert.equal("content", contentKeyPage.podcast.splitPath("content.landingpages.podcast.test.code")[0]);
+        });
+        test('getKeyListCount() should update after elements are removed', function() {
+            contentKeyPage.podcast.removePodcast("test");
             assert.equal(baseNum, contentKeyPage.podcast.getKeyListCount());
         });
+        test('Element should no longer exist after remove', function() {
+            assert.equal(false, contentKeyPage.podcast.pathExists("content.landingpages.podcast.test"));
+        });
+
+
+
+
 
     });
 });

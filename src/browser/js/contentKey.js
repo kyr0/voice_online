@@ -1,12 +1,13 @@
 "use strict";
-//TODO -- 1) write up the unit tests 2) hook up the search function 3) UI tests with selenium
+//TODO hook up the search function >>  UI tests with selenium
+
 
 (function() {
     /* I wanted to create the list programmatically to make the example I sent
-         more interesting than regex-ing through an array.
-         Hence the following. It's a bit overkill to generating a content key.
-         But, I wanted to show how I test, and it was fun. Thanks!
+         more interesting to show how I test.  It was fun. Thanks!
     */
+
+    var _ = require("underscore");
 
     // Content is the root of the object hierarchy
     var content = {toString: function(){return "content";}};
@@ -33,7 +34,7 @@
             function (castTitle) {
                 var myMommy = this;
                 this.repertoire.push(Object.create(myMommy, {
-                    titles: {
+                    title: {
                         value: (function(){
                             // create array with content titles
                             var memberKey = [myMommy.toString() + "." + castTitle];
@@ -45,19 +46,25 @@
                                 }
                             }
                             return memberKey;
-                        }())
+                        }()),
+                        enumerable: true
                     },
                     toString: {
                         value: function(){
-                            return this.titles.toString();
+                            return this.title.toString();
                         }
                     }
                 }));
             }
         },
+        // removes a title from the repertoire
         removePodcast: {value:
             function (castTitle) {
-
+                for (var i = 0; i < this.repertoire.length; i++) {
+                    if (_.contains(this.repertoire[i].title,(this.toString() + "." + castTitle))) {
+                        this.repertoire.splice(i, 1);
+                    }
+                }
             }
         },
         // getKeyList returns an array of key strings based on the current repertoire
@@ -65,8 +72,8 @@
             function (){
                 var keyList = [this.toString()];
                 for (var i = 0; i < this.repertoire.length; i++) {
-                    for (var j = 0; j < this.repertoire[i].titles.length; j++){
-                        keyList.push(this.repertoire[i].titles[j]);
+                    for (var j = 0; j < this.repertoire[i].title.length; j++){
+                        keyList.push(this.repertoire[i].title[j]);
                     }
                 }
                 return keyList;
@@ -89,6 +96,20 @@
                 return this.getKeyList().length;
             }
         },
+        // checks that the path exists in the repertoire returns boolean
+        pathExists: {value:
+            function(keyValue){
+                var keyList = this.getKeyList();
+                return ((keyList[_.indexOf(keyList, keyValue)] !== undefined));
+            }
+        },
+        // accepts the keyContentValue which should have the whole path
+        splitPath: {value:
+            function(keyValue){
+                var keyList = this.getKeyList();
+                return keyList[_.indexOf(keyList, keyValue)].split(".");
+            }
+        },
         toString: {value: function(){return landingpages.toString() + ".podcast";}}
     });
     module.exports.podcast = podcast;
@@ -100,20 +121,5 @@
     for (var h = 0; h < podcastTitles.length; h++){
         podcast.createPodcast(podcastTitles[h]);
     }
-
-
-
-
-
-    // test_GetKeyListReturnsArrayOfCorrectLength  (empty, add one, add3, remove 1, add new member)
-
-    // test we can access each individual element of the list
-    //for (var k = 0; k < podcast.getKeyList().length; k++){
-    //    console.log(podcast.getKeyList()[k] + "\n");
-    //}
-
-    // test we're getting the list as an array
-    //console.log(podcast.getKeyList());
-
 
 })();
