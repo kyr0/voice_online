@@ -51,6 +51,10 @@ suite('ContentObject', function() {
         test('getKeyList should return an array', function() {
             assert.equal(true, Array.isArray(contentKeyPage.podcast.getKeyList()));
         });
+        test('getKeyList() should return an array of length getKeyListCount()', function() {
+            contentKeyPage.podcast.getKeyListCount();
+            //assert.equal(true, Array.isArray(contentKeyPage.podcast.getKeyList()));
+        });
         test('.createPodcast should add an array of strings to repertoire.titles with a length of getEnumerableCount()' +
             ' + 1', function() {
             contentKeyPage.podcast.createPodcast("test");
