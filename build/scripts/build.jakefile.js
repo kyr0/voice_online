@@ -9,6 +9,7 @@
     var jshintConfig = require("../config/jshint.conf.js");
     var karmaConfig = require("../config/karma.conf.js");
     var mochify = require("mochify");
+    var browserify = require('browserify');
 
     var startTime = Date.now();
 
@@ -84,5 +85,6 @@
             strict: true
         }, complete, fail);
     }, {async: true});
+
 
 }());
