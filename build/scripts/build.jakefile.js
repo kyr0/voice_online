@@ -14,19 +14,19 @@
     var startTime = Date.now();
 
     desc("Lint and test");
-    task("default", [ "version", "lint", "test" ], function(){
+    task("default", [ "version", "lint", "browserify", "test" ], function(){
         var elapsedSeconds = (Date.now() - startTime) / 1000;
         console.log("\n\nBUILD OK (" + elapsedSeconds.toFixed(2) + "s)");
     });
 
     desc("E2E tests only");
-    task("E2EOnly", [ "testE2E" ], function(){
+    task("E2EOnly", [ "browserify", "testE2E" ], function(){
         var elapsedSeconds = (Date.now() - startTime) / 1000;
         console.log("\n\nBUILD OK (" + elapsedSeconds.toFixed(2) + "s)");
     });
 
     desc("Unit tests only");
-    task("UnitOnly", [ "testNode", "testBrowser" ], function(){
+    task("UnitOnly", [ "broserify", "testNode", "testBrowser" ], function(){
         var elapsedSeconds = (Date.now() - startTime) / 1000;
         console.log("\n\nBUILD OK (" + elapsedSeconds.toFixed(2) + "s)");
     });
@@ -108,6 +108,22 @@
         }, complete, fail);
     }, {async: true});
 
+
+    // *** BROWSERIFY ALL THE THINGS
+    desc("Browserify the things");
+    task('browserify', {async: true}, function () {
+        process.stdout.write("\n\nCompiling browserify bundles:\n\n");
+        var binPath = './node_modules/browserify/bin/cmd.js ';
+        // in future with more bundles we'll want to generate this better
+        var someArgs = './src/browser/js/index.js > ./src/browser/js/index.bundle.js';
+        var cmds = [
+            binPath + someArgs
+        ];
+        jake.exec(cmds, {printStdout: true}, function () {
+            console.log('All tests passed.');
+            complete();
+        });
+    });
 
 
 }());
