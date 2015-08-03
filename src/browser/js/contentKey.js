@@ -110,7 +110,7 @@
                 return keyList[_.indexOf(keyList, keyValue)].split(".");
             }
         },
-        toString: {value: function(){return landingpages.toString() + ".podcast";}}
+        toString: {value: function(){return landingpages.toString() + ".podcasts";}}
     });
     module.exports.podcast = podcast;
 

@@ -4,7 +4,7 @@
 "use strict";
 
 var assert = require("assert");
-var contentKeyPage = require("../src/browser/js/contentKey.js");
+var contentKeyPage = require("../src/browser/js/index.js");
 
 suite('index.js', function() {
     setup(function() {
@@ -12,9 +12,10 @@ suite('index.js', function() {
     });
 
     suite('test_index', function() {
-        test("should be an Object type", function() {
-            assert.equal(typeof contentKeyPage.content, 'object');
-        });
+        //test("should return appropriate warning when input is not formatted correctly", function() {
+        //    document.getElementById("contextKeyInput").value = "adventure time";
+        //    assert.equal(typeof contentKeyPage.content, 'object');
+        //});
 
 
     });
