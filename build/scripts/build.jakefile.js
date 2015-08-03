@@ -3,18 +3,30 @@
  */
 (function () {
     "use strict";
-
+    var protractor = require("protractor");
     var version = require("../util/version_checker.js");
     var jshint = require("simplebuild-jshint");
     var jshintConfig = require("../config/jshint.conf.js");
-    //var karmaConfig = require("../config/karma.conf.js");
     var mochify = require("mochify");
     //var browserify = require('browserify');
+    //var karmaConfig = require("../config/karma.conf.js");
 
     var startTime = Date.now();
 
     desc("Lint and test");
     task("default", [ "version", "lint", "test" ], function(){
+        var elapsedSeconds = (Date.now() - startTime) / 1000;
+        console.log("\n\nBUILD OK (" + elapsedSeconds.toFixed(2) + "s)");
+    });
+
+    desc("E2E tests only");
+    task("E2EOnly", [ "testE2E" ], function(){
+        var elapsedSeconds = (Date.now() - startTime) / 1000;
+        console.log("\n\nBUILD OK (" + elapsedSeconds.toFixed(2) + "s)");
+    });
+
+    desc("Unit tests only");
+    task("UnitOnly", [ "testNode", "testBrowser" ], function(){
         var elapsedSeconds = (Date.now() - startTime) / 1000;
         console.log("\n\nBUILD OK (" + elapsedSeconds.toFixed(2) + "s)");
     });
@@ -45,7 +57,7 @@
     // *** TEST
     desc("Test everything");
     //task("test", [ "testNode", "testBrowser", "karmaTest" ]);
-    task("test", [ "testNode", "testBrowser" ]);
+    task("test", [ "testNode", "testBrowser", "testE2E" ]);
 
     task("testNode", [], function(){
         process.stdout.write("\nTesting node server code:\n");
@@ -69,6 +81,17 @@
             else complete();
             });
     }, {async: true});
+
+    task('testE2E', {async: true}, function () {
+        process.stdout.write("\n\nRunning browser-based E2E tests:\n\n");
+        var cmds = [
+            './node_modules/protractor/bin/protractor ./build/config/protractor.conf.js'
+        ];
+        jake.exec(cmds, {printStdout: true}, function () {
+            console.log('All tests passed.');
+            complete();
+        });
+    });
 
     //task("karmaTest", function(){}, {async: true});
 
