@@ -27,3 +27,6 @@ node_modules/karma-browserify/node_modules/watchify/node_modules/chokidar/node_m
 # Protractor related build artifacts
 node_modules/protractor/node_modules/selenium-webdriver/node_modules/ws/node_modules/bufferutil/build/
 node_modules/protractor/node_modules/selenium-webdriver/node_modules/ws/node_modules/utf-8-validate/build/
+
+# webdriver-update downloads specific binaries based on the system running it
+node_modules/protractor/selenium/

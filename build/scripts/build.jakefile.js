@@ -7,9 +7,9 @@
     var version = require("../util/version_checker.js");
     var jshint = require("simplebuild-jshint");
     var jshintConfig = require("../config/jshint.conf.js");
-    var karmaConfig = require("../config/karma.conf.js");
+    //var karmaConfig = require("../config/karma.conf.js");
     var mochify = require("mochify");
-    var browserify = require('browserify');
+    //var browserify = require('browserify');
 
     var startTime = Date.now();
 
@@ -24,9 +24,9 @@
     task("lint", [ "lintNode", "lintClient" ]);
 
     task("lintNode", function() {
-        process.stdout.write("\nLinting Node.js code:");
+        process.stdout.write("\nLinting build and server code:");
         jshint.checkFiles({
-            files: [ "build/**/*.js"],
+            files: [ "build/**/*.js", "src/server/**/*.js"],
             options: jshintConfig.nodeOptions,
             globals: jshintConfig.nodeGlobals
         }, complete, fail);
@@ -35,7 +35,7 @@
     task("lintClient", function() {
         process.stdout.write("\nLinting browser code:");
         jshint.checkFiles({
-            files: ["src/**/*.js",
+            files: ["src/browser/**/*.js",
                 "!src/**/*.bundle.js"],
             options: jshintConfig.clientOptions,
             globals: jshintConfig.clientGlobals
@@ -57,10 +57,9 @@
     }, {async: true});
 
     task("testBrowser", function(){
-        process.stdout.write("\n\nTesting browser code:\n\n");
-        var brwfy = mochify('./test/**/*.js',{
+        process.stdout.write("\n\nRunning browser-based unit tests:\n\n");
+        var brwfy = mochify("test/unit/**/*.js", {
             phantomjs: "./node_modules/.bin/phantomjs",
-            recursive: true,
             ui: "tdd"
         }).bundle(function(err,buf){
             console.log(buf.toString());
@@ -85,6 +84,7 @@
             strict: true
         }, complete, fail);
     }, {async: true});
+
 
 
 }());

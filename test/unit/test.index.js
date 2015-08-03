@@ -4,7 +4,7 @@
 "use strict";
 
 var assert = require("assert");
-var contentKeyPage = require("../src/browser/js/index.js");
+var contentKeyPage = require("../../src/browser/js/index.js");
 
 suite('index.js', function() {
     setup(function() {

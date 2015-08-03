@@ -2,13 +2,10 @@ How to: Tabs
 ============
 
 
-To run the build:
+To build with linting and all tests:
 
     1. Install Node
     2. Install Git
-    3. Install node-canvas following directions here: https://github.com/Automattic/node-canvas/wiki
-    3. type './jake.sh'
-    
-To test:
+    3. Install Java Development Kit
+    4. type './jake.sh'
 
-    1.
