@@ -23,3 +23,7 @@ node_modules/karma/node_modules/socket.io/node_modules/engine.io/node_modules/ws
 node_modules/karma/node_modules/socket.io/node_modules/socket.io-client/node_modules/engine.io-client/node_modules/ws/node_modules/bufferutil/build/
 node_modules/karma/node_modules/socket.io/node_modules/socket.io-client/node_modules/engine.io-client/node_modules/ws/node_modules/utf-8-validate/build/
 node_modules/karma-browserify/node_modules/watchify/node_modules/chokidar/node_modules/fsevents/build/
+
+# Protractor related build artifacts
+node_modules/protractor/node_modules/selenium-webdriver/node_modules/ws/node_modules/bufferutil/build/
+node_modules/protractor/node_modules/selenium-webdriver/node_modules/ws/node_modules/utf-8-validate/build/
