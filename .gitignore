@@ -30,3 +30,10 @@ node_modules/protractor/node_modules/selenium-webdriver/node_modules/ws/node_mod
 
 # webdriver-update downloads specific binaries based on the system running it
 node_modules/protractor/selenium/
+
+# browser-sync build artifacts
+node_modules/browser-sync/node_modules/chokidar/node_modules/fsevents/build/
+node_modules/browser-sync/node_modules/socket.io/node_modules/engine.io/node_modules/ws/node_modules/bufferutil/build/
+node_modules/browser-sync/node_modules/socket.io/node_modules/engine.io/node_modules/ws/node_modules/utf-8-validate/build/
+node_modules/browser-sync/node_modules/socket.io/node_modules/socket.io-client/node_modules/engine.io-client/node_modules/ws/node_modules/bufferutil/build/
+node_modules/browser-sync/node_modules/socket.io/node_modules/socket.io-client/node_modules/engine.io-client/node_modules/ws/node_modules/utf-8-validate/build/
