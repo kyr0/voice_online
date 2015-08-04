@@ -8,7 +8,6 @@
     var jshint = require("simplebuild-jshint");
     var jshintConfig = require("../config/jshint.conf.js");
     var mochify = require("mochify");
-    //var browserify = require('browserify');
     //var karmaConfig = require("../config/karma.conf.js");
 
     var startTime = Date.now();
@@ -84,6 +83,7 @@
 
     task('testE2E', {async: true}, function () {
         process.stdout.write("\n\nRunning browser-based E2E tests:\n\n");
+        //'./node_modules/protractor/bin/webdriver-manager start',
         var cmds = [
             './node_modules/protractor/bin/protractor ./build/config/protractor.conf.js'
         ];

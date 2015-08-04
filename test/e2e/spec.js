@@ -1,11 +1,13 @@
-/**
- * Created by jaboing on 2015-08-03.
- */
-
+// spec.js
 describe('Protractor Demo App', function() {
-    it('should have a title', function() {
-        browser.get('./src/browser/index.html');
+    it('should add one and two', function() {
+        browser.get('http://juliemr.github.io/protractor-demo/');
+        element(by.model('first')).sendKeys(1);
+        element(by.model('second')).sendKeys(2);
 
-        expect(browser.getTitle()).toEqual('Context Key');
+        element(by.id('gobutton')).click();
+
+        expect(element(by.binding('latest')).getText()).
+            toEqual('3'); // This is wrong!
     });
 });
