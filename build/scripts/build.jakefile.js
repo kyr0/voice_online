@@ -13,22 +13,28 @@
 
     var startTime = Date.now();
 
-    desc("Lint and test");
-    task("default", [ "version", "lint", "browserify", "test" ], function(){
+    var wrapUp = function () {
         var elapsedSeconds = (Date.now() - startTime) / 1000;
         console.log("\n\nBUILD OK (" + elapsedSeconds.toFixed(2) + "s)");
+        if (bsync.active) {
+            console.log("\nExiting browser-sync server instance.");
+            bsync.exit();
+        }
+    };
+
+    desc("Lint and test everything");
+    task("default", [ "version", "lint", "browserify", "test" ], function(){
+        wrapUp();
     });
 
     desc("E2E tests only");
     task("E2EOnly", [ "browserify", "testE2E" ], function(){
-        var elapsedSeconds = (Date.now() - startTime) / 1000;
-        console.log("\n\nBUILD OK (" + elapsedSeconds.toFixed(2) + "s)");
+        wrapUp();
     });
 
     desc("Unit tests only");
-    task("UnitOnly", [ "broserify", "testNode", "testBrowser" ], function(){
-        var elapsedSeconds = (Date.now() - startTime) / 1000;
-        console.log("\n\nBUILD OK (" + elapsedSeconds.toFixed(2) + "s)");
+    task("UnitOnly", [ "browserify", "testServerUnit", "testClientUnit" ], function(){
+        wrapUp();
     });
 
     // *** LINT
@@ -57,9 +63,9 @@
     // *** TEST
     desc("Test everything");
     //task("test", [ "testNode", "testBrowser", "karmaTest" ]);
-    task("test", [ "testNode", "testBrowser", "testE2E" ]);
+    task("test", [ "testServerUnit", "testClientUnit", "testE2E" ]);
 
-    task("testNode", [], function(){
+    task("testServerUnit", [], function(){
         process.stdout.write("\nTesting node server code:\n");
         var reporter = require("nodeunit").reporters["default"];
         reporter.run(['./src/server/test/_server_test.js'], null, function(failures){
@@ -68,7 +74,7 @@
         });
     }, {async: true});
 
-    task("testBrowser", function(){
+    task("testClientUnit", function(){
         process.stdout.write("\n\nRunning browser-based unit tests:\n\n");
         var brwfy = mochify("test/unit/**/*.js", {
             phantomjs: "./node_modules/.bin/phantomjs",
@@ -82,25 +88,42 @@
             });
     }, {async: true});
 
-    task('testE2E', {async: true}, function () {
-        process.stdout.write("\n\nRunning browser-based E2E tests:\n\n");
-        bsync.init({
-            server: {
-                baseDir: ["src/browser"],
-                index: "index.html"
-            },
-            open: false
-        });
-        bsync.notify("We're on baby...");
-        //'./node_modules/protractor/bin/webdriver-manager start',
-        var cmds = [
-            './node_modules/protractor/bin/protractor ./build/config/protractor.conf.js'
-        ];
-        jake.exec(cmds, {printStdout: true}, function () {
-            console.log('All tests passed.');
+    desc("Run the E2E tests in a browser with http & selenium servers");
+    task('testE2E', ["startBServer"], {async: true}, function () {
+        process.stdout.write("\n\nStarting browser-based E2E tests:\n\n");
+        var t = jake.Task.runE2E;
+        t.addListener('complete', function () {
+            console.log('Finished executing E2E tests');
             complete();
         });
-        //bsync.exit();
+        // Kick off runE2e
+        t.invoke();
+
+        //'./node_modules/protractor/bin/webdriver-manager start',
+    });
+
+
+    task('runE2E', {async:true}, function () {
+        var testE2Etask = this;
+        var protractorBin = "./node_modules/protractor/bin/protractor";
+        var protractorConf = "./build/config/protractor.conf.js";
+        var protractorSpecs = "--specs './test/e2e/spec.js'";
+        var cmds = [
+            protractorBin + " " + protractorConf + " " + protractorSpecs
+        ];
+        var ex = jake.createExec(cmds);
+        ex.addListener('stdout', function(chunk){
+            console.log(chunk.toString());
+        });
+        ex.addListener('stderr', function(chunk){
+            console.log(chunk.toString());
+
+        });
+        ex.addListener('cmdEnd', function(){
+            complete();
+        });
+        ex.run();
+
     });
 
     //task("karmaTest", function(){}, {async: true});
@@ -135,5 +158,18 @@
         });
     });
 
+    // *** BROWSER-SYNC SERVER MANAGEMENT
+    desc("Run an instance of browser-sync server");
+    task('startBServer', {async: true}, function () {
+        process.stdout.write("\n\nRunning browser-sync server:\n\n");
+        bsync.init({
+            server: {
+                baseDir: ["src/browser"],
+                index: "index.html"
+            },
+            open: false
+        });
+        complete();
+    });
 
 }());
