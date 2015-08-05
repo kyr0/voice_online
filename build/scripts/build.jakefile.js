@@ -12,15 +12,23 @@
     var bsync = require("browser-sync").create();
     //var karmaConfig = require("../config/karma.conf.js");
 
-
+    var bsyncPort = 9000;
     var startTime = Date.now();
 
-    //var seleniumIsUpAlready = exec('lsof -i -n -P | grep 4444', {silent:true});
-    //if (seleniumIsUpAlready.code === 0) {
-    //    console.log('Found an orphaned instance of selenium standalone server:');
-    //    console.log('Running: kill -9 ' + seleniumIsUpAlready.output.split(/[ ,]+/)[1]);
-    //    exec('kill -9 ' + seleniumIsUpAlready.output.split(/[ ,]+/)[1]);
-    //}
+    /* jshint ignore:start */
+    var bsyncIsUpAlready = exec('lsof -i -n -P | grep ' + bsyncPort);
+    if (bsyncIsUpAlready.code === 0) {
+        var lsofOut = bsyncIsUpAlready.output.split(/[ ,]+/);
+        if (lsofOut[0] === "node") {
+            console.log('Found an orphaned instance of browser-sync node server:');
+            console.log('Running: kill -9 ' + lsofOut[1]);
+
+            exec('kill -9 ' + lsofOut[1]);
+        }
+        else fail("Something is occupying browser-sync local server's default port");
+    }
+    /* jshint ignore:end */
+
 
     var wrapUp = function () {
         var elapsedSeconds = (Date.now() - startTime) / 1000;
@@ -74,7 +82,6 @@
 
     // *** TEST
     desc("Test everything");
-    //task("test", [ "testNode", "testBrowser", "karmaTest" ]);
     task("test", [ "testServerUnit", "testClientUnit", "testE2E" ]);
 
     task("testServerUnit", [], function(){
@@ -100,8 +107,8 @@
             });
     }, {async: true});
 
-    desc("Run the E2E tests in a browser with http & selenium servers");
-    task('testE2E', ["startBServer"], function () {
+    desc("Run the E2E tests using selenium");
+    task('testE2E', ["startBServer"], {async:true}, function () {
         process.stdout.write("\n\nStarting browser-based E2E tests:\n\n");
         var t = jake.Task.runE2E;
         t.addListener('complete', function () {
@@ -115,14 +122,17 @@
     });
     // *** BROWSER-SYNC SERVER START
     desc("Run an instance of browser-sync server");
-    task('startBServer', function () {
+    task('startBServer', {async:true}, function () {
         process.stdout.write("\n\nRunning browser-sync server:\n\n");
         bsync.init({
             server: {
                 baseDir: ["src/browser"],
                 index: "index.html"
             },
-            open: false
+            open: false,
+            ui: false,
+            notify: false,
+            port:bsyncPort
         });
         complete();
     });
@@ -156,13 +166,12 @@
 
         });
         ex.addListener('cmdEnd', function(){
+            console.log("Protractor tests complete");
             complete();
         });
         ex.run();
 
     });
-
-    //task("karmaTest", function(){}, {async: true});
 
 
     // *** CHECK VERSION
