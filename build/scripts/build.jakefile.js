@@ -13,6 +13,7 @@
     //var karmaConfig = require("../config/karma.conf.js");
 
     var bsyncPort = 9000;
+    var wdPort = 4444;
     var startTime = Date.now();
 
     /* jshint ignore:start */
@@ -43,17 +44,17 @@
     };
 
     desc("Lint and test everything");
-    task("default", [ "version", "lint", "browserify", "test" ], function(){
+    task("default", [ "checkWD", "version", "lint", "browserify", "test" ], function(){
         wrapUp();
     });
 
-    desc("E2E tests only");
-    task("E2EOnly", [ "browserify", "testE2E" ], function(){
+    desc("Run only end to end UI tests");
+    task("e2eOnly", [  "checkWD", "browserify", "testE2E" ], function(){
         wrapUp();
     });
 
-    desc("Unit tests only");
-    task("UnitOnly", [ "browserify", "testServerUnit", "testClientUnit" ], function(){
+    desc("Run only unit tests");
+    task("unitOnly", [ "browserify", "testServerUnit", "testClientUnit" ], function(){
         wrapUp();
     });
 
@@ -82,7 +83,10 @@
 
     // *** TEST
     desc("Test everything");
-    task("test", [ "testServerUnit", "testClientUnit", "testE2E" ]);
+    task("test", [ "checkWD", "browserify", "testServerUnit", "testClientUnit", "testE2E" ], {async: true},
+        function(){
+            wrapUp();
+    });
 
     task("testServerUnit", [], function(){
         process.stdout.write("\nTesting node server code:\n");
@@ -107,7 +111,6 @@
             });
     }, {async: true});
 
-    desc("Run the E2E tests using selenium");
     task('testE2E', ["startBServer"], {async:true}, function () {
         process.stdout.write("\n\nStarting browser-based E2E tests:\n\n");
         var t = jake.Task.runE2E;
@@ -115,7 +118,7 @@
             console.log('Finished executing E2E tests');
             complete();
         });
-        // Kick off runE2e
+        // Kick off runE2E
         t.invoke();
 
         //'./node_modules/protractor/bin/webdriver-manager start',
@@ -137,19 +140,7 @@
         complete();
     });
 
-    // *** WEBDRIVER SERVER START
-    /* jshint ignore:start */
-    desc("Start an instance of selenium server and leave it running");
-    task('startWDServer', function () {
-        // check if the binaries are in place
-        exec("./node_modules/protractor/bin/webdriver-manager update");
-
-        process.stdout.write("\n\nStarting webdriver:\n\n");
-        exec("./node_modules/protractor/bin/webdriver-manager start");
-    });
-    /* jshint ignore:end */
-
-    // *** RUN THE ACTUAL E2E TESTS WITH PROTRACTOR
+    // *** RUN THE ACTUAL E2E TESTS USING PROTRACTOR
     task('runE2E', {async:true}, function () {
         var protractorBin = "./node_modules/protractor/bin/protractor";
         var protractorConf = "./build/config/protractor.conf.js";
@@ -175,7 +166,6 @@
 
 
     // *** CHECK VERSION
-    desc("Check Node version");
     task("version", function(){
         process.stdout.write("Checking Node.js version: .\n");
         version.check({
@@ -188,7 +178,6 @@
 
 
     // *** BROWSERIFY ALL THE THINGS
-    desc("Browserify the things");
     task('browserify', {async: true}, function () {
         process.stdout.write("\n\nCompiling browserify bundles:\n\n");
         var binPath = './node_modules/browserify/bin/cmd.js ';
@@ -201,6 +190,61 @@
             console.log('All tests passed.');
             complete();
         });
+    });
+
+    // *** BEGIN SELENIUM WEBDRIVER MADNESS
+    // *** CHECK WEBDRIVER SERVER IS UP, IF NOT, START IT
+    task('checkWD', {async: true}, function() {
+        /* jshint ignore:start */
+        var wdIsUpAlready = exec('lsof -i -n -P | grep ' + wdPort);
+        if (wdIsUpAlready.code === 0) {
+            var lsofOut = wdIsUpAlready.output.split(/[ ,]+/);
+            if (lsofOut[0] === "java") {
+                console.log('Selenium server is up and running.\n');
+                complete();
+            }
+            else fail("Something is occupying selenium server's default port");
+        }
+        else {
+            // start the server if it's not running already
+            jake.Task.startWDServer.invoke();
+            complete();
+        }
+        /* jshint ignore:end */
+    });
+
+    /* jshint ignore:start */
+    desc("Start an instance of selenium webdriver server and leave it running");
+    task('startWDServer', {async: true}, function () {
+        // check if the binaries are in place
+        exec("./node_modules/protractor/bin/webdriver-manager update");
+
+        process.stdout.write("\n\nStarting selenium standalone server in background\n");
+        var child = exec("./node_modules/protractor/bin/webdriver-manager start", {async:true, silent: true});
+        child.stdout.on('data', function(data) {
+           complete();
+        });
+    });
+    /* jshint ignore:end */
+    desc("Kill instances of the selenium server");
+    task('killWD', {async: true}, function() {
+        /* jshint ignore:start */
+        var wdIsUpAlready = exec('lsof -i -n -P | grep ' + wdPort);
+        if (wdIsUpAlready.code === 0) {
+            var lsofOut = wdIsUpAlready.output.split(/[ ,]+/);
+            if (lsofOut[0] === "java") {
+                console.log('Killing selenium server...\n');
+                exec('kill -9 ' + lsofOut[1]);
+                wdIsUpAlready = exec('lsof -i -n -P | grep ' + wdPort);
+                if (wdIsUpAlready.code !== 0) {
+                    console.log("Done.");
+                }
+                else fail("Whoops, this is running:\n" + wdIsUpAlready);
+            }
+            else fail("Something else is occupying selenium server's default port");
+        }
+        else console.log("No server running.");
+        /* jshint ignore:end */
     });
 
 
