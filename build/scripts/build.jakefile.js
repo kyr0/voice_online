@@ -33,7 +33,7 @@
 
     var wrapUp = function () {
         var elapsedSeconds = (Date.now() - startTime) / 1000;
-        console.log("\n\nBUILD OK (" + elapsedSeconds.toFixed(2) + "s)");
+        console.log("\n\nOK (" + elapsedSeconds.toFixed(2) + "s)");
 
         // if there is an instance of Browser-Sync, kill it
         // becasuse bsync.exit() also exits the jake.sh process, this must be the final action
@@ -144,7 +144,7 @@
     task('runE2E', {async:true}, function () {
         var protractorBin = "./node_modules/protractor/bin/protractor";
         var protractorConf = "./build/config/protractor.conf.js";
-        var protractorSpecs = "--specs './test/e2e/spec.js'";
+        var protractorSpecs = "--specs './test/e2e/contextKey_spec.js'";
         var cmds = [
             protractorBin + " " + protractorConf + " " + protractorSpecs
         ];

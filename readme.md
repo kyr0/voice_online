@@ -1,11 +1,14 @@
-How to: Tabs
-============
-
 To build with linting and all tests:
     
-    ** Note that at this time only OSX builds are supported
-    1. Install Node (v0.12.7)
-    2. Install Git
+    ** Note that at this time only OSX & Ubuntu Linux are officially supported
+    1. Install Git 
+        - OSX, simply type 'git' on the command line and follow instructions)
+        - Ubuntu, 
+    2. Install Node: v0.12.7 (OSX) or v0.10.25** (Ubuntu) 
+        - OSX, http://howtonode.org/how-to-install-nodejs)
+        - Linux, https://github.com/joyent/node/wiki/installing-node.js-via-package-manager
+        ** if running Linux you will need to update package.json before building, eg. "node": "0.10.25"
+        ** run '/usr/bin/local/nodejs --version' and update the node engine's version number accordingly
     3. Install Java Development Kit
     4. type './jake.sh' and relax 
     

@@ -8,7 +8,7 @@
     var contentKey = require("./contentKey.js");
 
     window.checkInputThenWrite = function checkInputThenWrite(){
-        document.getElementById("contextKeyInput").value = '["content.landingpages.podcasts"]';
+        //document.getElementById("contextKeyInput").value = '["content.landingpages.podcasts"]';
         var invalidInputMsg = 'Input must have the following format: ["contextKey"]';
         var userInput = document.getElementById("contextKeyInput").value;
         console.log(userInput);
@@ -29,19 +29,19 @@
         var containers = contentKey.podcast.splitPath(userInput);
         console.log(containers);
         var listDiv = document.getElementById('list');
-        var listDivText = "<br></br><br></br>";
+        var listDivText = "<br><br>";
         var counter = 0;
         // some recursive fun to generate the list
         var writeListItem = function (){
-            listDivText += '<br></br><ul><br></br><li>' + containers[counter];
+            listDivText += '<br><br><ul><br><br><li>' + containers[counter];
             counter++;
             if (counter < containers.length) {
                 writeListItem();
             }
-            listDivText += '</li><br></br></ul><br></br>';
+            listDivText += '</li><br><br></ul><br><br>';
         };
         writeListItem();
-        listDiv.innerHTML = listDivText + "<br></br><br></br>";
+        listDiv.innerHTML = listDivText + "<br><br>";
     };
 
 })();
