@@ -3,7 +3,9 @@
  */
 (function () {
     "use strict";
+    require('shelljs/global');
     var protractor = require("protractor");
+    var webdriver = require("selenium-webdriver");
     var version = require("../util/version_checker.js");
     var jshint = require("simplebuild-jshint");
     var jshintConfig = require("../config/jshint.conf.js");
@@ -11,20 +13,31 @@
     var bsync = require("browser-sync").create();
     //var karmaConfig = require("../config/karma.conf.js");
 
-
+    var wdmgrProc;
     var startTime = Date.now();
 
+    var seleniumIsUpAlready = exec('lsof -i -n -P | grep 4444', {silent:true});
+    if (seleniumIsUpAlready.code === 0) {
+        console.log('Found an orphaned instance of selenium standalone server:');
+        console.log('Running: kill -9 ' + seleniumIsUpAlready.output.split(/[ ,]+/)[1]);
+        exec('kill -9 ' + seleniumIsUpAlready.output.split(/[ ,]+/)[1]);
+    }
+
     var wrapUp = function () {
+        console.log("Killing selenium-standalone process");
+        exec("kill -9 " + wdmgrProc + 1);
+
         var elapsedSeconds = (Date.now() - startTime) / 1000;
         console.log("\n\nBUILD OK (" + elapsedSeconds.toFixed(2) + "s)");
 
         // if there is an instance of Browser-Sync, kill it
         // becasuse bsync.exit() also exits the jake.sh process, this must be the final action
-        if (bsync.active) {
-            console.log("\nExiting browser-sync server instance.");
-            bsync.exit();
-        }
     };
+
+    if (bsync.active) {
+        console.log("\nExiting browser-sync server instance.");
+        bsync.exit();
+    }
 
     desc("Lint and test everything");
     task("default", [ "version", "lint", "browserify", "test" ], function(){
@@ -93,7 +106,7 @@
     }, {async: true});
 
     desc("Run the E2E tests in a browser with http & selenium servers");
-    task('testE2E', ["startBServer"], {async: true}, function () {
+    task('testE2E', ["startWDMServer", "startBServer"], function () {
         process.stdout.write("\n\nStarting browser-based E2E tests:\n\n");
         var t = jake.Task.runE2E;
         t.addListener('complete', function () {
@@ -105,10 +118,38 @@
 
         //'./node_modules/protractor/bin/webdriver-manager start',
     });
+    // *** BROWSER-SYNC SERVER START
+    desc("Run an instance of browser-sync server");
+    task('startBServer', function () {
+        process.stdout.write("\n\nRunning browser-sync server:\n\n");
+        bsync.init({
+            server: {
+                baseDir: ["src/browser"],
+                index: "index.html"
+            },
+            open: false
+        });
+        complete();
+    });
+    // *** WEBDIVER-MANAGER START
+    desc("Start an instance of webdriver-manager");
+    task('startWDMServer', function () {
+        // check if the binaries are in place
+        exec("./node_modules/protractor/bin/webdriver-manager update");
 
+        process.stdout.write("\n\nStarting webdriver-manager:\n\n");
+        wdmgrProc = exec("./node_modules/protractor/bin/webdriver-manager start");
+        console.log("STUFF: " + wdmgrProc);
+        //wdmgrProc.stdout.on('data', function(data) {
+        //    console.log("SOME WDM DATA:" + data);
+        //    if (data.search("Started org.openqa.jetty.jetty.Server") > -1){console.log("FOUND");}
+        //
+        //    complete();
+        //});
 
+    });
+    // *** RUN THE ACTUAL E2E TESTS WITH PROTRACTOR
     task('runE2E', {async:true}, function () {
-        var testE2Etask = this;
         var protractorBin = "./node_modules/protractor/bin/protractor";
         var protractorConf = "./build/config/protractor.conf.js";
         var protractorSpecs = "--specs './test/e2e/spec.js'";
@@ -162,18 +203,6 @@
         });
     });
 
-    // *** BROWSER-SYNC SERVER MANAGEMENT
-    desc("Run an instance of browser-sync server");
-    task('startBServer', {async: true}, function () {
-        process.stdout.write("\n\nRunning browser-sync server:\n\n");
-        bsync.init({
-            server: {
-                baseDir: ["src/browser"],
-                index: "index.html"
-            },
-            open: false
-        });
-        complete();
-    });
+
 
 }());
