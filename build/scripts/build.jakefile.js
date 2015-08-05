@@ -11,11 +11,15 @@
     var bsync = require("browser-sync").create();
     //var karmaConfig = require("../config/karma.conf.js");
 
+
     var startTime = Date.now();
 
     var wrapUp = function () {
         var elapsedSeconds = (Date.now() - startTime) / 1000;
         console.log("\n\nBUILD OK (" + elapsedSeconds.toFixed(2) + "s)");
+
+        // if there is an instance of Browser-Sync, kill it
+        // becasuse bsync.exit() also exits the jake.sh process, this must be the final action
         if (bsync.active) {
             console.log("\nExiting browser-sync server instance.");
             bsync.exit();
