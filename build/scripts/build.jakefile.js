@@ -182,9 +182,11 @@
         process.stdout.write("\n\nCompiling browserify bundles:\n\n");
         var binPath = './node_modules/browserify/bin/cmd.js ';
         // in future with more bundles we'll want to generate this better
-        var someArgs = './src/browser/js/index.js > ./src/browser/js/index.bundle.js';
+        var bundleLB = './src/browser/js/index.js > ./src/browser/js/index.bundle.js';
+        var bundleCanvas = './spikes/canvas/scripts/canvas.js > ./spikes/canvas/scripts/canvas.bundle.js';
         var cmds = [
-            binPath + someArgs
+            binPath + bundleLB,
+            binPath + bundleCanvas
         ];
         jake.exec(cmds, {printStdout: true}, function () {
             console.log('All tests passed.');

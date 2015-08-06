@@ -1,7 +1,6 @@
 "use strict";
 
     var fbr = require('./bower_components/fabric/dist/fabric.js');
-    //var fbr = require('../../../node_modules/fabric-browserify/dist/fabric.js');
     var fabric = fbr.fabric;
 
     console.log(fabric.toString());

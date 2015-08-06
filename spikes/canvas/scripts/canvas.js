@@ -1,6 +1,8 @@
 "use strict";
 
-    var fabric = require('./bower_components/fabric/dist/fabric.require.js');
+    var fbr = require('./bower_components/fabric/dist/fabric.js');
+    var fabric = fbr.fabric;
+    //var fabric = require('./bower_components/fabric/dist/fabric.require.js');
     //requirejs(['fabric'],
     //
     //function(fabric) {

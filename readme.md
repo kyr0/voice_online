@@ -17,7 +17,7 @@ To see which build related tasks are available:
 
 To see the example page for Little Bits:
 
-    The easiest way is to open ./src/browser/index.html 
+    The easiest way is to open ./src/browser/index.html directly in the browser
 
     Alternatively:
     1. In the console activate the local server './jake.sh startBServer'
