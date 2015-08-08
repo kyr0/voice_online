@@ -9,6 +9,7 @@
     "baudio": "^2.1.2",
     "browser-sync": "^2.8.2",
     "browserify": "^11.0.0",
+    "grunt": "^0.4.5",
     "jake": "^8.0.12",
     "jasmine-core": "^2.3.4",
     "jshint": "^2.8.0",

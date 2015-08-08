@@ -3,11 +3,22 @@ General
 - create js template file for boilerplate
 
 Minimum Marketing Features:
-- lesson practice page
+- lesson based practice
+- user account / sign up
+- personal score history
+
 
 Engineering Tasks:
-- finish testing existing code, think of canvas tests, do bubble tests
-- draw time at 120 BPM on canvas
-- draw pitch from oscilator at various frequencies
-- draw pitch from microphone on canvas over time
-- design a system for populating a lesson
+- get oscillator making sounds at correct pitches in tuner example
+- strip away tuner and have the console show the values in a consumable format
+- get osc making sounds from array at range of pitches firing on time intervals
+- detect oscillator pitch and display in real time to the console
+- detect microphone pitch and .. ditto
+- design the Lesson Object, with time sig, BPM, range, note population, etc
+- replace fabric with Paper.js
+- test for canvas connectivity
+- design Canvas Object to interact with Lessons
+- draw bubbles programmatically on the canvas based on a Lesson Object
+- draw time on canvas
+- draw pitch from oscillator at various frequencies
+
