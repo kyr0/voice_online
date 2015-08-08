@@ -27,8 +27,15 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 	var ampEstimates = [];
 
 	sampleRate = audioSampleRate;
-	bufferSize = audioBufferSize !== 'undefined' ? audioBufferSize : DEFAULT_BUFFER_SIZE;
-	cutoff = cutoffMPM !== 'undefined' ? cutoffMPM : DEFAULT_CUTOFF;
+	bufferSize = typeof audioBufferSize !== 'undefined' ? audioBufferSize : DEFAULT_BUFFER_SIZE;
+	cutoff = typeof cutoffMPM !== 'undefined' ? cutoffMPM : DEFAULT_CUTOFF;
+
+	/* start-test-code */
+	this.__testonly__.sampleRate = sampleRate;
+	this.__testonly__.bufferSize = bufferSize;
+	this.__testonly__.cutoff = cutoff;
+	/* end-test-code */
+
 
 }
 

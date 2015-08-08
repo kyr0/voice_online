@@ -4,17 +4,16 @@
 "use strict";
 
 var assert = require("assert");
-var contentKeyPage = require("../../spike/pitch_v2/js/mpm.js");
+//var MPM = require("../../spike/pitch/mpm.js");
 
-suite('index.js', function() {
+suite('mpm.js', function() {
     setup(function() {
         // ...
     });
 
     suite('test_MPM', function() {
-        test("should return appropriate warning when input is not formatted correctly", function() {
-            document.getElementById("contextKeyInput").value = "adventure time";
-            assert.equal(typeof contentKeyPage.content, 'object');
+        test("should do something", function() {
+            // ...
         });
 
 
