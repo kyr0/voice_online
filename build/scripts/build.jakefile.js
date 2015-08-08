@@ -99,7 +99,7 @@
 
     task("testClientUnit", function(){
         process.stdout.write("\n\nRunning browser-based unit tests:\n\n");
-        var brwfy = mochify("test/unit/**/*.js", {
+        mochify("test/unit/**/*.js", {
             phantomjs: "./node_modules/.bin/phantomjs",
             ui: "tdd"
         }).bundle(function(err,buf){
@@ -182,11 +182,13 @@
         process.stdout.write("\n\nCompiling browserify bundles:\n\n");
         var binPath = './node_modules/browserify/bin/cmd.js ';
         // in future with more bundles we'll want to generate this better
-        var bundleLB = './src/browser/js/index.js > ./src/browser/js/index.bundle.js';
+        var bundleLBits = './src/browser/js/index.js > ./src/browser/js/index.bundle.js';
         var bundleCanvas = './spikes/canvas/scripts/canvas.js > ./spikes/canvas/scripts/canvas.bundle.js';
+        //var bundleMPM = './spikes/pitch/mpm.js > ./spikes/pitch/mpm.bundle.js';
         var cmds = [
-            binPath + bundleLB,
-            binPath + bundleCanvas
+            binPath + bundleLBits,
+            binPath + bundleCanvas,
+            //binPath + bundleMPM
         ];
         jake.exec(cmds, {printStdout: true}, function () {
             console.log('All tests passed.');

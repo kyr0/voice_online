@@ -8,9 +8,7 @@
  * https://github.com/sevagh/Pitcha/blob/master/app/src/main/java/com/sevag/pitcha/dsp/MPM.java
  */
 
-module.exports = MPM;
-
-function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
+module.exports = function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 
 	var DEFAULT_BUFFER_SIZE = 1024; // public int
 	var DEFAULT_CUTOFF = 0.97; // private double
@@ -31,13 +29,18 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 	cutoff = typeof cutoffMPM !== 'undefined' ? cutoffMPM : DEFAULT_CUTOFF;
 
 	/* start-test-code */
-	this.__testonly__.sampleRate = sampleRate;
-	this.__testonly__.bufferSize = bufferSize;
-	this.__testonly__.cutoff = cutoff;
+	this.__testonly__ = {
+		sampleRate : sampleRate,
+		bufferSize : bufferSize,
+		cutoff : cutoff,
+		DEFAULT_CUTOFF : DEFAULT_CUTOFF,
+		DEFAULT_BUFFER_SIZE : DEFAULT_BUFFER_SIZE
+	};
 	/* end-test-code */
 
 
-}
+};
+
 
 /*
 	private void normalizedSquareDifference(final double[] audioBuffer) {
