@@ -4,7 +4,7 @@
 "use strict";
 
 var assert = require("assert");
-var MPM = require("../../spikes/pitch/mpm.js");
+var MPM = require("../../spikes/pitch/js/mpm.js");
 
 suite('MPM Class', function() {
     setup(function() {

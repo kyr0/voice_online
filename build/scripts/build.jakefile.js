@@ -184,7 +184,7 @@
         // in future with more bundles we'll want to generate this better
         var bundleLittleBits = './src/browser/js/index.js > ./src/browser/js/bundles/index.bundle.js';
         var bundleCanvas = './spikes/canvas/scripts/canvas.js > ./spikes/canvas/scripts/canvas.bundle.js';
-        var bundleMPMSpec = './test/e2e/mpm_spec.js > ./test/e2e/bundles/mpm_spec.bundle.js';
+        var bundleMPMSpec = './spikes/pitch/js/test_mpm.js > ./spikes/pitch/js/mpm.bundle.js';
         var cmds = [
             binPath + bundleLittleBits,
             binPath + bundleCanvas,

@@ -36,25 +36,33 @@ module.exports = function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 		cutoff : cutoff,
 		DEFAULT_CUTOFF : DEFAULT_CUTOFF,
 		DEFAULT_BUFFER_SIZE : DEFAULT_BUFFER_SIZE,
-		nsdfLength : nsdf.length,
-		normalizedSquareDifference : normalizedSquareDifference
+		nsdfLength : nsdf.length
 	};
 	/* end-test-code */
 
 	var normalizedSquareDifference = function (audioBuffer) {
+		var makeNSDFLog = "";
+		var startTime = Date.now();
 		for (var tau = 0; tau < audioBuffer.length; tau++) {
 			var acf = 0;
 			var divisorM = 0;
 			for (var i = 0; i < audioBuffer.length - tau; i++) {
-				acf += audioBuffer[i] * audioBuffer[i + tau];
+				acf += audioBuffer[i] * audioBuffer[i + tau];  // 0.29796794673311
 				divisorM += audioBuffer[i] * audioBuffer[i] + audioBuffer[i + tau] * audioBuffer[i + tau];
+				// 0.59593589346622
 			}
 			nsdf[tau] = 2 * acf / divisorM;
-			//console.log(nsdf[tau] + " ");
+			makeNSDFLog += (nsdf[tau] + ", ");
 		}
+		var elapsedTime = ((Date.now() - startTime));
+		console.log("Finished NSDF.\n Time elapsed (ms): " + elapsedTime + "\nNSDF Array length: " +
+			nsdf.length + "\n" + makeNSDFLog);
 	};
 
-
+	/* start-test-code */
+	this.__testonly__.normalizedSquareDifference = normalizedSquareDifference;
+	/* end-test-code */
+	
 };
 
 
