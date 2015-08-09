@@ -6,6 +6,9 @@
  *
  * Converted from java->to->javascript from this project:
  * https://github.com/sevagh/Pitcha/blob/master/app/src/main/java/com/sevag/pitcha/dsp/MPM.java
+ *
+ *  Worth checking out this article if latency turns out to be an issue:
+ *  https://courses.physics.illinois.edu/phys406/NSF_REU_Reports/2005_reu/Real-Time_Time-Domain_Pitch_Tracking_Using_Wavelets.pdf
  */
 
 function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {

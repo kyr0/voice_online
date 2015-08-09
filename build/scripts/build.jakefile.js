@@ -184,11 +184,13 @@
         // in future with more bundles we'll want to generate this better
         var bundleLittleBits = './src/browser/js/index.js > ./src/browser/js/bundles/index.bundle.js';
         var bundleCanvas = './spikes/canvas/scripts/canvas.js > ./spikes/canvas/scripts/canvas.bundle.js';
-        var bundleMPMSpec = './spikes/pitch/js/drive_mpm.js > ./spikes/pitch/js/mpm.bundle.js';
+        var bundleMPMDriver = './spikes/pitch/js/drive_mpm.js > ./spikes/pitch/js/drive_mpm.bundle.js';
+        var bundleWebAudioDriver = './spikes/pitch/js/drive_webAudio.js > ./spikes/pitch/js/drive_webAudio.bundle.js';
         var cmds = [
             binPath + bundleLittleBits,
             binPath + bundleCanvas,
-            binPath + bundleMPMSpec
+            binPath + bundleMPMDriver,
+            binPath + bundleWebAudioDriver
         ];
         jake.exec(cmds, {printStdout: true}, function () {
             console.log('All tests passed.');
