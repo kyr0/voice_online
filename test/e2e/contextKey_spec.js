@@ -1,7 +1,7 @@
 // spec.js
 "use strict";
 
-var indexPage = require("./pages/indexPage");
+var indexPage = require("./pageModules/indexPage");
 
 beforeEach(function() {
     isAngularSite(false);

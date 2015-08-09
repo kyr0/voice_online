@@ -1,5 +1,5 @@
 /*
- * "Implementation of MPM adapted from the Tarsos DSP project."
+ * Implementation of Mcleod Pitch Method (MPM)
  *
  * Based on this article:
  * http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf
@@ -10,13 +10,13 @@
 
 module.exports = function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 
-	var DEFAULT_BUFFER_SIZE = 1024; // public int
-	var DEFAULT_CUTOFF = 0.97; // private double
+	var DEFAULT_BUFFER_SIZE = 1024;
+	var DEFAULT_CUTOFF = 0.97;
 	var SMALL_CUTOFF = 0.5;
 	var LOWER_PITCH_CUTOFF = 80.0; // Hz
 	var cutoff;
 	var sampleRate;
-	var nsdf = [];
+	var nsdf;  // normalized square difference
 	var bufferSize;
 	var turningPointX;
 	var turningPointY;
@@ -27,6 +27,7 @@ module.exports = function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 	sampleRate = audioSampleRate;
 	bufferSize = typeof audioBufferSize !== 'undefined' ? audioBufferSize : DEFAULT_BUFFER_SIZE;
 	cutoff = typeof cutoffMPM !== 'undefined' ? cutoffMPM : DEFAULT_CUTOFF;
+	nsdf = new Array(bufferSize);
 
 	/* start-test-code */
 	this.__testonly__ = {
@@ -34,26 +35,31 @@ module.exports = function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 		bufferSize : bufferSize,
 		cutoff : cutoff,
 		DEFAULT_CUTOFF : DEFAULT_CUTOFF,
-		DEFAULT_BUFFER_SIZE : DEFAULT_BUFFER_SIZE
+		DEFAULT_BUFFER_SIZE : DEFAULT_BUFFER_SIZE,
+		nsdfLength : nsdf.length,
+		normalizedSquareDifference : normalizedSquareDifference
 	};
 	/* end-test-code */
+
+	var normalizedSquareDifference = function (audioBuffer) {
+		for (var tau = 0; tau < audioBuffer.length; tau++) {
+			var acf = 0;
+			var divisorM = 0;
+			for (var i = 0; i < audioBuffer.length - tau; i++) {
+				acf += audioBuffer[i] * audioBuffer[i + tau];
+				divisorM += audioBuffer[i] * audioBuffer[i] + audioBuffer[i + tau] * audioBuffer[i + tau];
+			}
+			nsdf[tau] = 2 * acf / divisorM;
+			//console.log(nsdf[tau] + " ");
+		}
+	};
 
 
 };
 
 
+
 /*
-	private void normalizedSquareDifference(final double[] audioBuffer) {
-		for (int tau = 0; tau < audioBuffer.length; tau++) {
-			double acf = 0;
-			double divisorM = 0;
-			for (int i = 0; i < audioBuffer.length - tau; i++) {
-				acf += audioBuffer[i] * audioBuffer[i + tau];
-				divisorM += audioBuffer[i] * audioBuffer[i] + audioBuffer[i + tau] * audioBuffer[i + tau];
-			}
-			nsdf[tau] = 2 * acf / divisorM;
-		}
-	}
 
 	public double getPitchFromShort(final short[] data) {
 		double[] doubleData = new double[data.length];

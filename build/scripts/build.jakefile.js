@@ -144,7 +144,7 @@
     task('runE2E', {async:true}, function () {
         var protractorBin = "./node_modules/protractor/bin/protractor";
         var protractorConf = "./build/config/protractor.conf.js";
-        var protractorSpecs = "--specs './test/e2e/contextKey_spec.js'";
+        var protractorSpecs = "--specs './test/e2e/*.js'";
         var cmds = [
             protractorBin + " " + protractorConf + " " + protractorSpecs
         ];
@@ -182,13 +182,13 @@
         process.stdout.write("\n\nCompiling browserify bundles:\n\n");
         var binPath = './node_modules/browserify/bin/cmd.js ';
         // in future with more bundles we'll want to generate this better
-        var bundleLBits = './src/browser/js/index.js > ./src/browser/js/index.bundle.js';
+        var bundleLittleBits = './src/browser/js/index.js > ./src/browser/js/bundles/index.bundle.js';
         var bundleCanvas = './spikes/canvas/scripts/canvas.js > ./spikes/canvas/scripts/canvas.bundle.js';
-        //var bundleMPM = './spikes/pitch/mpm.js > ./spikes/pitch/mpm.bundle.js';
+        var bundleMPMSpec = './test/e2e/mpm_spec.js > ./test/e2e/bundles/mpm_spec.bundle.js';
         var cmds = [
-            binPath + bundleLBits,
+            binPath + bundleLittleBits,
             binPath + bundleCanvas,
-            //binPath + bundleMPM
+            binPath + bundleMPMSpec
         ];
         jake.exec(cmds, {printStdout: true}, function () {
             console.log('All tests passed.');
