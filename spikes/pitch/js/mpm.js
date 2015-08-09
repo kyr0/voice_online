@@ -8,7 +8,7 @@
  * https://github.com/sevagh/Pitcha/blob/master/app/src/main/java/com/sevag/pitcha/dsp/MPM.java
  */
 
-module.exports = function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
+function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 
 	var DEFAULT_BUFFER_SIZE = 1024;
 	var DEFAULT_CUTOFF = 0.97;
@@ -41,109 +41,113 @@ module.exports = function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 	/* end-test-code */
 
 	var normalizedSquareDifference = function (audioBuffer) {
-		var makeNSDFLog = "";
-		var startTime = Date.now();
+		//var makeNSDFLog = "";   // used to initially inspect behaviour and performance
+		//var startTime = Date.now();
 		for (var tau = 0; tau < audioBuffer.length; tau++) {
 			var acf = 0;
 			var divisorM = 0;
 			for (var i = 0; i < audioBuffer.length - tau; i++) {
-				acf += audioBuffer[i] * audioBuffer[i + tau];  // 0.29796794673311
+				acf += audioBuffer[i] * audioBuffer[i + tau];
 				divisorM += audioBuffer[i] * audioBuffer[i] + audioBuffer[i + tau] * audioBuffer[i + tau];
-				// 0.59593589346622
 			}
 			nsdf[tau] = 2 * acf / divisorM;
-			makeNSDFLog += (nsdf[tau] + ", ");
+			//makeNSDFLog += (nsdf[tau] + ", ");
 		}
-		var elapsedTime = ((Date.now() - startTime));
-		console.log("Finished NSDF.\n Time elapsed (ms): " + elapsedTime + "\nNSDF Array length: " +
-			nsdf.length + "\n" + makeNSDFLog);
+		//var elapsedTime = ((Date.now() - startTime));
+		//console.log("Finished NSDF.\n Time elapsed (ms): " + elapsedTime + "\nNSDF Array length: " +
+		//	nsdf.length + "\n" + makeNSDFLog);
 	};
 
 	/* start-test-code */
 	this.__testonly__.normalizedSquareDifference = normalizedSquareDifference;
+	this.__testonly__.nsdf = nsdf;
 	/* end-test-code */
-	
+
+}
+
+MPM.prototype.getPitch = function(audioBuffer) {   // double array
+	var pitch;
+
+	// Clear previous results (this is faster than setting length to 0)
+	// http://www.2ality.com/2012/12/clear-array.html
+	maxPositions = [];
+	periodEstimates = [];
+	ampEstimates = [];
+
+	//// 1. Calculate the normalized square difference for each Tau value.
+	//normalizedSquareDifference(audioBuffer);
+	//// 2. Peak picking time: time to pick some peaks.
+	//peakPicking();
+    //
+	//double highestAmplitude = Double.NEGATIVE_INFINITY;
+    //
+	//for (final Integer tau : maxPositions) {
+	//	// make sure every annotation has a probability attached
+	//	highestAmplitude = Math.max(highestAmplitude, nsdf[tau]);
+    //
+	//	if (nsdf[tau] > SMALL_CUTOFF) {
+	//		// calculates turningPointX and Y
+	//		prabolicInterpolation(tau);
+	//		// store the turning points
+	//		ampEstimates.add(turningPointY);
+	//		periodEstimates.add(turningPointX);
+	//		// remember the highest amplitude
+	//		highestAmplitude = Math.max(highestAmplitude, turningPointY);
+	//	}
+	//}
+    //
+	//if (periodEstimates.isEmpty()) {
+	//	pitch = -1;
+	//} else {
+	//	// use the overall maximum to calculate a cutoff.
+	//	// The cutoff value is based on the highest value and a relative
+	//	// threshold.
+	//	final double actualCutoff = cutoff * highestAmplitude;
+    //
+	//	// find first period above or equal to cutoff
+	//	int periodIndex = 0;
+	//	for (int i = 0; i < ampEstimates.size(); i++) {
+	//		if (ampEstimates.get(i) >= actualCutoff) {
+	//			periodIndex = i;
+	//			break;
+	//		}
+	//	}
+    //
+	//	final double period = periodEstimates.get(periodIndex);
+	//	final double pitchEstimate = (double) (sampleRate / period);
+	//	if (pitchEstimate > LOWER_PITCH_CUTOFF) {
+	//		pitch = pitchEstimate;
+	//	} else {
+	//		pitch = -1;
+	//	}
+    //
+	//}
+	//return pitch;
 };
 
-
+module.exports = MPM;
 
 /*
 
-	public double getPitchFromShort(final short[] data) {
-		double[] doubleData = new double[data.length];
+//MPM.prototype.getPitchFromShort = function (data) { // data is an array of type short
+//	var doubleData = new Array(data.length);
+//	var maxshort = 0;
+//	for (var i = 0; i < data.length; i++) {
+//		if (data[i] > maxshort) {
+//			maxshort = data[i];
+//		}
+//	}
+//
+//	for (var j = 0; j < data.length; j++) {
+//		doubleData[j] = (double) ((double) data[j] * (double) Integer.MAX_VALUE / (double) maxshort);  // ?? No F'ing Idea
+//	}
+//	return getPitch(doubleData);
+//};
 
-		short maxshort = 0;
-		for (int i = 0; i < data.length; i++) {
-			if (data[i] > maxshort) {
-				maxshort = data[i];
-			}
-		}
 
-		for (int i = 0; i < data.length; i++) {
-			doubleData[i] = (double) ((double) data[i] * (double) Integer.MAX_VALUE / (double) maxshort);
-		}
-		return getPitch(doubleData);
-	}
 
-	public double getPitch(final double[] audioBuffer) {
-		final double pitch;
 
-		// 0. Clear previous results (Is this faster than initializing a list
-		// again and again?)
-		maxPositions.clear();
-		periodEstimates.clear();
-		ampEstimates.clear();
 
-		// 1. Calculate the normalized square difference for each Tau value.
-		normalizedSquareDifference(audioBuffer);
-		// 2. Peak picking time: time to pick some peaks.
-		peakPicking();
-
-		double highestAmplitude = Double.NEGATIVE_INFINITY;
-
-		for (final Integer tau : maxPositions) {
-			// make sure every annotation has a probability attached
-			highestAmplitude = Math.max(highestAmplitude, nsdf[tau]);
-
-			if (nsdf[tau] > SMALL_CUTOFF) {
-				// calculates turningPointX and Y
-				prabolicInterpolation(tau);
-				// store the turning points
-				ampEstimates.add(turningPointY);
-				periodEstimates.add(turningPointX);
-				// remember the highest amplitude
-				highestAmplitude = Math.max(highestAmplitude, turningPointY);
-			}
-		}
-
-		if (periodEstimates.isEmpty()) {
-			pitch = -1;
-		} else {
-			// use the overall maximum to calculate a cutoff.
-			// The cutoff value is based on the highest value and a relative
-			// threshold.
-			final double actualCutoff = cutoff * highestAmplitude;
-
-			// find first period above or equal to cutoff
-			int periodIndex = 0;
-			for (int i = 0; i < ampEstimates.size(); i++) {
-				if (ampEstimates.get(i) >= actualCutoff) {
-					periodIndex = i;
-					break;
-				}
-			}
-
-			final double period = periodEstimates.get(periodIndex);
-			final double pitchEstimate = (double) (sampleRate / period);
-			if (pitchEstimate > LOWER_PITCH_CUTOFF) {
-				pitch = pitchEstimate;
-			} else {
-				pitch = -1;
-			}
-
-		}
-		return pitch;
-	}
 
 	private void prabolicInterpolation(final int tau) {
 		final double nsdfa = nsdf[tau - 1];

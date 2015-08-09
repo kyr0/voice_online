@@ -31,24 +31,37 @@ suite('MPM Class', function() {
         test("should have a nsdf length same as bufferSize", function() {
             assert.equal(mpm2.__testonly__.nsdfLength, mpm2.__testonly__.bufferSize);
         });
-        //test("should populate every nsdf element using the buffer", function() {
-        //    //var AudioContext = new (window.AudioContext || window.webkitAudioContext)();
-            //var audioCtx = new AudioContext();
-            //var channels = 1;   // microphones are monophonic
-            //// Create an empty two second stereo buffer
-            //var frameCount = audioCtx.sampleRate * 2.0; // 2 second buffer
-            //var buffer = audioCtx.createBuffer(channels, frameCount, audioCtx.sampleRate);
-            //console.log("Sample Rate: " + audioCtx.sampleRate);
-            //
-            //// Fill the buffer with white noise which is just random values between -1.0 and 1.0
-            //// This gives us the actual ArrayBuffer that contains the data
-            //var nowBuffering = buffer.getChannelData(channels - 1); // channels start with 0 index
-            //for (var i = 0; i < frameCount; i++) {
-            //    // Math.random() is in [0; 1.0] audio needs to be in [-1.0; 1.0]
-            //    nowBuffering[i] = Math.random() * 2 - 1;
-            //}
-            //var mpm3 = new MPM(audioCtx.sampleRate, buffer.length);
-            //mpm3.__testonly__.normalizedSquareDifference(nowBuffering);
-        //});
+        test("should populate every nsdf element seeded by buffer frames", function() {
+            // Create a mock buffer
+            var sampleRate = 44100;
+            var time = 1000;  // used as mult/div of sampleRate to determine frame length
+            var frameCount = Math.floor(sampleRate / time); // 1 millisecond buffer @ 44.1khz sample rate
+            var buffer = createMockBuffer(frameCount);
+            var mpm3 = new MPM(sampleRate, buffer.length);
+            assert.equal('undefined', checkNSDFValues(mpm3)); // should be undefined elements
+            mpm3.__testonly__.normalizedSquareDifference(buffer);
+            assert.equal(true, checkNSDFValues(mpm3));  // should be full of -1 to 1
+        });
     });
+
+    function createMockBuffer(numFrames){
+        var mockBuffer = new Array(numFrames);
+        // Fill the mock buffer with white noise which is just random values between -1.0 and 1.0
+        // This gives us the actual ArrayBuffer that contains the data
+        for (var i = 0; i < numFrames; i++) {
+            // Math.random() is in [0; 1.0] audio needs to be in [-1.0; 1.0]
+            mockBuffer[i] = Math.random() * 2 - 1;
+        }
+        return mockBuffer;
+    }
+
+    function checkNSDFValues(mpmObj){
+        for (var i = 0; i < mpmObj.__testonly__.nsdfLength; i++) {
+            if (typeof mpmObj.__testonly__.nsdf[i] === 'undefined') { return 'undefined' }
+            else if (mpmObj.__testonly__.nsdf[i] > 1 || mpmObj.__testonly__.nsdf[i] < -1) {
+                return false;
+            }
+        }
+        return true;
+    }
 });

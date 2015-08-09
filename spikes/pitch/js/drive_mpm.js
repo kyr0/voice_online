@@ -2,6 +2,8 @@
 
 var MPM = require("./mpm.js");
 
+// NOTE: There is commented out test data in the nsdf function related to this driver
+
 (function () {
     var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     var channels = 1;   // microphones are monophonic
