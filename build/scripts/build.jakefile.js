@@ -202,6 +202,8 @@
     // *** CHECK WEBDRIVER SERVER IS UP, IF NOT, START IT
     task('checkWD', {async: true}, function() {
         /* jshint ignore:start */
+        // check if the binaries are in place
+        exec("./node_modules/protractor/bin/webdriver-manager update");
         var wdIsUpAlready = exec('lsof -i -n -P | grep ' + wdPort);
         if (wdIsUpAlready.code === 0) {
             var lsofOut = wdIsUpAlready.output.split(/[ ,]+/);
@@ -222,9 +224,6 @@
     /* jshint ignore:start */
     desc("Start an instance of selenium webdriver server and leave it running");
     task('startWDServer', {async: true}, function () {
-        // check if the binaries are in place
-        exec("./node_modules/protractor/bin/webdriver-manager update");
-
         process.stdout.write("\n\nStarting selenium standalone server in background\n");
         var child = exec("./node_modules/protractor/bin/webdriver-manager start", {async:true, silent: true});
         child.stdout.on('data', function(data) {
