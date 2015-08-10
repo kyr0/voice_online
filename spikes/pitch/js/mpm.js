@@ -99,7 +99,7 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
      * the explanation before) in the MPM article. This calculation can be
      * optimized by using an FFT. The results should remain the same.
      */
-    var normalizedSquareDifference = function (audioBuffer) {
+    function normalizedSquareDifference(audioBuffer) {
         //var makeNSDFLog = "";   // used to initially inspect behaviour and performance
         //var startTime = Date.now();
         for (var tau = 0; tau < audioBuffer.length; tau++) {
@@ -165,7 +165,7 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
      */
     // note that if this method is malfunctioning it may be because I removed the '=' from
     //  the float comparisons due to inexplicable javascript behaviour in the error thrown
-    var peakPicking = function () {
+    function peakPicking() {
 
         var pos = 0;
         var curMaxPos = 0;

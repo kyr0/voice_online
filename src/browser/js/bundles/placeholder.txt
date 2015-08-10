@@ -1,0 +1,2 @@
+This file has to exist for git to pay attention since the directory contents are ignored by git
+it is treated like an empty directory otherwise.
