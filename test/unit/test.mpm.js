@@ -5,12 +5,15 @@
 
 var assert = require("assert");
 var MPM = require("../../spikes/pitch/js/mpm.js");
+var config = require("./test.mpm.config.js");
+
 
 suite('MPM Class', function() {
     setup(function() {
         //...
     });
     suite('test_MPM', function() {
+
         var mpm = new MPM(48000);
         test("should have a sampleRate of 48000", function() {
             assert.equal(mpm.__testonly__.sampleRate, 48000);
@@ -21,6 +24,7 @@ suite('MPM Class', function() {
         test("should have a cutoff of DEFAULT_CUTOFF", function() {
             assert.equal(mpm.__testonly__.DEFAULT_CUTOFF, mpm.__testonly__.cutoff);
         });
+
         var mpm2 = new MPM(48000, 2048, 0.93);
         test("should have a bufferSize from construction parameter", function() {
             assert.equal(2048, mpm2.__testonly__.bufferSize);
@@ -31,16 +35,30 @@ suite('MPM Class', function() {
         test("should have a nsdf length same as bufferSize", function() {
             assert.equal(mpm2.__testonly__.nsdfLength, mpm2.__testonly__.bufferSize);
         });
+
+        var sampleRate = 44100;
+        var time = 1000;  // used as mult/div of sampleRate to determine frame length
+        var frameCount = Math.floor(sampleRate / time); // 1 millisecond buffer @ 44.1khz sample rate
+        var buffer = createMockBuffer(frameCount); // Create a mock buffer
         test("should populate every nsdf element seeded by buffer frames", function() {
-            // Create a mock buffer
-            var sampleRate = 44100;
-            var time = 1000;  // used as mult/div of sampleRate to determine frame length
-            var frameCount = Math.floor(sampleRate / time); // 1 millisecond buffer @ 44.1khz sample rate
-            var buffer = createMockBuffer(frameCount);
             var mpm3 = new MPM(sampleRate, buffer.length);
             assert.equal('undefined', checkNSDFValues(mpm3)); // should be undefined elements
             mpm3.__testonly__.normalizedSquareDifference(buffer);
             assert.equal(true, checkNSDFValues(mpm3));  // should be full of -1 to 1
+        });
+        var mpm4 = new MPM(sampleRate, config.oscBuffer.length);
+        test("should populate every nsdf element using getPitch()", function() {
+            assert.equal('undefined', checkNSDFValues(mpm4)); // should be undefined elements
+            mpm4.getPitch(config.oscBuffer);
+            assert.equal(true, checkNSDFValues(mpm4));  // should be full of -1 to 1
+        });
+        test("should have repeatable values given same input", function() {
+            assert.equal(config.nsdfArray.toString(), mpm4.__testonly__.nsdf.toString());
+            var max1 = 0.9998912511141909;
+            var max2 = 0.9995046600818478;
+            assert.equal(max1, mpm4.__testonly__.nsdf[100]);
+            assert.equal(max2, mpm4.__testonly__.nsdf[200]);
+            assert.equal("100,200", MPM.__testonly__.maxPositions.toString());
         });
     });
 
@@ -65,3 +83,5 @@ suite('MPM Class', function() {
         return true;
     }
 });
+
+
