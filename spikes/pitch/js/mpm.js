@@ -7,7 +7,7 @@
  * Converted from java->to->javascript from this project:
  * Github: https://github.com/JorenSix/TarsosDSP
  *
- * Special thanks to Sevag for pointing it out:
+ * Special thanks to Sevag for pointing it out and for bits of code (freq array):
  * https://github.com/sevagh/Pitcha/blob/master/app/src/main/java/com/sevag/pitcha/dsp/MPM.java
  *
  */
@@ -74,7 +74,13 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
     //A list of estimates of the amplitudes corresponding with the period estimates.
     var ampEstimates = [];
 
-    var result;  // the final pitch detection result, may need to implement as an object
+    /**
+     *  A probability (noisiness, (a)periodicity, salience, voicedness or
+     *         clarity measure) for the detected pitch. This is somewhat similar
+     *         to the term voiced which is used in speech recognition. This
+     *         probability is calculated together with the pitch.
+     */
+    var probability;
 
 
     sampleRate = audioSampleRate;
@@ -115,14 +121,14 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
         //var elapsedTime = ((Date.now() - startTime));
         //console.log("Finished NSDF.\n Time elapsed (ms): " + elapsedTime + "\nNSDF Array length: " +
         //	nsdf.length + "\n" + makeNSDFLog);
-    };
+    }
 
     /* start-test-code */
     this.__testonly__.nsdf = nsdf;
     this.__testonly__.normalizedSquareDifference = normalizedSquareDifference;
     /* end-test-code */
 
-    this.getPitch = function(audioBuffer) {   // double array
+    this.getPitch = function(audioBuffer) {
         var pitch;
 
         // Clear previous results (this is faster than setting length to 0)
@@ -135,7 +141,117 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
         normalizedSquareDifference(audioBuffer);
         // 2. Peak picking time: time to pick some peaks.
         peakPicking();
+
+        var highestAmplitude = Number.NEGATIVE_INFINITY;
+
+        var tau;
+        for (var i = 0; i < maxPositions.length; i++) {
+            tau = maxPositions[i];
+            // make sure every annotation has a probability attached
+            highestAmplitude = Math.max(highestAmplitude, nsdf[tau]);
+
+            if (nsdf[tau] > SMALL_CUTOFF) {
+                // calculates turningPointX and Y
+                prabolicInterpolation(tau);
+                // store the turning points
+                ampEstimates.push(turningPointY);
+                periodEstimates.push(turningPointX);
+                // remember the highest amplitude
+                highestAmplitude = Math.max(highestAmplitude, turningPointY);
+            }
+        }
+
+        if (periodEstimates.length === 0) {
+            pitch = -1;
+        } else {
+            // use the overall maximum to calculate a cutoff.
+            // The cutoff value is based on the highest value and a relative
+            // threshold.
+            var actualCutoff = cutoff * highestAmplitude;
+
+            // find first period above or equal to cutoff
+            var periodIndex = 0;
+            for (var j = 0; j < ampEstimates.length; j++) {
+                if (ampEstimates[j] >= actualCutoff) {
+                    periodIndex = j;
+                    break;
+                }
+            }
+
+            var period = periodEstimates[periodIndex];
+            var pitchEstimate = sampleRate / period;
+            if (pitchEstimate > LOWER_PITCH_CUTOFF) {
+                pitch = pitchEstimate;
+            } else {
+                pitch = -1;
+            }
+
+        }
+
+        //result.setProbability((float) highestAmplitude);
+        //result.setPitch(pitch);
+        //
+        return pitch;
+
+        /* start-test-code */
+        module.exports.__testonly__.pitch = pitch;
+        /* end-test-code */
     };
+
+
+
+    /**
+     * Finds the x value corresponding with the peak of a parabola.
+     *
+     * a,b,c are three samples that follow each other. E.g. a is at 511, b at
+     * 512 and c at 513; f(a), f(b) and f(c) are the normalized square
+     * difference values for those samples; x is the peak of the parabola and is
+     * what we are looking for. Because the samples follow each other
+     * (b - a = 1) the formula for parabolic interpolation can be simplified a lot.
+     *
+     * http://fizyka.umk.pl/nrbook/c10-2.pdf
+     *
+     * The following ASCII ART shows it a bit more clear, imagine this to be a
+     * bit more curvaceous.
+     *
+     *     nsdf(x)
+     *       ^
+     *       |
+     * f(x)  |------ ^
+     * f(b)  |     / |\
+     * f(a)  |    /  | \
+     *       |   /   |  \
+     *       |  /    |   \
+     * f(c)  | /     |    \
+     *       |_____________________> x
+     *            a  x b  c
+     *
+     * @param tau
+     *            The delay tau, b value in the drawing is the tau value.
+     */
+    function prabolicInterpolation(tau) {
+        var nsdfa = nsdf[tau - 1];
+        var nsdfb = nsdf[tau];
+        var nsdfc = nsdf[tau + 1];
+        var bValue = tau;
+        var bottom = nsdfc + nsdfa - 2 * nsdfb;
+        if (bottom == 0) {
+            turningPointX = bValue;
+            turningPointY = nsdfb;
+        } else {
+            var delta = nsdfa - nsdfc;
+            turningPointX = bValue + delta / (2 * bottom);
+            turningPointY = nsdfb - delta * delta / (8 * bottom);
+        }
+        /* start-test-code */
+        module.exports.__testonly__.turningPointX = turningPointX;
+        module.exports.__testonly__.turningPointY = turningPointY;
+        /* end-test-code */
+    }
+
+    /* start-test-code */
+    this.__testonly__.prabolicInterpolation = prabolicInterpolation;
+    /* end-test-code */
 
 
     /**

@@ -12,7 +12,7 @@ suite('MPM Class', function() {
     setup(function() {
         //...
     });
-    suite('test_MPM', function() {
+    suite('test_MPM:', function() {
 
         var mpm = new MPM(48000);
         test("should have a sampleRate of 48000", function() {
@@ -59,6 +59,26 @@ suite('MPM Class', function() {
             assert.equal(max1, mpm4.__testonly__.nsdf[100]);
             assert.equal(max2, mpm4.__testonly__.nsdf[200]);
             assert.equal("100,200", MPM.__testonly__.maxPositions.toString());
+        });
+        test("prabolicInterpolation() should conditionally assign tau/tauValue to turningPointX/Y", function() {
+            mpm4.__testonly__.nsdf[33] = 1;  // a
+            mpm4.__testonly__.nsdf[34] = 1;  // b, tau index = 34
+            mpm4.__testonly__.nsdf[35] = 1;  // c
+            mpm4.__testonly__.prabolicInterpolation(34);
+            assert.equal(34, MPM.__testonly__.turningPointX);
+            assert.equal(1, MPM.__testonly__.turningPointY);
+        });
+        test("prabolicInterpolation() should convert X/Y repeatably given repeated signal", function() {
+            mpm4.getPitch(config.oscBuffer);  // reset the values in mpm4
+            assert.equal(200.46002039225493, MPM.__testonly__.turningPointX);
+            assert.equal(1.0000240543039114, MPM.__testonly__.turningPointY);
+        });
+        //test("getPitch() should assign -1 to pitch given non-pitched sound", function() {
+        //    mpm4.getPitch(config.zeroBuffer);
+        //    assert.equal(-1, MPM.__testonly__.pitch);
+        //});
+        test("getPitch() should assign frequency 440 to oscillator pitch", function() {
+            assert.equal(440, Math.round(mpm4.getPitch(config.oscBuffer)));
         });
     });
 
