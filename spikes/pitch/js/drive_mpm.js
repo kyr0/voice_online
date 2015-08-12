@@ -1,6 +1,6 @@
 "use strict";
 
-var MPM = require("./mpm.js");
+var MPM = require("./MPM.js");
 
 // NOTE: There is commented out test data in the nsdf function related to this driver
 

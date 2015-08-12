@@ -4,8 +4,8 @@
 "use strict";
 
 var assert = require("assert");
-var MPM = require("../../spikes/pitch/js/mpm.js");
-var config = require("./test.mpm.config.js");
+var MPM = require("../../spikes/pitch/js/MPM.js");
+var config = require("./test.MPM.config.js");
 
 
 suite('MPM Class', function() {
@@ -77,8 +77,20 @@ suite('MPM Class', function() {
         //    mpm4.getPitch(config.zeroBuffer);
         //    assert.equal(-1, MPM.__testonly__.pitch);
         //});
-        test("getPitch() should assign frequency 440 to oscillator pitch", function() {
+        test("getPitch() should assign frequency 440 to oscillator pitch A4", function() {
             assert.equal(440, Math.round(mpm4.getPitch(config.oscBuffer)));
+        });
+        test("getPitch() should assign frequency 55 to buffer w/pitch A1 given 1024 samples", function() {
+            assert.equal(55, Math.round(mpm4.getPitch(config.noteBuffers.A1_1024)));
+        });
+        test("getPitch() should assign frequency 55 to buffer w/pitch A2 given 512 samples", function() {
+            assert.equal(110, Math.round(mpm4.getPitch(config.noteBuffers.A2_512)));
+        });
+        test("getPitch() should show ~4 cents flat at high freq, 7902 is the freq for B8", function() {
+            assert.equal(7882, Math.round(mpm4.getPitch(config.noteBuffers.B8_256)));
+        });
+        test("getPitch() B7 should be within .5 cent and still accurate enough (sharp by a hair)", function() {
+            assert.equal(3951.784860959183, mpm4.getPitch(config.noteBuffers.B7_256));
         });
     });
 

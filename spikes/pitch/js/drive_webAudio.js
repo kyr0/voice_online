@@ -2,81 +2,88 @@
 
 (function () {
 
-    var oct0 = [16.35, 17.32, 18.35, 19.45, 20.60, 21.83, 23.12, 24.50, 25.96, 27.50, 29.14, 30.87];
-    var oct1 = [32.70, 34.65, 36.71, 38.89, 41.20, 43.65, 46.25, 49, 51.91, 55, 58.27, 61.74];
-    var oct2 = [65.41, 69.30, 73.42, 77.78, 82.41, 87.31, 92.50, 98, 103.8, 110, 116.5, 123.5];
-    var oct3 = [130.8, 138.6, 146.8, 155.6, 164.8, 174.6, 185.0, 196, 207.7, 220, 233.1, 246.9];
-    var oct4 = [261.6, 277.2, 293.7, 311.1, 329.6, 349.2, 370, 392, 415.3, 440, 466.2, 493.9];
-    var oct5 = [523.3, 554.4, 587.3, 622.3, 659.3, 698.5, 740, 784, 830.6, 880, 932.3, 987.8];
-    var oct6 = [1047, 1109, 1175, 1245, 1319, 1397, 1480, 1568, 1661, 1760, 1865, 1976];
-    var oct7 = [2093, 2217, 2349, 2489, 2637, 2794, 2960, 3136, 3322, 3520, 3729, 3951];
-    var oct8 = [4186, 4435, 4699, 4978, 5274, 5588, 5920, 6272, 6645, 7040, 7459, 7902];
+    var MPM = require("./MPM.js");
+    var oct0 = [16.352, 17.324, 18.354, 19.445, 20.602, 21.827, 23.125, 24.500, 25.957, 27.500, 29.135, 30.868];
+    var oct1 = [32.703, 34.648, 36.708, 38.891, 41.203, 43.653, 46.249, 48.999, 51.913, 55.000, 58.270, 61.735];
+    var oct2 = [65.406, 69.296, 73.416, 77.782, 82.407, 87.307, 92.499, 97.999, 103.83, 110.00, 116.54, 123.47];
+    var oct3 = [130.81, 138.59, 146.83, 155.56, 164.81, 174.61, 185.00, 196.00, 207.65, 220.00, 233.08, 246.94];
+    var oct4 = [261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392.00, 415.30, 440.00, 466.16, 493.88];
+    var oct5 = [523.25, 554.37, 587.33, 622.25, 659.25, 698.46, 739.99, 783.99, 830.61, 880.00, 932.33, 987.77];
+    var oct6 = [1046.5, 1108.7, 1174.7, 1244.5, 1318.5, 1396.9, 1480.0, 1568.0, 1661.2, 1760.0, 1864.7, 1975.5];
+    var oct7 = [2093.0, 2217.5, 2349.3, 2489.0, 2637.0, 2793.8, 2960.0, 3136.0, 3322.4, 3520.0, 3729.3, 3951.1];
+    var oct8 = [4186.0, 4434.9, 4698.6, 4978.0, 5274.0, 5587.7, 5919.9, 6271.9, 6644.9, 7040.0, 7458.6, 7902.1];
+    var noteNames = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "Bb", "B"];
+    var notes2D = [oct0, oct1, oct2, oct3, oct4, oct5, oct6, oct7, oct8]; // 2D array
 
-    var notes = [oct0, oct1, oct2, oct3, oct4, oct5, oct6, oct7, oct8]; // 2D array
-    
+    var octave = 8;
+    var note = 3;  // 11 = B
+    var bufferLength = 256;
     var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    console.log("Sample Rate: " + audioCtx.sampleRate);
     var oscillator = audioCtx.createOscillator();
-    //oscillator.frequency.value = 1976;
+    oscillator.frequency.value = notes2D[octave][note];  // osc start frequency
+    var mpm = new MPM(audioCtx.sampleRate, bufferLength);
 
-    // Create a ScriptProcessorNode with a bufferSize of 256 and a single input and output channel
-    // This will fire the
-    var scriptNode = audioCtx.createScriptProcessor(256, 1, 1);
+    // HTML variables
+    var listDiv = document.getElementById('list');
+
+    // Create a ScriptProcessorNode with buffer size of bufferLength and a single input and output channel
+    var scriptNode = audioCtx.createScriptProcessor(bufferLength, 1, 1);
 
     oscillator.connect(scriptNode); // Connect output of Oscillator to our scriptNode
     oscillator.start();
-    oscillator.stop(.00581); // stop the oscillator after 256 frames == 44.1k per second * .00581
-    // the effect of this is the the script processing node should fire audioProcessingEvent only once
 
+    // will loop through all notes and play them into the script node via oscillator
+    //for (var octave = 0; octave < notes.length; octave++) {
+    //    for (var note = 0; note < notes[octave].length; note++) {
+    //        oscillator.frequency.value = notes[octave][note];
+    //        oscillator.start();
+    //        oscillator.stop(.00581); // stop the oscillator after 256 frames == 44.1k per second * .00581
+    //    }
+    //}
 
-
+    var count = 0;
     scriptNode.onaudioprocess = function(audioProcessingEvent) {
-        oscillator.disconnect(); // disconnect here so we get only a few frames
-        // The input buffer is from the oscillator we connected earlier
-        var inputBuffer = audioProcessingEvent.inputBuffer;
-        var makeDataLog = "";  // used to peek into the data
-        //var makeBufferLog = "";  // used to peek into the buffer
+        //if (octave === notes2D.length) {
+        //    oscillator.disconnect();
+        //    console.log("WERE DONE");
+        //}
+        //else if (note === notes2D[0].length) {
+        //    octave++;
+        //    note = 0;
+        //}
+        //else { note++; }
+        if (count === 0) {
+            var inputBuffer = audioProcessingEvent.inputBuffer;
+            var makeCodeOutput = "module.exports.noteBuffers = { " + noteNames[note] + octave + " : [ ";
+            var makeDataLog = "[ ";  // used to peek into the data
 
+            // The input buffer is from the oscillator we connected earlier
+            var inputData = inputBuffer.getChannelData(0);
 
-        var inputData = inputBuffer.getChannelData(0);
+            //// Loop through each of the samples in the buffer
+            //for (var sample = 0; sample < inputBuffer.length; sample++) {
+            //    makeDataLog += inputData[sample] + ", ";
+            //}
+            //makeDataLog += " ]";
+            document.getElementById('list').innerHTML = "PITCH: " + mpm.getPitch(inputData);
+                //+ "<br><br>" +
+                //makeCodeOutput + makeDataLog + " ]};";
+            //console.log("Buffer length: " + inputBuffer.length + "\n" +
+            //    "Data Values: \n" + makeDataLog);
 
-
-        // Loop through the 256 samples
-        for (var sample = 0; sample < inputBuffer.length; sample++) {
-            makeDataLog += inputData[sample] + ", ";
-            //makeBufferLog += inputBuffer[sample].toString() + " :: ";
-
-            // make output equal to the same as the input
-            //outputData[sample] = inputData[sample];
-            // add noise to each output sample
-            //outputData[sample] += ((Math.random() * 2) - 1) * 0.2;
         }
-
-        console.log("Buffer length: " + inputBuffer.length + "\n" +
-            "Data Values: \n" + makeDataLog);
-        // + "\nBuffer Values: \n" + makeBufferLog
-
+        count++;
     };
 
-
-    ////var channels = 1;   // microphones are monophonic
-    ////// Create an empty two second stereo buffer
-    ////var frameCount = Math.floor(audioCtx.sampleRate / 100); // 10 millisecond buffer
-    ////var buffer = audioCtx.createBuffer(channels, frameCount, audioCtx.sampleRate);
-    //
-    //
-    //
-    //// Fill the buffer with white noise which is just random values between -1.0 and 1.0
-    //// This gives us the actual ArrayBuffer that contains the data
-    //var nowBuffering = buffer.getChannelData(channels - 1); // channels start with 0 index
-    //
-    //for (var i = 0; i < frameCount; i++) {
-    //    // Math.random() is in [0; 1.0] audio needs to be in [-1.0; 1.0]
-    //    nowBuffering[i] = Math.random() * 2 - 1;
-    //
-    //}
-    //console.log("Finished Buffering. \n Buffer length: " + buffer.length + "\n" + makeLog);
-    ////var mpm = new MPM(audioCtx.sampleRate, buffer.length);
-    ////mpm.__testonly__.normalizedSquareDifference(nowBuffering);
-
 })();
+
+// TODO FIRST: pitch result object
+// constructor, REQ takes pitch freq, {time domain data, probability} optional
+// // getName() should show note name, octave and cents abov/below
+
+
+//TEST
+// calc pitch of a generated tone of a note, is it > or < than the designated freq?
+//   if < then check the freq below and calc cent incremental, is it within .5 cent? if > then do same for above
+// next check freq above and calc cent incremental
+// iterate through cents: generate tone of cent, check pitch is it within .5 cent?

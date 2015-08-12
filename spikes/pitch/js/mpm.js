@@ -36,6 +36,9 @@
 function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 
     this.DEFAULT_BUFFER_SIZE = 1024; // The expected size of an audio buffer (in samples).
+    // note that this can be optimized if we know in advance the range of input freq that will
+    // be found in the buffer, for instance A1 needs a buffer of 1024 to be successful, but A4
+    // only needs 128 (smallest in Javascript Web Audio API is 256)
 
     // Overlap defines how much two audio buffers following each other should
     // overlap (in samples). 75% overlap is advised in the MPM article.
@@ -50,7 +53,7 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
     var SMALL_CUTOFF = 0.5;
 
     //Pitch annotations below this threshold are considered invalid and ignored.
-    var LOWER_PITCH_CUTOFF = 80.0; // Hz
+    var LOWER_PITCH_CUTOFF = 54.0; // Hz
 
     // Defines the relative size that the chosen peak (pitch) has
     var cutoff;
@@ -330,7 +333,7 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
             maxPositions.push(curMaxPos); // add it to the vector of maxima
         }
         module.exports.__testonly__ = { maxPositions : maxPositions };
-    };
+    }
 
     /* start-test-code */
     this.__testonly__.peakPicking = peakPicking;
