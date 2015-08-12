@@ -29,30 +29,39 @@ suite('MPM Class', function() {
         test("should have a bufferSize from construction parameter", function() {
             assert.equal(2048, mpm2.__testonly__.bufferSize);
         });
+
         test("should have a cutoff from construction parameter", function() {
             assert.equal(0.93, mpm2.__testonly__.cutoff);
         });
-        test("should have a nsdf length same as bufferSize", function() {
+
+        test("nsdf.length should be same as bufferSize", function() {
             assert.equal(mpm2.__testonly__.nsdfLength, mpm2.__testonly__.bufferSize);
         });
+
+
 
         var sampleRate = 44100;
         var time = 1000;  // used as mult/div of sampleRate to determine frame length
         var frameCount = Math.floor(sampleRate / time); // 1 millisecond buffer @ 44.1khz sample rate
         var buffer = createMockBuffer(frameCount); // Create a mock buffer
-        test("should populate every nsdf element seeded by buffer frames", function() {
+
+        test("normalizedSquareDifference() should populate every nsdf[] element seeded by buffer", function() {
             var mpm3 = new MPM(sampleRate, buffer.length);
             assert.equal('undefined', checkNSDFValues(mpm3)); // should be undefined elements
             mpm3.__testonly__.normalizedSquareDifference(buffer);
             assert.equal(true, checkNSDFValues(mpm3));  // should be full of -1 to 1
         });
+
+
         var mpm4 = new MPM(sampleRate, config.oscBuffer.length);
-        test("should populate every nsdf element using getPitch()", function() {
+
+        test("getPitch() should populate every nsdf element", function() {
             assert.equal('undefined', checkNSDFValues(mpm4)); // should be undefined elements
             mpm4.getPitch(config.oscBuffer);
             assert.equal(true, checkNSDFValues(mpm4));  // should be full of -1 to 1
         });
-        test("should have repeatable values given same input", function() {
+
+        test("maxPositions[] should have repeatable values given same input", function() {
             assert.equal(config.nsdfArray.toString(), mpm4.__testonly__.nsdf.toString());
             var max1 = 0.9998912511141909;
             var max2 = 0.9995046600818478;
@@ -60,6 +69,7 @@ suite('MPM Class', function() {
             assert.equal(max2, mpm4.__testonly__.nsdf[200]);
             assert.equal("100,200", MPM.__testonly__.maxPositions.toString());
         });
+
         test("prabolicInterpolation() should conditionally assign tau/tauValue to turningPointX/Y", function() {
             mpm4.__testonly__.nsdf[33] = 1;  // a
             mpm4.__testonly__.nsdf[34] = 1;  // b, tau index = 34
@@ -68,6 +78,7 @@ suite('MPM Class', function() {
             assert.equal(34, MPM.__testonly__.turningPointX);
             assert.equal(1, MPM.__testonly__.turningPointY);
         });
+
         test("prabolicInterpolation() should convert X/Y repeatably given repeated signal", function() {
             mpm4.getPitch(config.oscBuffer);  // reset the values in mpm4
             assert.equal(200.46002039225493, MPM.__testonly__.turningPointX);
@@ -80,19 +91,24 @@ suite('MPM Class', function() {
         test("getPitch() should assign frequency 440 to oscillator pitch A4", function() {
             assert.equal(440, Math.round(mpm4.getPitch(config.oscBuffer)));
         });
+
         test("getPitch() should assign frequency 55 to buffer w/pitch A1 given 1024 samples", function() {
             assert.equal(55, Math.round(mpm4.getPitch(config.noteBuffers.A1_1024)));
         });
+
         test("getPitch() should assign frequency 55 to buffer w/pitch A2 given 512 samples", function() {
             assert.equal(110, Math.round(mpm4.getPitch(config.noteBuffers.A2_512)));
         });
+
         test("getPitch() should show ~4 cents flat at high freq, 7902 is the freq for B8", function() {
             assert.equal(7882, Math.round(mpm4.getPitch(config.noteBuffers.B8_256)));
         });
+
         test("getPitch() B7 should be within .5 cent and still accurate enough (sharp by a hair)", function() {
             assert.equal(3951.784860959183, mpm4.getPitch(config.noteBuffers.B7_256));
         });
     });
+
 
     function createMockBuffer(numFrames){
         var mockBuffer = new Array(numFrames);
