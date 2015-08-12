@@ -50,61 +50,53 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
     // Defines the relative size the chosen peak (pitch) has. 0.93 means: choose
     // the first peak that is higher than 93% of the highest peak detected. 93%
     // is the default value used in the Tartini user interface.
-    var DEFAULT_CUTOFF = 0.97;
+    var _DEFAULT_CUTOFF = 0.97;
 
     // For performance reasons, peaks below small cutoff are not even considered.
-    var SMALL_CUTOFF = 0.5;
+    var _SMALL_CUTOFF = 0.5;
 
     //Pitch annotations below this threshold are considered invalid and ignored.
-    var LOWER_PITCH_CUTOFF = 54.0; // Hz
+    var _LOWER_PITCH_CUTOFF = 54.0; // Hz
 
     // Defines the relative size that the chosen peak (pitch) has
-    var cutoff;
+    var _cutoff;
 
     // The audio sample rate. Most audio has a sample rate of 44.1kHz.
-    var sampleRate;
+    var _sampleRate;
 
     //Contains a normalized square difference (NSDF) function value for each delay (tau)
-    var nsdf;
+    var _nsdf;
 
     // The x and y coordinate of the top of the curve (nsdf)
-    var turningPointX;
-    var turningPointY;
+    var _turningPointX;
+    var _turningPointY;
 
     // A list with minimum and maximum values of the nsdf curve.
-    var maxPositions = [];
+    var _maxPositions = [];
 
     // A list of estimates of the period of the signal (in samples).
-    var periodEstimates = [];
+    var _periodEstimates = [];
 
     //A list of estimates of the amplitudes corresponding with the period estimates.
-    var ampEstimates = [];
-
-    /**
-     *  A probability (noisiness, (a)periodicity, salience, voicedness or
-     *         clarity measure) for the detected pitch. This is somewhat similar
-     *         to the term voiced which is used in speech recognition. This
-     *         probability is calculated together with the pitch.
-     */
-    var probability;
+    var _ampEstimates = [];
 
     // returned by getPitch()
-    var result = new PitchDetectionResult();
+    var _result = new PitchDetectionResult();
 
 
-    sampleRate = audioSampleRate;
+    _sampleRate = audioSampleRate;
     var bufferSize = typeof audioBufferSize !== 'undefined' ? audioBufferSize : this.DEFAULT_BUFFER_SIZE;
-    cutoff = typeof cutoffMPM !== 'undefined' ? cutoffMPM : DEFAULT_CUTOFF;
-    nsdf = new Array(bufferSize);
+    _cutoff = typeof cutoffMPM !== 'undefined' ? cutoffMPM : _DEFAULT_CUTOFF;
+    _nsdf = new Array(bufferSize);
 
     /* start-test-code */
     this.__testonly__ = {
-        sampleRate : sampleRate,
+        sampleRate : _sampleRate,
         bufferSize : bufferSize,
-        cutoff : cutoff,
-        DEFAULT_CUTOFF : DEFAULT_CUTOFF,
+        cutoff : _cutoff,
+        DEFAULT_CUTOFF : _DEFAULT_CUTOFF,
         DEFAULT_BUFFER_SIZE : this.DEFAULT_BUFFER_SIZE,
-        nsdfLength : nsdf.length
+        nsdfLength : _nsdf.length
     };
     /* end-test-code */
 
@@ -122,12 +114,12 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
                 acf += audioBuffer[i] * audioBuffer[i + tau];
                 divisorM += audioBuffer[i] * audioBuffer[i] + audioBuffer[i + tau] * audioBuffer[i + tau];
             }
-            nsdf[tau] = 2 * acf / divisorM;
+            _nsdf[tau] = 2 * acf / divisorM;
         }
     }
 
     /* start-test-code */
-    this.__testonly__.nsdf = nsdf;
+    this.__testonly__.nsdf = _nsdf;
     this.__testonly__.normalizedSquareDifference = normalizedSquareDifference;
     /* end-test-code */
 
@@ -136,9 +128,9 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 
         // Clear previous results (this is faster than setting length to 0)
         // http://www.2ality.com/2012/12/clear-array.html
-        maxPositions = [];
-        periodEstimates = [];
-        ampEstimates = [];
+        _maxPositions = [];
+        _periodEstimates = [];
+        _ampEstimates = [];
 
         // 1. Calculate the normalized square difference for each Tau value.
         normalizedSquareDifference(audioBuffer);
@@ -148,42 +140,42 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
         var highestAmplitude = Number.NEGATIVE_INFINITY;
 
         var tau;
-        for (var i = 0; i < maxPositions.length; i++) {
-            tau = maxPositions[i];
+        for (var i = 0; i < _maxPositions.length; i++) {
+            tau = _maxPositions[i];
             // make sure every annotation has a probability attached
-            highestAmplitude = Math.max(highestAmplitude, nsdf[tau]);
+            highestAmplitude = Math.max(highestAmplitude, _nsdf[tau]);
 
-            if (nsdf[tau] > SMALL_CUTOFF) {
+            if (_nsdf[tau] > _SMALL_CUTOFF) {
                 // calculates turningPointX and Y
                 prabolicInterpolation(tau);
                 // store the turning points
-                ampEstimates.push(turningPointY);
-                periodEstimates.push(turningPointX);
+                _ampEstimates.push(_turningPointY);
+                _periodEstimates.push(_turningPointX);
                 // remember the highest amplitude
-                highestAmplitude = Math.max(highestAmplitude, turningPointY);
+                highestAmplitude = Math.max(highestAmplitude, _turningPointY);
             }
         }
 
-        if (periodEstimates.length === 0) {
+        if (_periodEstimates.length === 0) {
             pitch = -1;
         } else {
             // use the overall maximum to calculate a cutoff.
             // The cutoff value is based on the highest value and a relative
             // threshold.
-            var actualCutoff = cutoff * highestAmplitude;
+            var actualCutoff = _cutoff * highestAmplitude;
 
             // find first period above or equal to cutoff
             var periodIndex = 0;
-            for (var j = 0; j < ampEstimates.length; j++) {
-                if (ampEstimates[j] >= actualCutoff) {
+            for (var j = 0; j < _ampEstimates.length; j++) {
+                if (_ampEstimates[j] >= actualCutoff) {
                     periodIndex = j;
                     break;
                 }
             }
 
-            var period = periodEstimates[periodIndex];
-            var pitchEstimate = sampleRate / period;
-            if (pitchEstimate > LOWER_PITCH_CUTOFF) {
+            var period = _periodEstimates[periodIndex];
+            var pitchEstimate = _sampleRate / period;
+            if (pitchEstimate > _LOWER_PITCH_CUTOFF) {
                 pitch = pitchEstimate;
             } else {
                 pitch = -1;
@@ -191,9 +183,16 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 
         }
 
-        result.setProbability(highestAmplitude);
-        result.setPitch(pitch);
-        return result;
+        /**
+         *  A probability (noisiness, (a)periodicity, salience, voicedness or
+         *         clarity measure) for the detected pitch. This is somewhat similar
+         *         to the term voiced which is used in speech recognition. This
+         *         probability is calculated together with the pitch.
+         */
+        _result.setProbability(highestAmplitude);
+        
+        _result.setPitch(pitch);
+        return _result;
 
         /* start-test-code */
         module.exports.__testonly__.pitch = pitch;
@@ -232,22 +231,22 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
      *            The delay tau, b value in the drawing is the tau value.
      */
     function prabolicInterpolation(tau) {
-        var nsdfa = nsdf[tau - 1];
-        var nsdfb = nsdf[tau];
-        var nsdfc = nsdf[tau + 1];
+        var nsdfa = _nsdf[tau - 1];
+        var nsdfb = _nsdf[tau];
+        var nsdfc = _nsdf[tau + 1];
         var bValue = tau;
         var bottom = nsdfc + nsdfa - 2 * nsdfb;
         if (bottom == 0) {
-            turningPointX = bValue;
-            turningPointY = nsdfb;
+            _turningPointX = bValue;
+            _turningPointY = nsdfb;
         } else {
             var delta = nsdfa - nsdfc;
-            turningPointX = bValue + delta / (2 * bottom);
-            turningPointY = nsdfb - delta * delta / (8 * bottom);
+            _turningPointX = bValue + delta / (2 * bottom);
+            _turningPointY = nsdfb - delta * delta / (8 * bottom);
         }
         /* start-test-code */
-        module.exports.__testonly__.turningPointX = turningPointX;
-        module.exports.__testonly__.turningPointY = turningPointY;
+        module.exports.__testonly__.turningPointX = _turningPointX;
+        module.exports.__testonly__.turningPointY = _turningPointY;
         /* end-test-code */
     }
 
@@ -289,12 +288,12 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
         var curMaxPos = 0;
 
         // find the first negative zero crossing
-        while (pos < (nsdf.length - 1) / 3 && nsdf[pos] > 0) {
+        while (pos < (_nsdf.length - 1) / 3 && _nsdf[pos] > 0) {
             pos++;
         }
 
         // loop over all the values below zero
-        while (pos < nsdf.length - 1 && nsdf[pos] <= 0) {
+        while (pos < _nsdf.length - 1 && _nsdf[pos] <= 0) {
             pos++;
         }
 
@@ -303,35 +302,35 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
             pos = 1;
         }
 
-        while (pos < nsdf.length - 1) {
-            if (!(nsdf[pos] >= 0)) {
-                throw new Error("peakPicking(): NSDF value at index " + pos + " should be >= 0, was: " + nsdf[pos]);}
-            if ((nsdf[pos] > nsdf[pos - 1]) && (nsdf[pos] >= nsdf[pos + 1])) {
+        while (pos < _nsdf.length - 1) {
+            if (!(_nsdf[pos] >= 0)) {
+                throw new Error("peakPicking(): NSDF value at index " + pos + " should be >= 0, was: " + _nsdf[pos]);}
+            if ((_nsdf[pos] > _nsdf[pos - 1]) && (_nsdf[pos] >= _nsdf[pos + 1])) {
                 if (curMaxPos === 0) {
                     // the first max (between zero crossings)
                     curMaxPos = pos;
-                } else if (nsdf[pos] > nsdf[curMaxPos]) {
+                } else if (_nsdf[pos] > _nsdf[curMaxPos]) {
                     // a higher max (between the zero crossings)
                     curMaxPos = pos;
                 }
             }
             pos++;
             // a negative zero crossing
-            if ((pos < nsdf.length - 1) && (nsdf[pos] <= 0)) {
+            if ((pos < _nsdf.length - 1) && (_nsdf[pos] <= 0)) {
                 // if there was a maximum add it to the list of maxima
                 if (curMaxPos > 0) {
-                    maxPositions.push(curMaxPos);
+                    _maxPositions.push(curMaxPos);
                     curMaxPos = 0; // clear the maximum position, so we start looking for new ones
                 }
-                while ((pos < nsdf.length - 1) && (nsdf[pos] <= 0)) {
+                while ((pos < _nsdf.length - 1) && (_nsdf[pos] <= 0)) {
                     pos++; // loop over all the values below zero
                 }
             }
         }
         if (curMaxPos > 0) { // if there was a maximum in the last part
-            maxPositions.push(curMaxPos); // add it to the vector of maxima
+            _maxPositions.push(curMaxPos); // add it to the vector of maxima
         }
-        module.exports.__testonly__ = { maxPositions : maxPositions };
+        module.exports.__testonly__ = { maxPositions : _maxPositions };
     }
 
     /* start-test-code */

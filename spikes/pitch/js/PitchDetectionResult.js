@@ -30,13 +30,13 @@
 function PitchDetectionResult () {
 
 
-    var pitch = -1; // The pitch in Hertz.
-    var probability = -1;
-    var pitched = false;
+    var _pitch = -1; // The pitch in Hertz.
+    var _probability = -1;
+    var _pitched = false;
 
     // Return the pitch in Hertz.
     this.getPitch = function () {
-        return pitch;
+        return _pitch;
     };
 
     // Set the pitch in Hertz
@@ -44,20 +44,20 @@ function PitchDetectionResult () {
         if ((new_pitch !== -1 && new_pitch < 0) || (typeof new_pitch !== "number")) {
             throw new Error("setPitch(): not a valid pitch setting, was: " + new_pitch);
         }
-        pitch = new_pitch;
+        _pitch = new_pitch;
     };
 
     // is calculated along with MPM,
     //   need to experiment on live sounds to understand its exact function
     this.getProbability = function() {
-        return probability;
+        return _probability;
     };
 
     this.setProbability = function (new_prob) {
         if (typeof new_prob !== "number") {
             throw new Error("setProbability(): not a valid setting, was: " + new_prob);
         }
-        probability = new_prob;
+        _probability = new_prob;
     };
 
     /**
@@ -66,14 +66,14 @@ function PitchDetectionResult () {
      *   pitch even when isPitched() is false.
      */
     this.isPitched = function() {
-        return pitched;
+        return _pitched;
     };
 
     this.setIsPitched = function(new_IsPitched) {
         if (typeof new_IsPitched !== "boolean") {
             throw new Error("setIsPitched(): not a valid setting, was: " + new_IsPitched);
         }
-        pitched = new_IsPitched;
+        _pitched = new_IsPitched;
     };
 
     // if someone is evaluating carelessly should be a number
