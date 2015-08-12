@@ -44,9 +44,11 @@ suite('PitchDetectionResult Class', function() {
             }
         });
 
+        var testPitch = 21345;
+        var testProb = -21345;
         test("setPitch() should be happy when I use any positive number", function() {
-            pdr.setPitch(21345);
-            assert.equal(21345, pdr.getPitch());
+            pdr.setPitch(testPitch);
+            assert.equal(testPitch, pdr.getPitch());
         });
 
         test("setProbability() should throw an error if attempt to set invalid probability (string)", function() {
@@ -59,8 +61,8 @@ suite('PitchDetectionResult Class', function() {
         });
 
         test("setProbability() should be happy when I use any number", function() {
-            pdr.setProbability(-21345);
-            assert.equal(-21345, pdr.getProbability());
+            pdr.setProbability(testProb);
+            assert.equal(testProb, pdr.getProbability());
         });
 
         test("setIsPitched() should throw an error if attempt to set non-boolean", function() {
@@ -75,6 +77,10 @@ suite('PitchDetectionResult Class', function() {
         test("isPitched() should be happy when I use any boolean", function() {
             pdr.setIsPitched(true);
             assert.equal(true, pdr.isPitched());
+        });
+
+        test("PDR object should evaluate to a number by default", function() {
+            assert.equal(testPitch, pdr);
         });
     });
 });

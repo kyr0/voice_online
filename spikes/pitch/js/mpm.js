@@ -30,8 +30,11 @@
  * the desired number of ACF coefficients. The implementation can be optimized
  * to O((W+w)log(W+w)) by using an FFT to calculate the Auto-Correlation Function
  * But I am still afraid of the dark magic of the FFT and clinging to the familiar,
- * friendly, laggard time domain.
+ * friendly, laggard time domain."
  */
+
+var PitchDetectionResult = require("./PitchDetectionResult.js");
+
 
 function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 
@@ -85,6 +88,9 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
      */
     var probability;
 
+    // returned by getPitch()
+    var result = new PitchDetectionResult();
+
 
     sampleRate = audioSampleRate;
     var bufferSize = typeof audioBufferSize !== 'undefined' ? audioBufferSize : this.DEFAULT_BUFFER_SIZE;
@@ -109,8 +115,6 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
      * optimized by using an FFT. The results should remain the same.
      */
     function normalizedSquareDifference(audioBuffer) {
-        //var makeNSDFLog = "";   // used to initially inspect behaviour and performance
-        //var startTime = Date.now();
         for (var tau = 0; tau < audioBuffer.length; tau++) {
             var acf = 0;
             var divisorM = 0;
@@ -119,11 +123,7 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
                 divisorM += audioBuffer[i] * audioBuffer[i] + audioBuffer[i + tau] * audioBuffer[i + tau];
             }
             nsdf[tau] = 2 * acf / divisorM;
-            //makeNSDFLog += (nsdf[tau] + ", ");
         }
-        //var elapsedTime = ((Date.now() - startTime));
-        //console.log("Finished NSDF.\n Time elapsed (ms): " + elapsedTime + "\nNSDF Array length: " +
-        //	nsdf.length + "\n" + makeNSDFLog);
     }
 
     /* start-test-code */
@@ -191,10 +191,9 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 
         }
 
-        //result.setProbability((float) highestAmplitude);
-        //result.setPitch(pitch);
-        //
-        return pitch;
+        result.setProbability(highestAmplitude);
+        result.setPitch(pitch);
+        return result;
 
         /* start-test-code */
         module.exports.__testonly__.pitch = pitch;

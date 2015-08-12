@@ -75,6 +75,11 @@ function PitchDetectionResult () {
         }
         pitched = new_IsPitched;
     };
+
+    // if someone is evaluating carelessly should be a number
+    this.valueOf = function(){
+        return this.getPitch();
+    };
 }
 
 module.exports = PitchDetectionResult;
