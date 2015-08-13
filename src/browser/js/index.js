@@ -7,7 +7,7 @@
 
     var contentKey = require("./contentKey.js");
 
-    window.checkInputThenWrite = function checkInputThenWrite(){
+    window.checkInputThenWrite = function (){
         //document.getElementById("contextKeyInput").value = '["content.landingpages.podcasts"]';
         var invalidInputMsg = 'Input must have the following format: ["contextKey"]';
         var userInput = document.getElementById("contextKeyInput").value;

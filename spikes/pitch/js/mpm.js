@@ -190,13 +190,10 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
          *         probability is calculated together with the pitch.
          */
         _result.setProbability(highestAmplitude);
-        
+
         _result.setPitch(pitch);
         return _result;
 
-        /* start-test-code */
-        module.exports.__testonly__.pitch = pitch;
-        /* end-test-code */
     };
 
 
