@@ -6,6 +6,7 @@
 var assert = require("assert");
 var MPM = require("../../spikes/pitch/js/MPM.js");
 var config = require("./test.MPM.config.js");
+var pEval = require("../../spikes/pitch/js/PitchManager.js");
 
 
 suite('MPM Class', function() {
@@ -84,32 +85,35 @@ suite('MPM Class', function() {
             assert.equal(200.46002039225493, MPM.__testonly__.turningPointX);
             assert.equal(1.0000240543039114, MPM.__testonly__.turningPointY);
         });
-        //test("getPitch() should assign -1 to pitch given non-pitched sound", function() {
-        //    mpm4.getPitch(config.zeroBuffer);
-        //    assert.equal(-1, MPM.__testonly__.pitch);
-        //});
-        test("getPitch() should assign frequency 440 to oscillator pitch A4", function() {
-            assert.equal(440, Math.round(mpm4.getPitch(config.oscBuffer)));
-        });
 
-        test("getPitch() should assign frequency 55 to buffer w/pitch A1 given 1024 samples", function() {
-            assert.equal(55, Math.round(mpm4.getPitch(config.noteBuffers.A1_1024)));
-        });
-
-        test("getPitch() should assign frequency 55 to buffer w/pitch A2 given 512 samples", function() {
+        test("getPitch() should assign frequency 110 to buffer w/pitch A2 given 512 samples", function() {
             assert.equal(110, Math.round(mpm4.getPitch(config.noteBuffers.A2_512)));
         });
 
-        test("getPitch() should show ~4 cents flat at high freq, 7902 is the freq for B8", function() {
-            assert.equal(7882, Math.round(mpm4.getPitch(config.noteBuffers.B8_256)));
+        test("MPM should detect all pitches within range (A1 - Bb7) at a .5 cent accuracy", function() {
+            this.timeout(0);
+            var note = pEval.getNote("A1");
+            var noteName = note.name;
+            var tone;
+            var pitchDetected;
+            while (noteName !== "Bb7"){
+                tone = config.noteBuffers[noteName + "_1024"];
+                pitchDetected = mpm4.getPitch(tone);
+                //console.log(note.name + " " + note.frequency + " " + pitchDetected);
+                assert.equal(0, pEval.getCentsDiff(pitchDetected, noteName));
+                note = note.nextNote;
+                noteName = note.name;
+            }
         });
 
-        test("getPitch() B7 should be within .5 cent and still accurate enough (sharp by a hair)", function() {
-            assert.equal(3951.784860959183, mpm4.getPitch(config.noteBuffers.B7_256));
+        test("getPitch() should assign -1 to sounds below A1", function() {
+            assert.equal(-1, mpm4.getPitch(config.noteBuffers.A0_1024));
         });
+
+
     });
 
-
+    // this could be used to add noise to a signal for clarity testing in future
     function createMockBuffer(numFrames){
         var mockBuffer = new Array(numFrames);
         // Fill the mock buffer with white noise which is just random values between -1.0 and 1.0
