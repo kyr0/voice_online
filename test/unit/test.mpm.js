@@ -92,7 +92,7 @@ suite('MPM Class', function() {
 
         test("MPM should detect all pitches within range (A1 - Bb7) at a .5 cent accuracy", function() {
             this.timeout(0);
-            var note = pEval.getNote("A1");
+            var note = pEval.getNoteByName("A1");
             var noteName = note.name;
             var tone;
             var pitchDetected;

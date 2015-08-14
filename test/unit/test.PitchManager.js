@@ -14,19 +14,19 @@ suite('Pitch Evaluation library', function() {
     suite('test_PitchEvaluation:', function() {
 
         test("first element of pitch map should be C0 ", function() {
-            assert.equal(16.352, pEval.getNote("C0").frequency);
+            assert.equal(16.352, pEval.getNoteByName("C0").frequency);
         });
 
         test("C0 should have previousNote set to null", function() {
-            assert.equal(null, pEval.getNote("C0").previousNote);
+            assert.equal(null, pEval.getNoteByName("C0").previousNote);
         });
 
         test("B8 should have nextNote set to null", function() {
-            assert.equal(null, pEval.getNote("B8").nextNote);
+            assert.equal(null, pEval.getNoteByName("B8").nextNote);
         });
 
         test("B8 should know its own name", function() {
-            assert.equal("B8", pEval.getNote("B8").name);
+            assert.equal("B8", pEval.getNoteByName("B8").name);
         });
 
         test("getCentsDiff() should give a negative value for flat notes", function() {
@@ -65,22 +65,38 @@ suite('Pitch Evaluation library', function() {
             assert.equal(null, pEval.getCentsDiff(25, 'Gb0'));
         });
 
-        test("getCentsDiff() should throw an error for flat notes below threshold", function() {
+        test("getCentsDiff() should throw an error for flat notes below C0", function() {
+            var errMsg;
             try {
-                pEval.getCentsDiff(15, 'C0');
+                pEval.getCentsDiff(16.351, 'C0');
             }
             catch(err) {
-                assert.equal("getCentsDiff(): the frequency is outside the threshold - Fq:15", err.message);
+                errMsg =  err.message;
             }
+            assert.equal("getCentsDiff(): the frequency is outside the threshold - Fq:16.351", errMsg);
         });
 
-        test("getCentsDiff() should throw an error for sharp notes above threshold", function() {
+        test("getCentsDiff() should throw an error for sharp notes above B8", function() {
+            var errMsg;
             try {
-                pEval.getCentsDiff(9000, 'B8');
+                pEval.getCentsDiff(7902.2, 'B8');
             }
             catch(err) {
-                assert.equal("getCentsDiff(): the frequency is outside the threshold - Fq:9000", err.message);
+                errMsg = err.message;
             }
+            assert.equal("getCentsDiff(): the frequency is outside the threshold - Fq:7902.2", errMsg);
+        });
+
+        test("should be able to use pitchArray to lookup Note object", function() {
+            assert.equal(16.352, pEval.__testonly__pMap.pitchArray[0]);
+            assert.equal("C0", pEval.__testonly__pMap.reverseMap[16.352].name);
+        });
+
+        test("should be able to use pitchArray to lookup Note object when freq is not exact", function() {
+            // 3840.2 is ~50 cents above the high cutoff
+            assert.equal(pEval.getNoteByName("A7").frequency, pEval.getNoteFromPitch(3623.1));
+            // 53.4565 is ~50 cents below A1 (low freq cutoff)50 cents below A1 (low freq cutoff)
+            assert.equal(pEval.getNoteByName("A1").frequency, pEval.getNoteFromPitch(53.435));
         });
 
     });

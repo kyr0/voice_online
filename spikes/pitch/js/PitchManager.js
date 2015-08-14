@@ -6,32 +6,45 @@
 var PitchManager = (function() {
 
 
-    var pitchMap = new _PitchMap();
-    var lowThreshold = pitchMap.C0.frequency;
-    var highThreshold = pitchMap.B8.frequency;
+    var _pMap = new _PitchMap();
+    var _pitchMap = _pMap.pitchMap;
+    var _pitchArray = _pMap.pitchArray;
+    var _reverseMap = _pMap.reverseMap;
+
+    var lowThreshold = _pitchMap.C0.frequency;
+    var highThreshold = _pitchMap.B8.frequency;
 
     // returns the difference from expected pitch, rounded to the nearest cent
     var publicGetCentsDiff = function(actualPitch, noteName){
         if (actualPitch < lowThreshold || actualPitch > highThreshold) {
             throw new Error("getCentsDiff(): the frequency is outside the threshold - Fq:" + actualPitch);
         }
-        var expectedPitch = pitchMap[noteName].frequency;
+        var expectedPitch = _pitchMap[noteName].frequency;
         if (actualPitch < expectedPitch) {  // flat
-            var semitoneDownPitch = pitchMap[noteName]['previousNote']['frequency'];
+            var semitoneDownPitch = _pitchMap[noteName]['previousNote']['frequency'];
             if (actualPitch <= semitoneDownPitch) return null; // more than one semitone difference
             else return Math.round((expectedPitch - actualPitch) / ((semitoneDownPitch - expectedPitch) / 100));
         }
         else if (actualPitch > expectedPitch) { // sharp
-            var semitoneUpPitch = pitchMap[noteName]['nextNote']['frequency'];
+            var semitoneUpPitch = _pitchMap[noteName]['nextNote']['frequency'];
             if (actualPitch >= semitoneUpPitch) return null; // more than one semitone difference
             else return Math.round((actualPitch - expectedPitch) / ((semitoneUpPitch - expectedPitch) / 100));
         }
         else return 0; // perfect pitch, worth noting the above may return 0 if Math.round determines
     };
 
-    var publicGetNote = function(noteName){
-        return pitchMap[noteName];
+    var publicGetNoteByName = function(noteName){
+        return _pitchMap[noteName];
     };
+
+    // thanks to Chris Wilson for most of this function
+    var publicGetNoteFromPitch = function(frequency){
+        var noteNum = 12 * (Math.log( frequency / 440 )/Math.log(2) );
+        console.log(Math.round( noteNum ));
+        return _pitchArray[Math.round( noteNum ) + 57];
+    };
+
+
 
     //var getCentsUp
     //var getSemitoneInterval
@@ -39,7 +52,11 @@ var PitchManager = (function() {
 
     return {
         getCentsDiff : publicGetCentsDiff,
-        getNote : publicGetNote,
+        getNoteByName : publicGetNoteByName,
+        getNoteFromPitch : publicGetNoteFromPitch,
+        /* start-test-code */
+        __testonly__pMap : _pMap
+        /* end-test-code */
     };
 
 })();
@@ -47,12 +64,22 @@ var PitchManager = (function() {
 module.exports = PitchManager;
 
 
-// This private singleton object creates a linked list of Note objects, each Note is
-// aware of its musical neighbours a semitone up and a semitone down and contains a reference to each.
-// Each note also is aware of its frequency.
+/*
+* This private singleton-like object creates the following:
+*
+* 1) a linked list of Note objects, each Note is
+* aware of its musical neighbours a semitone up and a semitone down and contains a reference to each.
+* Each note also is aware of its frequency.
+*
+* 2) an array with all available frequencies, used in root-finding algorithm
+*
+* 3) a convenient reverse map which returns the note name based on frequency, allows reconnecting to
+*  the pitchMap with a trivial lookup.
+*
+*/
 function _PitchMap() {
 
-    // the raw data used to generate the map
+    // the raw data used to generate the stuff
     var _noteNames = ["C", "Db",    "D",   "Eb",    "E",    "F",   "Gb",    "G",   "Ab",    "A",   "Bb",    "B"];
     var _oct0 = [16.352, 17.324, 18.354, 19.445, 20.602, 21.827, 23.125, 24.500, 25.957, 27.500, 29.135, 30.868];
     var _oct1 = [32.703, 34.648, 36.708, 38.891, 41.203, 43.653, 46.249, 48.999, 51.913, 55.000, 58.270, 61.735];
@@ -67,18 +94,33 @@ function _PitchMap() {
     var _notes2D = [_oct0, _oct1, _oct2, _oct3, _oct4, _oct5, _oct6, _oct7, _oct8]; // 2D array
 
     var pitchMap = {};
+    var pitchArray = []; // for when we need index for quick lookups using Brent's Method
+    var reverseMap = {}; // makes it simple to take results from Array back into Map
 
-    // will loop through all notes and create the map
+    // will loop through all notes and create the maps, arrays etc
     for (var octave = 0; octave < _notes2D.length; octave++) {
         for (var note = 0; note < _notes2D[octave].length; note++) {
-            pitchMap[_noteNames[note] + octave] = {
-                name : _noteNames[note] + octave,
-                frequency : _notes2D[octave][note],
+            var thisNotesName = _noteNames[note] + octave; // symbolic note eg "Ab4"
+            var thisNotesFreq = _notes2D[octave][note];
+
+            // pitch map is for convenient-yet-slow lookups
+            pitchMap[thisNotesName] = {
+                name : thisNotesName,
+                frequency : thisNotesFreq,
                 previousNote : getPreviousNote(octave, note),
-                //nextNote : getNextNote(octave, note)
                 nextNote : null
             };
             setNextNoteOnPrevious(octave, note);  // link previous note after creating this one
+
+            // pitchArray is used with root-finding algorithm Brent's Method (arrays are fast)
+            pitchArray.push(thisNotesFreq);
+
+            // use the frequency from pitchArray[x] to get the name for Note objects in pitchMap
+            reverseMap[thisNotesFreq] = {
+                name : thisNotesName
+            }
+
+
         }
     }
 
@@ -89,14 +131,6 @@ function _PitchMap() {
         var prevOctave = (prevNoteNum === 11) ? curOctave - 1 : curOctave;
         return pitchMap[_noteNames[prevNoteNum] + prevOctave];
     }
-
-    //function getNextNote (curOctave, curNoteNum){
-    //    if (curOctave === 8 && curNoteNum === 11) return null;
-    //    var nextNoteNum = (curNoteNum === 11) ? 0 : curNoteNum + 1;
-    //    var nextOctave = (nextNoteNum === 0) ? curOctave + 1 : curOctave;
-    //    return _noteNames[nextNoteNum] + nextOctave;
-    //}
-    //
 
     // Square bracket notation for the win :(
     // Essentially this finds the nextNote property of the previous note and assigns it
@@ -110,6 +144,10 @@ function _PitchMap() {
         pitchMap[_noteNames[prevNoteNum] + prevOctave]['nextNote'] = pitchMap[_noteNames[curNoteNum] + curOctave];
     }
 
-    return pitchMap;
+    return {
+        pitchMap : pitchMap,
+        pitchArray : pitchArray,
+        reverseMap : reverseMap
+    };
 }
 
