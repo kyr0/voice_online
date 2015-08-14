@@ -16,21 +16,33 @@ var PitchManager = (function() {
 
     // returns the difference from expected pitch, rounded to the nearest cent
     var publicGetCentsDiff = function(actualPitch, noteName){
+
         if (actualPitch < lowThreshold || actualPitch > highThreshold) {
             throw new Error("getCentsDiff(): the frequency is outside the threshold - Fq:" + actualPitch);
         }
-        var expectedPitch = _pitchMap[noteName].frequency;
-        if (actualPitch < expectedPitch) {  // flat
-            var semitoneDownPitch = _pitchMap[noteName]['previousNote']['frequency'];
-            if (actualPitch <= semitoneDownPitch) return null; // more than one semitone difference
-            else return Math.round((expectedPitch - actualPitch) / ((semitoneDownPitch - expectedPitch) / 100));
+
+        // thanks again to Chris Wilson for the original logarithmic cents finding function
+        // Minor adjustments: Math.round instead of Math.floor allows pitch within .5 cent of
+        //  intended note to be counted as "perfect"
+        var centsOff =  Math.round( 1200 * Math.log( actualPitch / _pitchMap[noteName].frequency )/Math.log(2) );
+
+        if (Math.abs(centsOff) > 49) {
+            return null;
         }
-        else if (actualPitch > expectedPitch) { // sharp
-            var semitoneUpPitch = _pitchMap[noteName]['nextNote']['frequency'];
-            if (actualPitch >= semitoneUpPitch) return null; // more than one semitone difference
-            else return Math.round((actualPitch - expectedPitch) / ((semitoneUpPitch - expectedPitch) / 100));
-        }
-        else return 0; // perfect pitch, worth noting the above may return 0 if Math.round determines
+        //centsOff = (centsOff < 0) ? centsOff += 1 : centsOff -= 1;
+        return centsOff;
+        //var expectedPitch = _pitchMap[noteName].frequency;
+        //if (actualPitch < expectedPitch) {  // flat
+        //    var semitoneDownPitch = _pitchMap[noteName]['previousNote']['frequency'];
+        //    if (actualPitch <= semitoneDownPitch) return null; // more than one semitone difference
+        //    else return Math.round((expectedPitch - actualPitch) / ((semitoneDownPitch - expectedPitch) / 100));
+        //}
+        //else if (actualPitch > expectedPitch) { // sharp
+        //    var semitoneUpPitch = _pitchMap[noteName]['nextNote']['frequency'];
+        //    if (actualPitch >= semitoneUpPitch) return null; // more than one semitone difference
+        //    else return Math.round((actualPitch - expectedPitch) / ((semitoneUpPitch - expectedPitch) / 100));
+        //}
+        //else return 0; // perfect pitch, worth noting the above may return 0 if Math.round determines
     };
 
     var publicGetNoteByName = function(noteName){
@@ -40,7 +52,6 @@ var PitchManager = (function() {
     // thanks to Chris Wilson for most of this function
     var publicGetNoteFromPitch = function(frequency){
         var noteNum = 12 * (Math.log( frequency / 440 )/Math.log(2) );
-        console.log(Math.round( noteNum ));
         return _pitchArray[Math.round( noteNum ) + 57];
     };
 

@@ -96,10 +96,9 @@ suite('MPM Class', function() {
             var noteName = note.name;
             var tone;
             var pitchDetected;
-            while (noteName !== "Bb7"){
+            while (noteName !== "Ab7"){
                 tone = config.noteBuffers[noteName + "_1024"];
                 pitchDetected = mpm4.getPitch(tone);
-                //console.log(note.name + " " + note.frequency + " " + pitchDetected);
                 assert.equal(0, pEval.getCentsDiff(pitchDetected, noteName));
                 note = note.nextNote;
                 noteName = note.name;

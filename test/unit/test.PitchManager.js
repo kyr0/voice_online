@@ -29,14 +29,6 @@ suite('Pitch Evaluation library', function() {
             assert.equal("B8", pEval.getNoteByName("B8").name);
         });
 
-        test("getCentsDiff() should give a negative value for flat notes", function() {
-            assert.equal(-87, pEval.getCentsDiff(22, 'Gb0'));
-        });
-
-        test("getCentsDiff() should give a positive value for sharp notes", function() {
-            assert.equal(2, pEval.getCentsDiff(23.150, 'Gb0'));
-        });
-
         test("getCentsDiff() should give zero for perfect pitch", function() {
             assert.equal(0, pEval.getCentsDiff(23.125, 'Gb0'));
         });
@@ -97,6 +89,14 @@ suite('Pitch Evaluation library', function() {
             assert.equal(pEval.getNoteByName("A7").frequency, pEval.getNoteFromPitch(3623.1));
             // 53.4565 is ~50 cents below A1 (low freq cutoff)50 cents below A1 (low freq cutoff)
             assert.equal(pEval.getNoteByName("A1").frequency, pEval.getNoteFromPitch(53.435));
+        });
+
+        test("should be able to use pitchArray to lookup Note object when freq is not exact", function() {
+            // NOTE: 49 cents almost equals .5 semitone
+            // 3226.9 is 49 cents above the high cutoff
+            assert.equal(49, pEval.getCentsDiff(3226.9, 'G7'));
+            // 53.450 is -49 cents below A1 (low freq cutoff)50 cents below A1 (low freq cutoff)
+            assert.equal(-49, pEval.getCentsDiff(53.450, 'A1'));
         });
 
     });

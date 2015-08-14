@@ -57,7 +57,9 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 
     //Pitch annotations below this threshold are considered invalid and ignored.
     var _LOWER_PITCH_CUTOFF = 53.435; // Hz == 50 cents below A1
-    var _HIGHER_PITCH_CUTOFF = 53.4565; // Hz == 50 cents above A7
+    var _HIGHER_PITCH_CUTOFF = 3229.2; // Hz == 50 cents above G7
+    // TODO implement high cutoff and test,
+    // TODO return freq guess even if out of range
 
     // Defines the relative size that the chosen peak (pitch) has
     var _cutoff;
