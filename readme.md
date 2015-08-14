@@ -27,12 +27,8 @@ To build, lint, and run all tests:
     2. Install Node: v0.12.7 (OSX) or v0.10.25** (Ubuntu) 
         - OSX, http://howtonode.org/how-to-install-nodejs)
         - Linux, https://github.com/joyent/node/wiki/installing-node.js-via-package-manager
-<<<<<<< HEAD
     2.5 Linux only: you will need to update package.json before building and change 
         the version to "node": "0.10.25"
-=======
-    2.5 **Linux ONLY:** you will need to update package.json before building and change the version to "node": "0.10.25"
->>>>>>> a9aae5cf3c33bb7ef15961db64705b9817d54aa0
     3. Install Java Development Kit
     4. type './jake.sh' and relax 
     
