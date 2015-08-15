@@ -21,15 +21,7 @@
     oscillator.connect(scriptNode); // Connect output of Oscillator to our scriptNode
     oscillator.start();
 
-    // will loop through all notes and play them into the script node via oscillator
-    //for (var octave = 0; octave < notes.length; octave++) {
-    //    for (var note = 0; note < notes[octave].length; note++) {
-    //        oscillator.frequency.value = notes[octave][note];
-    //        oscillator.start();
-    //        oscillator.stop(.00581); // stop the oscillator after 256 frames == 44.1k per second * .00581
-    //    }
-    //}
-
+    // oscillator.stop(.00581); // stop the oscillator after 256 frames == 44.1k per second * .00581
 
     window.nextTone = function(){
         note = note.nextNote;

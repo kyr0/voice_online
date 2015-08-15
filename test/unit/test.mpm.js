@@ -91,17 +91,17 @@ suite('MPM Class', function() {
         });
 
         test("MPM should detect all pitches within range (A1 - Bb7) at a .5 cent accuracy", function() {
-            this.timeout(0);
+            this.timeout(0); // this test cannot timeout (it takes ~2 seconds)
             var note = pEval.getNoteByName("A1");
-            var noteName = note.name;
+            var noteFreq = note.frequency;
             var tone;
             var pitchDetected;
-            while (noteName !== "Ab7"){
-                tone = config.noteBuffers[noteName + "_1024"];
+            while (note.name !== "Ab7"){
+                tone = config.noteBuffers[note.name + "_1024"];
                 pitchDetected = mpm4.getPitch(tone);
-                assert.equal(0, pEval.getCentsDiff(pitchDetected, noteName));
+                assert.equal(0, pEval.getCentsDiff(pitchDetected, noteFreq));
                 note = note.nextNote;
-                noteName = note.name;
+                noteFreq = note.frequency;
             }
         });
 

@@ -14,57 +14,56 @@ var PitchManager = (function() {
     var lowThreshold = _pitchMap.C0.frequency;
     var highThreshold = _pitchMap.B8.frequency;
 
-    // returns the difference from expected pitch, rounded to the nearest cent
-    var publicGetCentsDiff = function(actualPitch, noteName){
+    // take a raw frequency and returns the frequency of the nearest musical note
+    // thanks to Chris Wilson for most of this function
+    var publicGetClosestFreqFromPitch = function(frequency){
+        var noteNum = 12 * (Math.log( frequency / 440 )/Math.log(2) );
+        return _pitchArray[Math.round( noteNum ) + 57];
+    };
+
+    // takes a raw frequency and returns the Object of the nearest musical note
+    var publicGetClosestNoteFromPitch = function(frequency){
+        var noteName = _reverseMap[publicGetClosestFreqFromPitch(frequency)].name;
+        return publicGetNoteByName(noteName);
+    };
+
+    // actualPitch is a float representing the incoming frequency
+    // expected is either a float representing a musical note, or a string represenation eg 'A1'
+    //   returns the difference from expected pitch, rounded to the nearest cent
+    var publicGetCentsDiff = function(actualPitch, expected){
+        var expectedFreq = expected;
+        if (typeof expectedFreq === 'string') {
+            expectedFreq = publicGetNoteByName(expected).frequency;
+        }
 
         if (actualPitch < lowThreshold || actualPitch > highThreshold) {
             throw new Error("getCentsDiff(): the frequency is outside the threshold - Fq:" + actualPitch);
         }
 
-        // thanks again to Chris Wilson for the original logarithmic cents finding function
+        // thanks again to Chris Wilson for the logarithmic cent finding algorithm below
         // Minor adjustments: Math.round instead of Math.floor allows pitch within .5 cent of
         //  intended note to be counted as "perfect"
-        var centsOff =  Math.round( 1200 * Math.log( actualPitch / _pitchMap[noteName].frequency )/Math.log(2) );
+        var centsOff =  Math.round( 1200 * Math.log( actualPitch / expectedFreq )/Math.log(2) );
 
-        if (Math.abs(centsOff) > 49) {
+        // Don't return a value if more than .5 semitone off target
+        if (Math.abs(centsOff) > 50) {
             return null;
         }
-        //centsOff = (centsOff < 0) ? centsOff += 1 : centsOff -= 1;
         return centsOff;
-        //var expectedPitch = _pitchMap[noteName].frequency;
-        //if (actualPitch < expectedPitch) {  // flat
-        //    var semitoneDownPitch = _pitchMap[noteName]['previousNote']['frequency'];
-        //    if (actualPitch <= semitoneDownPitch) return null; // more than one semitone difference
-        //    else return Math.round((expectedPitch - actualPitch) / ((semitoneDownPitch - expectedPitch) / 100));
-        //}
-        //else if (actualPitch > expectedPitch) { // sharp
-        //    var semitoneUpPitch = _pitchMap[noteName]['nextNote']['frequency'];
-        //    if (actualPitch >= semitoneUpPitch) return null; // more than one semitone difference
-        //    else return Math.round((actualPitch - expectedPitch) / ((semitoneUpPitch - expectedPitch) / 100));
-        //}
-        //else return 0; // perfect pitch, worth noting the above may return 0 if Math.round determines
     };
 
+    // takes a string-based note in the form "<note><octave" eg 'A3' and returns Object
     var publicGetNoteByName = function(noteName){
         return _pitchMap[noteName];
     };
 
-    // thanks to Chris Wilson for most of this function
-    var publicGetNoteFromPitch = function(frequency){
-        var noteNum = 12 * (Math.log( frequency / 440 )/Math.log(2) );
-        return _pitchArray[Math.round( noteNum ) + 57];
-    };
-
-
-
-    //var getCentsUp
-    //var getSemitoneInterval
-
 
     return {
+        getClosestFreqFromPitch : publicGetClosestFreqFromPitch,
+        getClosestNoteFromPitch : publicGetClosestNoteFromPitch,
         getCentsDiff : publicGetCentsDiff,
         getNoteByName : publicGetNoteByName,
-        getNoteFromPitch : publicGetNoteFromPitch,
+
         /* start-test-code */
         __testonly__pMap : _pMap
         /* end-test-code */
@@ -76,7 +75,7 @@ module.exports = PitchManager;
 
 
 /*
-* This private singleton-like object creates the following:
+* This private singleton-esque object creates the following:
 *
 * 1) a linked list of Note objects, each Note is
 * aware of its musical neighbours a semitone up and a semitone down and contains a reference to each.
