@@ -35,7 +35,6 @@ var scriptNode = null;
 var mediaStreamSource = null;
 var mpm = null;
 var detectorElem,
-    canvasElem,
     pitchElem,
     noteElem,
     detuneElem,
@@ -48,19 +47,26 @@ window.onload = function() {
 
     // UI Elements
     detectorElem = document.getElementById( "detector" );
-    canvasElem = document.getElementById( "output" );
     pitchElem = document.getElementById( "pitch" );
-    console.log(pitchElem.innerHTML + "INNER HERE <--");
     noteElem = document.getElementById( "note" );
     detuneElem = document.getElementById( "detune" );
     detuneAmount = document.getElementById( "detune_amt" );
 
     // When the buffer is full of frames this event is executed
+    var count = 1;
     scriptNode.onaudioprocess = function(audioProcessingEvent) {
-        var inputBuffer = audioProcessingEvent.inputBuffer;
-        // The input buffer is from the oscillator we connected earlier
-        var inputData = inputBuffer.getChannelData(0);
-        updatePitch(inputData);
+        //if (count == 1) {
+        //    console.log("target: " + this.target
+        //        + "\ntype: " + this.type
+        //        + "\nbubbles?: " + this.bubbles
+        //        + "\ncancelable?:" + this.cancelable
+        //        + "\nplaybackTime: " + this.playbackTime
+        //    );
+            var inputBuffer = audioProcessingEvent.inputBuffer;
+            // The input buffer is from the oscillator we connected earlier
+            var inputData = inputBuffer.getChannelData(0);
+            updatePitch(inputData);
+        //}
     };
 };
 
@@ -95,9 +101,6 @@ window.toggleOscillator = function() {
         sourceNode = null;
         scriptNode = null;
         isPlaying = false;
-        if (!window.cancelAnimationFrame)
-            window.cancelAnimationFrame = window.webkitCancelAnimationFrame;
-        window.cancelAnimationFrame( rafID );
         return "play oscillator";
     }
 
@@ -119,9 +122,6 @@ window.toggleLiveInput = function () {
         sourceNode = null;
         scriptNode = null;
         isPlaying = false;
-        if (!window.cancelAnimationFrame)
-            window.cancelAnimationFrame = window.webkitCancelAnimationFrame;
-        window.cancelAnimationFrame( rafID );
     }
     getUserMedia(
         {
@@ -137,8 +137,6 @@ window.toggleLiveInput = function () {
         }, gotStream);
 };
 
-
-var rafID = null;
 function updatePitch(buf) {
     var pitch = mpm.getPitch(buf);
 
@@ -165,8 +163,4 @@ function updatePitch(buf) {
             detuneAmount.innerHTML = Math.abs( detune );
         }
     }
-
-    if (!window.requestAnimationFrame)
-        window.requestAnimationFrame = window.webkitRequestAnimationFrame;
-    rafID = window.requestAnimationFrame( updatePitch );
 }

@@ -182,7 +182,7 @@
         process.stdout.write("\n\nCompiling browserify bundles:\n\n");
         var binPath = './node_modules/browserify/bin/cmd.js ';
         // TODO generate this list more efficiently and browserify automatically
-        var bundleTuner = './spikes/tuner/js/tuner.js > ./spikes/tuner/js/tuner.bundle.js';
+        var bundleTuner = './spikes/practice_tuner/js/tuner.js > ./spikes/practice_tuner/js/tuner.bundle.js';
         //var bundleLittleBits = './src/browser/js/index.js > ./src/browser/js/bundles/index.bundle.js';
         //var bundleCanvas = './spikes/canvas/scripts/canvas.js > ./spikes/canvas/scripts/canvas.bundle.js';
         //var bundleGetBuffers = './spikes/pitch/js/getBuffersFromTones.js > ./spikes/pitch/js/getBuffersFromTones.bundle.js';
