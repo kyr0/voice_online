@@ -142,10 +142,10 @@ function updatePitch(buf) {
 
     if (pitch == -1) {
         detectorElem.className = "vague";
-        pitchElem.innerText = "--";
-        noteElem.innerText = "-";
+        pitchElem.innerHTML = "--";
+        noteElem.innerHTML = "-";
         detuneElem.className = "";
-        detuneAmount.innerText = "--";
+        detuneAmount.innerHTML = "--";
     } else {
         detectorElem.className = "confident";
         var note =  pEval.getClosestNoteFromPitch(pitch);
