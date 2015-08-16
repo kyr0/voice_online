@@ -28,12 +28,11 @@ var pEval = require("../../pitch/js/PitchManager.js");
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 var audioContext = null;
-var isPlaying = false;
-var sourceNode = null;
 var bufferLength = 1024;
 var scriptNode = null;
 var mediaStreamSource = null;
 var mpm = null;
+var lastResult = null;
 var detectorElem,
     pitchElem,
     noteElem,
@@ -41,6 +40,7 @@ var detectorElem,
     detuneAmount;
 
 window.onload = function() {
+    console.log("Window OnLoad");
     audioContext = new AudioContext();
     mpm = new MPM(audioContext.sampleRate, bufferLength);
     scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
@@ -52,22 +52,38 @@ window.onload = function() {
     detuneElem = document.getElementById( "detune" );
     detuneAmount = document.getElementById( "detune_amt" );
 
+
+    // get the mic
+    getUserMedia(
+        {
+            "audio": {
+                "mandatory": {
+                    "googEchoCancellation": "false",
+                    "googAutoGainControl": "false",
+                    "googNoiseSuppression": "false",
+                    "googHighpassFilter": "false"
+                },
+                "optional": []
+            }
+        }, gotStream
+    );
+
+
     // When the buffer is full of frames this event is executed
-    var count = 1;
     scriptNode.onaudioprocess = function(audioProcessingEvent) {
-        //if (count == 1) {
-        //    console.log("target: " + this.target
-        //        + "\ntype: " + this.type
-        //        + "\nbubbles?: " + this.bubbles
-        //        + "\ncancelable?:" + this.cancelable
-        //        + "\nplaybackTime: " + this.playbackTime
-        //    );
-            var inputBuffer = audioProcessingEvent.inputBuffer;
-            // The input buffer is from the oscillator we connected earlier
-            var inputData = inputBuffer.getChannelData(0);
-            updatePitch(inputData);
-        //}
+        console.log("OnAudioProcess");
+        var inputBuffer = audioProcessingEvent.inputBuffer;
+        // The input buffer is from the oscillator we connected earlier
+        var inputData = inputBuffer.getChannelData(0);
+        //console.log(inputData);
+        updatePitch(inputData);
     };
+    //console.log(scriptNode
+    //    + "target: " + scriptNode.target
+    //    + "\ntype: " + scriptNode.type
+    //    + "\nbubbles?: " + scriptNode.bubbles
+    //    + "\ncancelable?:" + scriptNode.cancelable
+    //    + "\nplaybackTime: " + scriptNode.playbackTime);
 };
 
 function error() {
@@ -94,64 +110,28 @@ function gotStream(stream) {
 
 }
 
-window.toggleOscillator = function() {
-    if (isPlaying) {
-        //stop playing and return
-        sourceNode.stop();
-        sourceNode = null;
-        scriptNode = null;
-        isPlaying = false;
-        return "play oscillator";
-    }
 
-    // Create the oscillator
-    sourceNode = audioContext.createOscillator();
-    sourceNode.connect( scriptNode );
-    sourceNode.start();
-    isPlaying = true;
-    isLiveInput = false;
-
-    return "stop";
-};
-
-
-window.toggleLiveInput = function () {
-    if (isPlaying) {
-        //stop playing and return
-        sourceNode.stop();
-        sourceNode = null;
-        scriptNode = null;
-        isPlaying = false;
-    }
-    getUserMedia(
-        {
-            "audio": {
-                "mandatory": {
-                    "googEchoCancellation": "false",
-                    "googAutoGainControl": "false",
-                    "googNoiseSuppression": "false",
-                    "googHighpassFilter": "false"
-                },
-                "optional": []
-            }
-        }, gotStream);
-};
 
 function updatePitch(buf) {
-    var pitch = mpm.getPitch(buf);
-
-    if (pitch == -1) {
-        detectorElem.className = "vague";
-        pitchElem.innerHTML = "--";
-        noteElem.innerHTML = "-";
-        detuneElem.className = "";
-        detuneAmount.innerHTML = "--";
+    var resultObj = mpm.detectPitch(buf);
+    var pitchFreq = resultObj.getPitchFrequency();
+    var probability = resultObj.getProbability();
+    if (pitchFreq == -1 || probability < .95) {
+        if (lastResult !== -1) {
+            detectorElem.className = "vague";
+            pitchElem.innerHTML = "--";
+            noteElem.innerHTML = "-";
+            detuneElem.className = "";
+            detuneAmount.innerHTML = "--";
+            lastResult = -1;
+        }
     } else {
+        //console.log("Pitch: " + pitchFreq + " Probability: " + probability);
         detectorElem.className = "confident";
-        var note =  pEval.getClosestNoteFromPitch(pitch);
-        pitchElem.innerHTML = Math.round(pitch);
-        noteElem.innerHTML = note.name;
-        var detune = pEval.getCentsDiff(pitch, note.frequency);
+        var noteObj =  pEval.getClosestNoteFromPitch(pitchFreq);
+        pitchElem.innerHTML = Math.round(pitchFreq);
+        noteElem.innerHTML = noteObj.name;
+        var detune = pEval.getCentsDiff(pitchFreq, noteObj.frequency);
         if (detune == 0 ) {
             detuneElem.className = "";
             detuneAmount.innerHTML = "Perfect.";
@@ -162,5 +142,7 @@ function updatePitch(buf) {
                 detuneElem.className = "sharp";
             detuneAmount.innerHTML = Math.abs( detune );
         }
+        lastResult = 1;
     }
+
 }

@@ -35,7 +35,7 @@ function PitchDetectionResult () {
     var _pitched = false;
 
     // Return the pitch in Hertz.
-    this.getPitch = function () {
+    this.getPitchFrequency = function () {
         return _pitch;
     };
 
@@ -78,7 +78,7 @@ function PitchDetectionResult () {
 
     // if someone is evaluating carelessly should be a number
     this.valueOf = function(){
-        return this.getPitch();
+        return this.getPitchFrequency();
     };
 }
 
