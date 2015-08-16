@@ -56,9 +56,9 @@ suite('MPM Class', function() {
 
         var mpm4 = new MPM(sampleRate, config.oscBuffer.length);
 
-        test("getPitch() should populate every nsdf element", function() {
+        test("detectPitch() should populate every nsdf element", function() {
             assert.equal('undefined', checkNSDFValues(mpm4)); // should be undefined elements
-            mpm4.getPitch(config.oscBuffer);
+            mpm4.detectPitch(config.oscBuffer);
             assert.equal(true, checkNSDFValues(mpm4));  // should be full of -1 to 1
         });
 
@@ -81,13 +81,13 @@ suite('MPM Class', function() {
         });
 
         test("prabolicInterpolation() should convert X/Y repeatably given repeated signal", function() {
-            mpm4.getPitch(config.oscBuffer);  // reset the values in mpm4
+            mpm4.detectPitch(config.oscBuffer);  // reset the values in mpm4
             assert.equal(200.46002039225493, MPM.__testonly__.turningPointX);
             assert.equal(1.0000240543039114, MPM.__testonly__.turningPointY);
         });
 
-        test("getPitch() should assign frequency 110 to buffer w/pitch A2 given 512 samples", function() {
-            assert.equal(110, Math.round(mpm4.getPitch(config.noteBuffers.A2_512)));
+        test("detectPitch() should assign frequency 110 to buffer w/pitch A2 given 512 samples", function() {
+            assert.equal(110, Math.round(mpm4.detectPitch(config.noteBuffers.A2_512)));
         });
 
         test("MPM should detect all pitches within range (A1 - Bb7) at a .5 cent accuracy", function() {
@@ -98,15 +98,15 @@ suite('MPM Class', function() {
             var pitchDetected;
             while (note.name !== "Ab7"){
                 tone = config.noteBuffers[note.name + "_1024"];
-                pitchDetected = mpm4.getPitch(tone);
+                pitchDetected = mpm4.detectPitch(tone);
                 assert.equal(0, pEval.getCentsDiff(pitchDetected, noteFreq));
                 note = note.nextNote;
                 noteFreq = note.frequency;
             }
         });
 
-        test("getPitch() should assign -1 to sounds below A1", function() {
-            assert.equal(-1, mpm4.getPitch(config.noteBuffers.A0_1024));
+        test("detectPitch() should assign -1 to sounds below A1", function() {
+            assert.equal(-1, mpm4.detectPitch(config.noteBuffers.A0_1024));
         });
 
 

@@ -126,7 +126,7 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
     this.__testonly__.normalizedSquareDifference = normalizedSquareDifference;
     /* end-test-code */
 
-    this.getPitch = function(audioBuffer) {
+    this.detectPitch = function(audioBuffer) {
         var pitch;
 
         // Clear previous results (this is faster than setting length to 0)

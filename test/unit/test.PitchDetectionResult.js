@@ -15,7 +15,7 @@ suite('PitchDetectionResult Class', function() {
         var pdr = new PitchDetectionResult();
 
         test("should have a default pitch of -1", function() {
-            assert.equal(-1, pdr.getPitch());
+            assert.equal(-1, pdr.getPitchFrequency());
         });
 
         test("should have a default probability of -1", function() {
@@ -52,7 +52,7 @@ suite('PitchDetectionResult Class', function() {
         var testProb = -21345;
         test("setPitch() should be happy when I use any positive number", function() {
             pdr.setPitch(testPitch);
-            assert.equal(testPitch, pdr.getPitch());
+            assert.equal(testPitch, pdr.getPitchFrequency());
         });
 
         test("setProbability() should throw an error if attempt to set invalid probability (string)", function() {

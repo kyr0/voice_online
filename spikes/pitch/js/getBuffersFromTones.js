@@ -54,7 +54,7 @@
                 makeDataLog += inputData[sample] + ", ";
             }
             makeDataLog += " ],";
-            var pitchDetected = mpm.getPitch(inputData);
+            var pitchDetected = mpm.detectPitch(inputData);
             document.getElementById('list').innerHTML =
                 //"Note - " + note.name + " : " + note.frequency +
                 //" Pitch detected: " + pitchDetected

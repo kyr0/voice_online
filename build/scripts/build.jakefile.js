@@ -183,18 +183,18 @@
         var binPath = './node_modules/browserify/bin/cmd.js ';
         // TODO generate this list more efficiently and browserify automatically
         var bundleTuner = './spikes/practice_tuner/js/tuner.js > ./spikes/practice_tuner/js/tuner.bundle.js';
-        //var bundleLittleBits = './src/browser/js/index.js > ./src/browser/js/bundles/index.bundle.js';
-        //var bundleCanvas = './spikes/canvas/scripts/canvas.js > ./spikes/canvas/scripts/canvas.bundle.js';
-        //var bundleGetBuffers = './spikes/pitch/js/getBuffersFromTones.js > ./spikes/pitch/js/getBuffersFromTones.bundle.js';
-        //var bundleMPMDriver = './spikes/pitch/js/drive_mpm.js > ./spikes/pitch/js/drive_mpm.bundle.js';
-        //var bundleWebAudioDriver = './spikes/pitch/js/drive_webAudio.js > ./spikes/pitch/js/drive_webAudio.bundle.js';
+        var bundleLittleBits = './src/browser/js/index.js > ./src/browser/js/bundles/index.bundle.js';
+        var bundleCanvas = './spikes/canvas/scripts/canvas.js > ./spikes/canvas/scripts/canvas.bundle.js';
+        var bundleGetBuffers = './spikes/pitch/js/getBuffersFromTones.js > ./spikes/pitch/js/getBuffersFromTones.bundle.js';
+        var bundleMPMDriver = './spikes/pitch/js/drive_mpm.js > ./spikes/pitch/js/drive_mpm.bundle.js';
+        var bundleWebAudioDriver = './spikes/pitch/js/drive_webAudio.js > ./spikes/pitch/js/drive_webAudio.bundle.js';
         var cmds = [
-            binPath + bundleTuner
-            //binPath + bundleLittleBits,
-            //binPath + bundleCanvas,
-            //binPath + bundleGetBuffers,
-            //binPath + bundleMPMDriver,
-            //binPath + bundleWebAudioDriver
+            binPath + bundleTuner,
+            binPath + bundleLittleBits,
+            binPath + bundleCanvas,
+            binPath + bundleGetBuffers,
+            binPath + bundleMPMDriver,
+            binPath + bundleWebAudioDriver
         ];
         jake.exec(cmds, {printStdout: true}, function () {
             console.log('All tests passed.');
