@@ -4,7 +4,17 @@ About
 When this project is complete it will be a nice way to practice pitch agnostic musical instruments for free.
 Voice, violin, brass, woodwind etc.. 
 
-Techniques and best practices related to Development / QA used in this project:
+Tuner demo: adapted from Chris Wilson's Pitch Detect tuner, this improved tuner offers precise pitch detection
+ from A1 - A7 with tested accuracy of .5-cent in real time. Also filters out background noise reliably and fixes a 
+ number of rendering glitches and performance issues.
+ 
+**Demo Path:** ./spikes/pratice_tuner/tuner.html
+
+**Original:** https://webaudiodemos.appspot.com/pitchdetect/
+
+
+
+**Techniques and best practices related to Development / QA demonstrated by this project:**
 
  * Unit testing with Mocha.js / TDD on client and NodeUnit on the server
  * End to end tests using Jasmine, Protractor, Selenium for both Angular & non-Angular sites
