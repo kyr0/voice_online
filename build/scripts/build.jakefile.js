@@ -53,6 +53,11 @@
         wrapUp();
     });
 
+    desc("Run only client integration tests");
+    task("itgrOnly", [ "testIntegration" ], function(){
+        wrapUp();
+    });
+
     desc("Run only unit tests");
     task("unitOnly", [ "browserify", "testServerUnit", "testClientUnit" ], function(){
         wrapUp();
@@ -83,7 +88,7 @@
 
     // *** TEST
     desc("Test everything");
-    task("test", [ "checkWD", "browserify", "testServerUnit", "testClientUnit", "testE2E" ], {async: true},
+    task("test", [ "checkWD", "browserify", "testServerUnit", "testClientUnit", "testIntegration", "testE2E" ], {async: true},
         function(){
             wrapUp();
     });
@@ -98,14 +103,28 @@
     }, {async: true});
 
     task("testClientUnit", function(){
-        process.stdout.write("\n\nRunning browser-based unit tests:\n\n");
+        process.stdout.write("\n\nRunning client unit tests:\n\n");
         mochify("test/unit/**/*.js", {
             phantomjs: "./node_modules/.bin/phantomjs",
             ui: "tdd"
         }).bundle(function(err,buf){
             console.log(buf.toString());
             if (buf.toString().search("failing") >= 0) {
-                fail("Browser has failing tests.");
+                fail("Client has failing unit tests.");
+            }
+            else complete();
+            });
+    }, {async: true});
+
+    task("testIntegration", function(){
+        process.stdout.write("\n\nRunning client integration tests:\n\n");
+        mochify("test/integration/**/*.js", {
+            phantomjs: "./node_modules/.bin/phantomjs",
+            ui: "tdd"
+        }).bundle(function(err,buf){
+            console.log(buf.toString());
+            if (buf.toString().search("failing") >= 0) {
+                fail("Client has failing integration tests.");
             }
             else complete();
             });

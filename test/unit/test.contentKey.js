@@ -53,7 +53,7 @@ suite('ContentObject', function() {
         });
 
         var baseNum = 31; // The number of elements we expect getKeyListCount to return
-        var numMembers = 4; // the number of hard coded members
+        var numMembers = 4; // the number of members included in every instance of podcast
 
         test('getKeyListCount() should return an value of (1 + (repertoireLength * (members+1))', function() {
             assert.equal(baseNum, contentKeyPage.podcast.getKeyListCount());

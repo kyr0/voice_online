@@ -5,108 +5,110 @@
 
 var assert = require("assert");
 var MPM = require("../../spikes/pitch/js/MPM.js");
-var config = require("./test.MPM.config.js");
-var pEval = require("../../spikes/pitch/js/PitchManager.js");
-
+var buffers = require("../resources/audioBuffers.js");
 
 suite('MPM Class', function() {
-    setup(function() {
-        //...
-    });
-    suite('test_MPM:', function() {
+    var sample48k = 48000;   // a sampleRate of 48000
+    var sample44k = 44100;   // sampleRate of 44100
+    var buffer2kb = 2048;  // a non-default buffersize of 2kb
+    var customCutoff = 0.93; // a non-default cutoff threshold
 
-        var mpm = new MPM(48000);
-        test("should have a sampleRate of 48000", function() {
-            assert.equal(mpm.__testonly__.sampleRate, 48000);
+
+    suite('MPM default parameters:', function() {
+        var mpm;
+        setup(function () {
+            mpm = new MPM(sample48k);
         });
-        test("should have a bufferSize of DEFAULT_BUFFER_SIZE", function() {
+
+        test("should have a sampleRate of " + sample48k, function () {
+            assert.equal(mpm.__testonly__.sampleRate, sample48k);
+        });
+        test("should have a bufferSize of DEFAULT_BUFFER_SIZE", function () {
             assert.equal(mpm.__testonly__.DEFAULT_BUFFER_SIZE, mpm.__testonly__.bufferSize);
         });
-        test("should have a cutoff of DEFAULT_CUTOFF", function() {
+        test("should have a cutoff of DEFAULT_CUTOFF", function () {
             assert.equal(mpm.__testonly__.DEFAULT_CUTOFF, mpm.__testonly__.cutoff);
         });
+    });
 
-        var mpm2 = new MPM(48000, 2048, 0.93);
-        test("should have a bufferSize from construction parameter", function() {
-            assert.equal(2048, mpm2.__testonly__.bufferSize);
+    suite('MPM non-default parameters:', function() {
+        var mpm;
+        setup(function () {
+            mpm = new MPM(sample48k, buffer2kb, customCutoff);
         });
 
-        test("should have a cutoff from construction parameter", function() {
-            assert.equal(0.93, mpm2.__testonly__.cutoff);
+        test("should have a bufferSize from construction parameter", function () {
+            assert.equal(buffer2kb, mpm.__testonly__.bufferSize);
         });
 
-        test("nsdf.length should be same as bufferSize", function() {
-            assert.equal(mpm2.__testonly__.nsdfLength, mpm2.__testonly__.bufferSize);
+        test("should have a cutoff from construction parameter", function () {
+            assert.equal(customCutoff, mpm.__testonly__.cutoff);
         });
 
+        test("nsdf.length should be same as bufferSize", function () {
+            assert.equal(mpm.__testonly__.nsdfLength, mpm.__testonly__.bufferSize);
+        });
+    });
 
 
-        var sampleRate = 44100;
+    suite('normalizedSquareDifference()', function() {
         var time = 1000;  // used as mult/div of sampleRate to determine frame length
-        var frameCount = Math.floor(sampleRate / time); // 1 millisecond buffer @ 44.1khz sample rate
+        var frameCount = Math.floor(sample44k / time); // 1 millisecond buffer @ 44.1khz sample rate
         var buffer = createMockBuffer(frameCount); // Create a mock buffer
+        var mpm;
 
-        test("normalizedSquareDifference() should populate every nsdf[] element seeded by buffer", function() {
-            var mpm3 = new MPM(sampleRate, buffer.length);
-            assert.equal('undefined', checkNSDFValues(mpm3)); // should be undefined elements
-            mpm3.__testonly__.normalizedSquareDifference(buffer);
-            assert.equal(true, checkNSDFValues(mpm3));  // should be full of -1 to 1
+        setup(function () {
+            mpm = new MPM(sample44k, buffer.length);
         });
 
-
-        var mpm4 = new MPM(sampleRate, config.oscBuffer.length);
-
-        test("detectPitch() should populate every nsdf element", function() {
-            assert.equal('undefined', checkNSDFValues(mpm4)); // should be undefined elements
-            mpm4.detectPitch(config.oscBuffer);
-            assert.equal(true, checkNSDFValues(mpm4));  // should be full of -1 to 1
+        test("should populate every nsdf[] element seeded by buffer", function () {
+            assert.equal('undefined', checkNSDFValues(mpm)); // should be undefined elements
+            mpm.__testonly__.normalizedSquareDifference(buffer);
+            assert.equal(true, checkNSDFValues(mpm));  // should be full of -1 to 1
         });
 
-        test("maxPositions[] should have repeatable values given same input", function() {
-            assert.equal(config.nsdfArray.toString(), mpm4.__testonly__.nsdf.toString());
-            var max1 = 0.9998912511141909;
-            var max2 = 0.9995046600818478;
-            assert.equal(max1, mpm4.__testonly__.nsdf[100]);
-            assert.equal(max2, mpm4.__testonly__.nsdf[200]);
-            assert.equal("100,200", MPM.__testonly__.maxPositions.toString());
+        // TODO: missing test: NaN value into NSDF
+    });
+
+
+    suite('detectPitch()', function() {
+        var mpm;
+
+        setup(function () {
+            mpm = new MPM(sample44k, buffers.oscBuffer.length);
         });
 
-        test("prabolicInterpolation() should conditionally assign tau/tauValue to turningPointX/Y", function() {
-            mpm4.__testonly__.nsdf[33] = 1;  // a
-            mpm4.__testonly__.nsdf[34] = 1;  // b, tau index = 34
-            mpm4.__testonly__.nsdf[35] = 1;  // c
-            mpm4.__testonly__.prabolicInterpolation(34);
+        test("should populate every nsdf element", function() {
+            assert.equal('undefined', checkNSDFValues(mpm)); // should be undefined elements
+            mpm.detectPitch(buffers.oscBuffer);
+            assert.equal(true, checkNSDFValues(mpm));  // should be full of -1 to 1
+        });
+
+        test("should put repeatable values in maxPositions[] given same input", function() {
+            var maxValue1 = 0.9998912511141909;
+            var maxValue2 = 0.9995046600818478;
+            var maxIndex1 = 100;
+            var maxIndex2 = 200;
+            mpm.detectPitch(buffers.oscBuffer);
+            assert.equal(buffers.nsdfArray.toString(), mpm.__testonly__.nsdf.toString());
+            assert.equal(maxValue1, mpm.__testonly__.nsdf[maxIndex1]);
+            assert.equal(maxValue2, mpm.__testonly__.nsdf[maxIndex2]);
+            assert.equal(maxIndex1 + "," + maxIndex2, MPM.__testonly__.maxPositions.toString());
+        });
+
+        test("member function prabolicInterpolation() should assign tau/tauValue to turningPointX/Y if 1", function() {
+            mpm.__testonly__.nsdf[33] = 1;  // a
+            mpm.__testonly__.nsdf[34] = 1;  // b, tau index = 34
+            mpm.__testonly__.nsdf[35] = 1;  // c
+            mpm.__testonly__.prabolicInterpolation(34);
             assert.equal(34, MPM.__testonly__.turningPointX);
             assert.equal(1, MPM.__testonly__.turningPointY);
         });
 
         test("prabolicInterpolation() should convert X/Y repeatably given repeated signal", function() {
-            mpm4.detectPitch(config.oscBuffer);  // reset the values in mpm4
+            mpm.detectPitch(buffers.oscBuffer);  // reset the values in mpm4
             assert.equal(200.46002039225493, MPM.__testonly__.turningPointX);
             assert.equal(1.0000240543039114, MPM.__testonly__.turningPointY);
-        });
-
-        test("detectPitch() should assign frequency 110 to buffer w/pitch A2 given 512 samples", function() {
-            assert.equal(110, Math.round(mpm4.detectPitch(config.noteBuffers.A2_512)));
-        });
-
-        test("MPM should detect all pitches within range (A1 - Bb7) at a .5 cent accuracy", function() {
-            this.timeout(0); // this test cannot timeout (it takes ~2 seconds)
-            var note = pEval.getNoteByName("A1");
-            var noteFreq = note.frequency;
-            var tone;
-            var pitchDetected;
-            while (note.name !== "Ab7"){
-                tone = config.noteBuffers[note.name + "_1024"];
-                pitchDetected = mpm4.detectPitch(tone);
-                assert.equal(0, pEval.getCentsDiff(pitchDetected, noteFreq));
-                note = note.nextNote;
-                noteFreq = note.frequency;
-            }
-        });
-
-        test("detectPitch() should assign -1 to sounds below A1", function() {
-            assert.equal(-1, mpm4.detectPitch(config.noteBuffers.A0_1024));
         });
 
 

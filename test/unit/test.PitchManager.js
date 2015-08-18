@@ -1,16 +1,15 @@
-///**
-// * Created by jaboing on 2015-07-31.
-// */
+
 "use strict";
 
 var assert = require("assert");
 var pEval = require("../../spikes/pitch/js/PitchManager.js");
-
+var helpers = require("../resources/testHelpers.js");
+for (var key in helpers) {
+    global[key] = helpers[key];
+}
 
 suite('Pitch Evaluation library', function() {
-    setup(function() {
-        //...
-    });
+
     suite('test_PitchEvaluation:', function() {
 
         test("first element of pitch map should be C0 ", function() {
@@ -29,6 +28,7 @@ suite('Pitch Evaluation library', function() {
             assert.equal("B8", pEval.getNoteByName("B8").name);
         });
 
+        // Gb0 = 23.125;
         var testFreq = pEval.getNoteByName('Gb0').frequency;
         test("getCentsDiff() should give zero for perfect pitch", function() {
             assert.equal(0, pEval.getCentsDiff(23.125, testFreq));
@@ -59,25 +59,13 @@ suite('Pitch Evaluation library', function() {
         });
 
         test("getCentsDiff() should throw an error for flat notes below C0", function() {
-            var errMsg;
-            try {
-                pEval.getCentsDiff(16.351, 'C7');
-            }
-            catch(err) {
-                errMsg =  err.message;
-            }
-            assert.equal("getCentsDiff(): the frequency is outside the threshold - Fq:16.351", errMsg);
+            assert.equal("getCentsDiff(): the frequency is outside the threshold - Fq:16.351",
+                catchFunc("getCentsDiff", [16.351, 'C7'], pEval));
         });
 
         test("getCentsDiff() should throw an error for sharp notes above B8", function() {
-            var errMsg;
-            try {
-                pEval.getCentsDiff(7902.2, 'B8');
-            }
-            catch(err) {
-                errMsg = err.message;
-            }
-            assert.equal("getCentsDiff(): the frequency is outside the threshold - Fq:7902.2", errMsg);
+            assert.equal("getCentsDiff(): the frequency is outside the threshold - Fq:7902.2",
+                catchFunc("getCentsDiff", [7902.2, 'B8'], pEval));
         });
 
         test("should be able to use pitchArray to lookup Note object", function() {

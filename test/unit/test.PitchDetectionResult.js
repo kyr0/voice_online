@@ -6,13 +6,17 @@
 var assert = require("assert");
 var PitchDetectionResult = require("../../spikes/pitch/js/PitchDetectionResult.js");
 
-suite('PitchDetectionResult Class', function() {
-    setup(function() {
-        //...
-    });
-    suite('test_PDR:', function() {
+var helpers = require("../resources/testHelpers.js");
+for (var key in helpers) {
+    global[key] = helpers[key];
+}
 
-        var pdr = new PitchDetectionResult();
+
+suite('PitchDetectionResult Class', function() {
+
+    var pdr = new PitchDetectionResult();
+
+    suite('defaults:', function() {
 
         test("should have a default pitch of -1", function() {
             assert.equal(-1, pdr.getPitchFrequency());
@@ -27,25 +31,11 @@ suite('PitchDetectionResult Class', function() {
         });
 
         test("setPitch() should throw an error if attempt to set invalid pitch (string)", function() {
-            var errMsg;
-            try {
-                pdr.setPitch("Hey");
-            }
-            catch(err) {
-                errMsg = err.message;
-            }
-            assert.equal("setPitch(): not a valid pitch setting, was: Hey", errMsg);
+            assert.equal("setPitch(): not a valid pitch setting, was: Hey", catchFunc("setPitch","Hey", pdr));
         });
 
         test("setPitch() should throw an error if attempt to set invalid pitch (neg #)", function() {
-            var errMsg;
-            try {
-                pdr.setPitch(-.5);
-            }
-            catch(err) {
-                errMsg = err.message;
-            }
-            assert.equal("setPitch(): not a valid pitch setting, was: -0.5", errMsg);
+            assert.equal("setPitch(): not a valid pitch setting, was: -0.5", catchFunc("setPitch", -0.5, pdr));
         });
 
         var testPitch = 21345;
@@ -56,14 +46,7 @@ suite('PitchDetectionResult Class', function() {
         });
 
         test("setProbability() should throw an error if attempt to set invalid probability (string)", function() {
-            var errMsg;
-            try {
-                pdr.setProbability("Hey");
-            }
-            catch(err) {
-                errMsg = err.message;
-            }
-            assert.equal("setProbability(): not a valid setting, was: Hey", errMsg);
+            assert.equal("setProbability(): not a valid setting, was: Hey", catchFunc("setProbability", "Hey", pdr));
         });
 
         test("setProbability() should be happy when I use any number", function() {
@@ -72,25 +55,21 @@ suite('PitchDetectionResult Class', function() {
         });
 
         test("setIsPitched() should throw an error if attempt to set non-boolean", function() {
-            var errMsg;
-            try {
-                pdr.setIsPitched("Hey");
-            }
-            catch(err) {
-                errMsg = err.message;
-            }
-            assert.equal("setIsPitched(): not a valid setting, was: Hey", errMsg);
+            assert.equal("setIsPitched(): not a valid setting, was: Hey", catchFunc("setIsPitched", "Hey", pdr));
         });
 
         test("isPitched() should be happy when I use any boolean", function() {
             pdr.setIsPitched(true);
             assert.equal(true, pdr.isPitched());
+            pdr.setIsPitched(false);
+            assert.equal(false, pdr.isPitched());
         });
 
-        test("PDR object should evaluate to a number by default", function() {
+        test("PDR object should evaluate to a number object by default", function() {
             assert.equal(testPitch, pdr);
         });
     });
+
 });
 
 
