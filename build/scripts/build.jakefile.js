@@ -204,13 +204,18 @@
         var binPath = './node_modules/browserify/bin/cmd.js ';
         var brwPaths = browserifyPaths.pathList;
         var cmds = [];
+        /* jshint ignore:start */
         for (var i = 0; i < brwPaths.length; i++) {
-            cmds.push(binPath + brwPaths[i]);
+            cmds.push(exec(binPath + brwPaths[i], function(code, output) {
+                if (code !== 0) {
+                    console.log('Exit code:', code);
+                    console.log('Program output:', output);
+                }
+            }));
         }
-        jake.exec(cmds, {printStdout: true}, function () {
-            console.log('All tests passed.');
-            complete();
-        });
+        /* jshint ignore:end */
+        console.log('Finished bundles.');
+        complete();
     });
 
     // *** WATCHIFY FOR FAST DEVELOPMENT
