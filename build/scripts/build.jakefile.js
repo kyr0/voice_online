@@ -213,6 +213,19 @@
         });
     });
 
+    // *** WATCHIFY FOR FAST DEVELOPMENT
+    task('watchify', {async: true}, function () {
+        process.stdout.write("\n\nWatching for changes to browserify bundles:\n\n");
+        var binPath = './node_modules/watchify/bin/cmd.js ';
+        var brwPaths = browserifyPaths.pathList;
+        /* jshint ignore:start */
+        for (var i = 0; i < brwPaths.length; i++) {
+            exec(binPath + brwPaths[i] + " -v", {async : true});
+        }
+        /* jshint ignore:end */
+        console.log('Watching the things.');
+    });
+
     // *** BEGIN SELENIUM WEBDRIVER MADNESS
     // *** CHECK WEBDRIVER SERVER IS UP, IF NOT, START IT
     task('checkWD', {async: true}, function() {

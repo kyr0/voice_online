@@ -28,6 +28,6 @@
   },
   "scripts": {
     "watchUnit": "./node_modules/mochify/bin/cmd.js ./test/unit/** --ui tdd --watch",
-    "watchify": ""
+    "watchify" : "./jake.sh watchify"
   }
 }
