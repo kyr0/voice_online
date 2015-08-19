@@ -10,6 +10,8 @@
     var jshintConfig = require("../config/jshint.conf.js");
     var mochify = require("mochify");
     var bsync = require("browser-sync").create();
+    var browserify = require('browserify');
+    var browserifyPaths = require("../config/browserify.conf.js");
     //var karmaConfig = require("../config/karma.conf.js");
 
     var bsyncPort = 9000;
@@ -53,7 +55,7 @@
         wrapUp();
     });
 
-    desc("Run only client integration tests");
+    desc("Run only client component tests");
     task("itgrOnly", [ "testIntegration" ], function(){
         wrapUp();
     });
@@ -117,14 +119,14 @@
     }, {async: true});
 
     task("testIntegration", function(){
-        process.stdout.write("\n\nRunning client integration tests:\n\n");
-        mochify("test/integration/**/*.js", {
+        process.stdout.write("\n\nRunning client component tests:\n\n");
+        mochify("test/component/**/*.js", {
             phantomjs: "./node_modules/.bin/phantomjs",
             ui: "tdd"
         }).bundle(function(err,buf){
             console.log(buf.toString());
             if (buf.toString().search("failing") >= 0) {
-                fail("Client has failing integration tests.");
+                fail("Client has failing component tests.");
             }
             else complete();
             });
@@ -200,23 +202,11 @@
     task('browserify', {async: true}, function () {
         process.stdout.write("\n\nCompiling browserify bundles:\n\n");
         var binPath = './node_modules/browserify/bin/cmd.js ';
-        // TODO generate this list more efficiently and browserify automatically
-        var bundleLesson = './spikes/paper/js/lesson.js > ./spikes/paper/js/lesson.bundle.js';
-        var bundleTuner = './spikes/practice_tuner/js/tuner.js > ./spikes/practice_tuner/js/tuner.bundle.js';
-        var bundleLittleBits = './src/browser/js/index.js > ./src/browser/js/bundles/index.bundle.js';
-        var bundleCanvas = './spikes/canvas/scripts/canvas.js > ./spikes/canvas/scripts/canvas.bundle.js';
-        var bundleGetBuffers = './spikes/pitch/js/getBuffersFromTones.js > ./spikes/pitch/js/getBuffersFromTones.bundle.js';
-        var bundleMPMDriver = './spikes/pitch/js/drive_mpm.js > ./spikes/pitch/js/drive_mpm.bundle.js';
-        var bundleWebAudioDriver = './spikes/pitch/js/drive_webAudio.js > ./spikes/pitch/js/drive_webAudio.bundle.js';
-        var cmds = [
-            binPath + bundleLesson,
-            binPath + bundleTuner,
-            binPath + bundleLittleBits,
-            binPath + bundleCanvas,
-            binPath + bundleGetBuffers,
-            binPath + bundleMPMDriver,
-            binPath + bundleWebAudioDriver
-        ];
+        var brwPaths = browserifyPaths.pathList;
+        var cmds = [];
+        for (var i = 0; i < brwPaths.length; i++) {
+            cmds.push(binPath + brwPaths[i]);
+        }
         jake.exec(cmds, {printStdout: true}, function () {
             console.log('All tests passed.');
             complete();

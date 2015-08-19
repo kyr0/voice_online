@@ -6,7 +6,6 @@
     "node": "0.12.7"
   },
   "devDependencies": {
-    "baudio": "^2.1.2",
     "browser-sync": "^2.8.2",
     "browserify": "^11.0.0",
     "grunt": "^0.4.5",
@@ -27,10 +26,6 @@
     "underscore": "^1.8.3"
   },
   "scripts": {
-    "start": "mochify --watch",
-    "phantom": "mochify",
-    "wd": "mochify --wd",
-    "cover": "mochify --cover",
-    "test": "npm run phantom && npm run wd && npm run cover"
+    "watchUnit": "./node_modules/mochify/bin/cmd.js ./test/unit/** --ui tdd --watch"
   }
 }
