@@ -10,27 +10,14 @@
 */
 module.exports.catchFunc = function(method, value, object){
     var obj = object || null;
-    if (obj) {
-        if (typeof value === "object") { // arrays are objects too
-            try {
-                object[method].apply(null, value);
-            }
-            catch (err) {
-                return err.message;
-            }
-        }
-        else {
-            try {
-                object[method](value);
-            }
-            catch (err) {
-                return err.message;
-            }
-        }
+
+    if (typeof value !== "object") { // is value an array or not
+        value = [value]; // change a simple value into an array
     }
-    else if (typeof value === "object") {
+
+    if (obj) {
         try {
-            method.apply(null, value);
+            object[method].apply(null, value);
         }
         catch (err) {
             return err.message;
@@ -38,7 +25,7 @@ module.exports.catchFunc = function(method, value, object){
     }
     else {
         try {
-            method(value);
+            method.apply(null, value);
         }
         catch (err) {
             return err.message;
