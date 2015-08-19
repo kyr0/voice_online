@@ -23,9 +23,11 @@
     "shelljs": "^0.5.1",
     "simplebuild-jshint": "^1.0.1",
     "syncopation": "^0.2.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "watchify": "^3.3.1"
   },
   "scripts": {
-    "watchUnit": "./node_modules/mochify/bin/cmd.js ./test/unit/** --ui tdd --watch"
+    "watchUnit": "./node_modules/mochify/bin/cmd.js ./test/unit/** --ui tdd --watch",
+    "watchify": ""
   }
 }
