@@ -60,12 +60,12 @@ suite('Pitch Evaluation library', function() {
 
         test("getCentsDiff() should throw an error for flat notes below C0", function() {
             assert.equal("getCentsDiff(): the frequency is outside the threshold - Fq:16.351",
-                catchFunc("getCentsDiff", [16.351, 'C7'], pEval));
+                catchError("getCentsDiff", [16.351, 'C7'], pEval));
         });
 
         test("getCentsDiff() should throw an error for sharp notes above B8", function() {
             assert.equal("getCentsDiff(): the frequency is outside the threshold - Fq:7902.2",
-                catchFunc("getCentsDiff", [7902.2, 'B8'], pEval));
+                catchError("getCentsDiff", [7902.2, 'B8'], pEval));
         });
 
         test("should be able to use pitchArray to lookup Note object", function() {

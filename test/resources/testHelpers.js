@@ -8,7 +8,7 @@
 * Takes method and value parameters, optional object and returns error message.
 * Value can be an array of parameters normally passed to the function / method.
 */
-module.exports.catchFunc = function(method, value, object){
+module.exports.catchError = function(method, value, object){
     var obj = object || null;
 
     if (typeof value !== "object") { // is value an array or not

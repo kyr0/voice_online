@@ -31,11 +31,11 @@ suite('PitchDetectionResult Class', function() {
         });
 
         test("setPitch() should throw an error if attempt to set invalid pitch (string)", function() {
-            assert.equal("setPitch(): not a valid pitch setting, was: Hey", catchFunc("setPitch","Hey", pdr));
+            assert.equal("setPitch(): not a valid pitch setting, was: Hey", catchError("setPitch","Hey", pdr));
         });
 
         test("setPitch() should throw an error if attempt to set invalid pitch (neg #)", function() {
-            assert.equal("setPitch(): not a valid pitch setting, was: -0.5", catchFunc("setPitch", -0.5, pdr));
+            assert.equal("setPitch(): not a valid pitch setting, was: -0.5", catchError("setPitch", -0.5, pdr));
         });
 
         var testPitch = 21345;
@@ -46,7 +46,7 @@ suite('PitchDetectionResult Class', function() {
         });
 
         test("setProbability() should throw an error if attempt to set invalid probability (string)", function() {
-            assert.equal("setProbability(): not a valid setting, was: Hey", catchFunc("setProbability", "Hey", pdr));
+            assert.equal("setProbability(): not a valid setting, was: Hey", catchError("setProbability", "Hey", pdr));
         });
 
         test("setProbability() should be happy when I use any number", function() {
@@ -55,7 +55,7 @@ suite('PitchDetectionResult Class', function() {
         });
 
         test("setIsPitched() should throw an error if attempt to set non-boolean", function() {
-            assert.equal("setIsPitched(): not a valid setting, was: Hey", catchFunc("setIsPitched", "Hey", pdr));
+            assert.equal("setIsPitched(): not a valid setting, was: Hey", catchError("setIsPitched", "Hey", pdr));
         });
 
         test("isPitched() should be happy when I use any boolean", function() {
