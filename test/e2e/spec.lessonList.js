@@ -1,18 +1,17 @@
 // spec.js
 "use strict";
 
-var LessonListPage = require("./pageObjects/LessonListPage");
-
-describe('Lesson List Page', function() {
-    beforeEach(function() {
-        isAngularSite(false);
-    });
-
-    var lessonListPage = new LessonListPage();
-
-    it('should have a title', function() {
-        lessonListPage.visitPage();
-        expect(lessonListPage.getTitle()).toEqual('Lesson List');
-    });
-
-});
+//var LessonListComponent = require("../../src/browser/js/LessonList.js");
+//
+//describe('Lesson List', function() {
+//    beforeEach(function() {
+//        isAngularSite(false);
+//    });
+//
+//    var lessonList = new LessonListComponent();
+//
+//    it('should have a list of lessons', function() {
+//        expect(lessonList.countLessons()).toBeGreaterThan(0);
+//    });
+//
+//});

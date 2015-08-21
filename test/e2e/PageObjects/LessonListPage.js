@@ -17,6 +17,9 @@ var LessonListPage = function () {
         return browser.getTitle();
     };
 
+    this.getNumLessons = function() {
+        return 0;
+    };
 };
 
 module.exports = LessonListPage;

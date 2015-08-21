@@ -9,7 +9,6 @@
         './spikes/paper/js/lesson.js -o ./spikes/paper/js/lesson.bundle.js',
 		'./spikes/practice_tuner/js/tuner.js -o ./spikes/practice_tuner/js/tuner.bundle.js',
 		'./src/browser/js/main.contextKey.js -o ./src/browser/js/bundles/contextKey.bundle.js',
-		'./src/browser/js/main.lessonList.js -o ./src/browser/js/bundles/lessonList.bundle.js',
 		'./spikes/canvas/scripts/canvas.js -o ./spikes/canvas/scripts/canvas.bundle.js',
 		'./spikes/pitch/js/getBuffersFromTones.js -o ./spikes/pitch/js/getBuffersFromTones.bundle.js',
 		'./spikes/pitch/js/drive_mpm.js -o ./spikes/pitch/js/drive_mpm.bundle.js',
