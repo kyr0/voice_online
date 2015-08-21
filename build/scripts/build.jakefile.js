@@ -122,7 +122,7 @@
         process.stdout.write("\n\nRunning client component tests:\n\n");
         mochify("test/component/**/*.js", {
             phantomjs: "./node_modules/.bin/phantomjs",
-            ui: "tdd"
+            ui: "expectations"
         }).bundle(function(err,buf){
             console.log(buf.toString());
             if (buf.toString().search("failing") >= 0) {
