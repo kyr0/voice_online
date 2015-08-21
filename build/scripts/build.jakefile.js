@@ -56,7 +56,7 @@
     });
 
     desc("Run only client component tests");
-    task("itgrOnly", [ "testIntegration" ], function(){
+    task("itgrOnly", [ "testComponents" ], function(){
         wrapUp();
     });
 
@@ -90,7 +90,7 @@
 
     // *** TEST
     desc("Test everything");
-    task("test", [ "checkWD", "browserify", "testServerUnit", "testClientUnit", "testIntegration", "testE2E" ], {async: true},
+    task("test", [ "checkWD", "browserify", "testServerUnit", "testClientUnit", "testComponents", "testE2E" ], {async: true},
         function(){
             wrapUp();
     });
@@ -118,15 +118,17 @@
             });
     }, {async: true});
 
-    task("testIntegration", function(){
+    task("testComponents", function(){
         process.stdout.write("\n\nRunning client component tests:\n\n");
-        mochify("test/component/**/*.js", {
+        mochify("test/component/**/spec.*.js", {
             phantomjs: "./node_modules/.bin/phantomjs",
-            ui: "expectations"
+            require: "expectations"
         }).bundle(function(err,buf){
             console.log(buf.toString());
             if (buf.toString().search("failing") >= 0) {
-                fail("Client has failing component tests.");
+                fail();
+            } else if (buf.toString().search("Error:") >= 0) {
+                fail();
             }
             else complete();
             });

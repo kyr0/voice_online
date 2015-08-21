@@ -18,22 +18,22 @@ var pEval = require("../../spikes/pitch/js/PitchManager.js");
  *   PitchManager library.
  */
 
-suite('Pitch Component: ', function() {
+describe('Pitch Component: ', function() {
     var sample44k = 44100;   // sampleRate of 44100
 
-    suite('detectPitch()', function() {
+    describe('detectPitch()', function() {
         var mpm;
 
-        setup(function () {
+        beforeEach(function () {
             mpm = new MPM(sample44k, buffer.oscBuffer.length);
         });
 
-        test("detectPitch() should assign frequency 110 to buffer w/pitch A2 given 512 samples", function() {
-            assert.equal(110, Math.round(mpm.detectPitch(buffer.noteBuffers.A2_512)));
+        it("should assign frequency 110 to buffer w/pitch A2 given 512 samples", function() {
+            expect(Math.round(mpm.detectPitch(buffer.noteBuffers.A2_512))).toEqual(110);
         });
 
-        test("MPM should detect all pitches within range (A1 - Bb7) at a .5 cent accuracy", function() {
-            this.timeout(0); // this test cannot timeout (it takes ~2 seconds)
+        it("should detect all pitches within range (A1 - Bb7) at a .5 cent accuracy", function() {
+            //this.timeout(0); // this test cannot timeout (it takes ~2 seconds)  // do we need this?
             var note = pEval.getNoteByName("A1");
             var noteFreq = note.frequency;
             var tone;
@@ -41,14 +41,16 @@ suite('Pitch Component: ', function() {
             while (note.name !== "Ab7"){
                 tone = buffer.noteBuffers[note.name + "_1024"];
                 pitchDetected = mpm.detectPitch(tone);
-                assert.equal(0, pEval.getCentsDiff(pitchDetected, noteFreq));
+                expect(pEval.getCentsDiff(pitchDetected, noteFreq)).toBe(0);
                 note = note.nextNote;
                 noteFreq = note.frequency;
             }
         });
 
-        test("detectPitch() should assign -1 to sounds below A1", function() {
-            assert.equal(-1, mpm.detectPitch(buffer.noteBuffers.Ab1_1024));
+        it("should assign pitch == -1, & isPitched() == false to results from tones below A1", function() {
+            var result = mpm.detectPitch(buffer.noteBuffers.Ab1_1024);
+            expect(result.isPitched()).toEqual(false);
+            expect(result.getPitchFrequency()).toEqual(-1);
         });
 
 

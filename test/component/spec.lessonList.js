@@ -1,6 +1,6 @@
-// spec.js
-"use strict";
-
+//// spec.js
+//"use strict";
+//
 //var LessonListComponent = require("../../src/browser/js/LessonList.js");
 //
 //describe('Lesson List', function() {
