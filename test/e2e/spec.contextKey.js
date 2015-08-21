@@ -1,14 +1,14 @@
 // spec.js
 "use strict";
 
-var indexPage = require("./pageObjects/ContextKeyPage");
-
-beforeEach(function() {
-    isAngularSite(false);
-});
+var ContextKeyPage = require("./pageObjects/ContextKeyPage");
 
 describe('Context Key Page', function() {
-    var contextKeyPage = new indexPage();
+    beforeEach(function() {
+        isAngularSite(false);
+    });
+
+    var contextKeyPage = new ContextKeyPage();
 
     it('should have a title', function() {
         contextKeyPage.visitPage();
