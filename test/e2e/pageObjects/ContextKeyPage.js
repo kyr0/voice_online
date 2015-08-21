@@ -7,13 +7,13 @@
 
 require("protractor");
 
-var IndexPage = function () {
+var ContextKeyPage = function () {
     var submitButton = element(By.id("submitButton"));
     var keyInput = element(By.id("contextKeyInput"));
     var list = element(By.id("list"));
 
     this.visitPage = function () {
-        browser.get("http://localhost:9000/index.html");
+        browser.get("http://localhost:9000/contextKey.html");
     };
 
     this.getTitle = function () {
@@ -24,14 +24,14 @@ var IndexPage = function () {
         keyInput.sendKeys(contextKey);
     };
 
-    IndexPage.prototype.submit = function () {
+    ContextKeyPage.prototype.submit = function () {
         submitButton.click();
     };
 
-    IndexPage.prototype.getDivHTML = function () {
+    ContextKeyPage.prototype.getDivHTML = function () {
         return list.getInnerHtml();
     };
 
 };
 
-module.exports = IndexPage;
+module.exports = ContextKeyPage;

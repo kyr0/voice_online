@@ -5,7 +5,7 @@
 
 (function() {
 
-    var contentKey = require("./contentKey.js");
+    var contentKey = require("./contextKeyComponent.js");
 
     window.checkInputThenWrite = function (){
         //document.getElementById("contextKeyInput").value = '["content.landingpages.podcasts"]';

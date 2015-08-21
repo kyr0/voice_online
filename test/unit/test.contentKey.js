@@ -4,7 +4,7 @@
 "use strict";
 
 var assert = require("assert");
-var contentKeyPage = require("../../src/browser/js/contentKey.js");
+var contentKeyPage = require("../../src/browser/js/contextKeyComponent.js");
 
 suite('ContentObject', function() {
     setup(function() {
