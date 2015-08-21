@@ -1,8 +1,5 @@
 "use strict";
 
-//var app = angular.module('lessonList', []);
+function LessonList () {}
 
-(function() {
-
-
-})();
+module.exports = LessonList;
