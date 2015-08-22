@@ -11,6 +11,7 @@
 module.exports.catchError = function(method, value, object){
     var obj = object || null;
 
+    // TODO: Object.prototype.toString.call( someVar ) === '[object Array]
     if (typeof value !== "object") { // is value an array or not
         value = [value]; // change a simple value into an array
     }

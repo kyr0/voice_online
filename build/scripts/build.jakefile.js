@@ -110,12 +110,16 @@
             phantomjs: "./node_modules/.bin/phantomjs",
             require: ["expectations"]
         }).bundle(function(err,buf){
-            console.log(buf.toString());
-            if (buf.toString().search("failing") >= 0) {
-                fail("Client has failing unit tests.");
+            if (buf) {
+                console.log(buf.toString());
+                if (buf.toString().search("failing") >= 0) {
+                    fail("Client has failing unit tests");
+                } else if (buf.toString().search("Error:") >= 0) {
+                    fail();
+                }
+                else complete();
             }
-            else complete();
-            });
+        });
     }, {async: true});
 
     task("testComponents", function(){
@@ -127,7 +131,7 @@
             if (buf) {
                 console.log(buf.toString());
                 if (buf.toString().search("failing") >= 0) {
-                    fail();
+                    fail("Component tests have failures");
                 } else if (buf.toString().search("Error:") >= 0) {
                     fail();
                 }

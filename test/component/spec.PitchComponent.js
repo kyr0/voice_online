@@ -23,7 +23,7 @@ describe('Pitch component', function() {
 
         beforeEach(function () {
             var sample44k = 44100;   // sampleRate of 44100
-            this.mpm = new MPM(sample44k, buffer.oscBuffer.length);
+            this.mpm = new MPM(sample44k);
         });
 
         it("should accurately detect all pitches within range (A1 - G7 inclusive) at a .5 cent accuracy", function() {
@@ -38,12 +38,7 @@ describe('Pitch component', function() {
             assertInvalidPitchDetectionOnRangeOfNotes("Ab7", "B8", this.mpm);
         });
 
-
     });
-
-
-
-
 });
 
 function assertValidPitchDetectionOnRangeOfNotes(startNote, endNote, mpm) {

@@ -1,6 +1,6 @@
 "use strict";
 
-//var Lesson = require("./Lesson.js");
+var Lesson = require("./Lesson.js");
 
 function LessonList () {
     var lessons = [];
