@@ -86,6 +86,10 @@ describe('MPM Object', function() {
             expect(errMsg).toContain(expectedMsg);
         });
 
+        it("should assign correct frequency to A2 buffer given 512 samples", function() {
+            var expectedA2Freq = 110;
+            expect(Math.round(this.mpm.detectPitch(buffers.noteBuffers.A2_512))).toEqual(expectedA2Freq);
+        });
 
         describe('should put expected values in ', function() {
             beforeEach(function () {

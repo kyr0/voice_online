@@ -106,9 +106,9 @@
 
     task("testClientUnit", function(){
         process.stdout.write("\n\nRunning client unit tests:\n\n");
-        mochify("test/unit/**/*.js", {
+        mochify("test/unit/**/spec.*.js", {
             phantomjs: "./node_modules/.bin/phantomjs",
-            ui: "tdd"
+            require: ["expectations"]
         }).bundle(function(err,buf){
             console.log(buf.toString());
             if (buf.toString().search("failing") >= 0) {

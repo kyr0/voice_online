@@ -178,7 +178,7 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 
             var period = _periodEstimates[periodIndex];
             var pitchEstimate = _sampleRate / period;
-            if (pitchEstimate > _LOWER_PITCH_CUTOFF) {
+            if (pitchEstimate > _LOWER_PITCH_CUTOFF && pitchEstimate < _HIGHER_PITCH_CUTOFF) {
                 pitch = pitchEstimate;
             } else {
                 pitch = -1;
