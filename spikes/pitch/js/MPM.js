@@ -138,7 +138,7 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
         // 1. Calculate the normalized square difference for each Tau value.
         normalizedSquareDifference(audioBuffer);
         // 2. Peak picking time: time to pick some peaks.
-        peakPicking();
+        peakPicking(audioBuffer);
 
         var highestAmplitude = Number.NEGATIVE_INFINITY;
 
@@ -280,9 +280,7 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
      *   values between -1 and 1
      * @author Phillip McLeod
      */
-    // note that if this method is malfunctioning it may be because I removed the '=' from
-    //  the float comparisons due to inexplicable javascript behaviour in the error thrown
-    function peakPicking() {
+    function peakPicking(audioBuffer) {
 
         var pos = 0;
         var curMaxPos = 0;
@@ -304,7 +302,8 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 
         while (pos < _nsdf.length - 1) {
             if (!(_nsdf[pos] >= 0)) {
-                throw new Error("peakPicking(): NSDF value at index " + pos + " should be >= 0, was: " + _nsdf[pos]);}
+                throw new Error("peakPicking(): NSDF value at index " + pos + " should be >= 0, was: " + _nsdf[pos] +
+                    "\n\nBuffer Input: [ " + audioBuffer + " ]\n");}
             if ((_nsdf[pos] > _nsdf[pos - 1]) && (_nsdf[pos] >= _nsdf[pos + 1])) {
                 if (curMaxPos === 0) {
                     // the first max (between zero crossings)

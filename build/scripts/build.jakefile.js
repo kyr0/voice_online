@@ -124,13 +124,15 @@
             phantomjs: "./node_modules/.bin/phantomjs",
             require: "expectations"
         }).bundle(function(err,buf){
-            console.log(buf.toString());
-            if (buf.toString().search("failing") >= 0) {
-                fail();
-            } else if (buf.toString().search("Error:") >= 0) {
-                fail();
+            if (buf) {
+                console.log(buf.toString());
+                if (buf.toString().search("failing") >= 0) {
+                    fail();
+                } else if (buf.toString().search("Error:") >= 0) {
+                    fail();
+                }
+                else complete();
             }
-            else complete();
             });
     }, {async: true});
 
