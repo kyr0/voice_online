@@ -7,7 +7,7 @@
 "use strict";
 
 var assert = require("assert");
-var MPM = require("../../spikes/pitch/js/MPM.js");
+var MPM = require("../../src/browser/js/MPM.js");
 var buffer = require("../resources/audioBuffers.js");
 var pEval = require("../../src/browser/js/PitchManager.js");
 

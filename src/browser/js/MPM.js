@@ -1,16 +1,4 @@
-/*
- * Implementation of Mcleod Pitch Method (MPM)
- *
- * Based on this article:
- * http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf
- *
- * Converted from java->to->javascript from this project:
- * Github: https://github.com/JorenSix/TarsosDSP
- *
- * Special thanks to Sevag for pointing it out and for bits of code (freq array):
- * https://github.com/sevagh/Pitcha/blob/master/app/src/main/java/com/sevag/pitcha/dsp/MPM.java
- *
- */
+"use strict";
 
 /**
  * Implementation of The McLeod Pitch Method (MPM). It is described in the
@@ -33,7 +21,7 @@
  * friendly, laggard time domain."
  */
 
-var PitchDetectionResult = require("./PitchDetectionResult.js");
+var PitchDetectionResult = require("./../../../spikes/pitch/js/PitchDetectionResult.js");
 
 
 function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
@@ -236,7 +224,7 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
         var nsdfc = _nsdf[tau + 1];
         var bValue = tau;
         var bottom = nsdfc + nsdfa - 2 * nsdfb;
-        if (bottom == 0) {
+        if (bottom === 0) {
             _turningPointX = bValue;
             _turningPointY = nsdfb;
         } else {
@@ -301,9 +289,10 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
         }
 
         while (pos < _nsdf.length - 1) {
-            if (!(_nsdf[pos] >= 0)) {
+            if (_nsdf[pos] < 0 || typeof _nsdf[pos] !== 'number') {
                 throw new Error("peakPicking(): NSDF value at index " + pos + " should be >= 0, was: " + _nsdf[pos] +
-                    "\n\nBuffer Input: [ " + audioBuffer + " ]\n");}
+                    "\n\nBuffer Input: [ " + audioBuffer + " ]\n");
+            }
             if ((_nsdf[pos] > _nsdf[pos - 1]) && (_nsdf[pos] >= _nsdf[pos + 1])) {
                 if (curMaxPos === 0) {
                     // the first max (between zero crossings)

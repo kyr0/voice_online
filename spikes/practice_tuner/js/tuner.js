@@ -22,7 +22,7 @@
  SOFTWARE.
  */
 
-var MPM = require("../../pitch/js/MPM.js");
+var MPM = require("../../../src/browser/js/MPM.js");
 var pEval = require("../../../src/browser/js/PitchManager.js");
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;

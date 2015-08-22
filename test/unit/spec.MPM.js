@@ -3,7 +3,7 @@
 // */
 "use strict";
 
-var MPM = require("../../spikes/pitch/js/MPM.js");
+var MPM = require("../../src/browser/js/MPM.js");
 var buffers = require("../resources/audioBuffers.js");
 var helpers = require("../resources/testHelpers.js");
 for (var key in helpers) {
@@ -82,7 +82,7 @@ describe('MPM Object', function() {
             var buffer = createMockBufferFullOfNaN();
             //this.mpm.detectPitch(buffer);
             var errMsg = catchError("detectPitch", buffer, this.mpm);
-            var expectedMsg = "peakPicking(): NSDF value at index 1 should be >= 0, was: NaN";
+            var expectedMsg = "peakPicking(): NSDF value at index";
             expect(errMsg).toContain(expectedMsg);
         });
 
