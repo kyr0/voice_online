@@ -122,7 +122,7 @@
         process.stdout.write("\n\nRunning client component tests:\n\n");
         mochify("test/component/**/spec.*.js", {
             phantomjs: "./node_modules/.bin/phantomjs",
-            require: "expectations"
+            require: ["expectations"]
         }).bundle(function(err,buf){
             if (buf) {
                 console.log(buf.toString());

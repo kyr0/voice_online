@@ -116,7 +116,8 @@ describe('MPM Object', function() {
                 expect(MPM.__testonly__.turningPointX).toEqual(tauIndex);
                 expect(MPM.__testonly__.turningPointY).toEqual(1);
             });
-        })
+        });
+
     });
 
     // this could also be used to add noise to a signal for clarity testing in future
