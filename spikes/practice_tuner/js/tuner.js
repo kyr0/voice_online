@@ -23,7 +23,7 @@
  */
 
 var MPM = require("../../pitch/js/MPM.js");
-var pEval = require("../../pitch/js/PitchManager.js");
+var pEval = require("../../../src/browser/js/PitchManager.js");
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 

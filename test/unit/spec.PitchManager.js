@@ -1,7 +1,7 @@
 
 "use strict";
 
-var pEval = require("../../spikes/pitch/js/PitchManager.js");
+var pEval = require("../../src/browser/js/PitchManager.js");
 var helpers = require("../resources/testHelpers.js");
 for (var key in helpers) {
     global[key] = helpers[key];

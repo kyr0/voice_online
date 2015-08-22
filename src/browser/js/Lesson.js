@@ -5,7 +5,6 @@ var noteMgr = require("./NoteManager.js");
 
 function Lesson () {
     this.notes = [];
-    this.lessonLength = 0;
     this.bpm = 120;
     this.range = "";
 

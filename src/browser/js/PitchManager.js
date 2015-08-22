@@ -1,12 +1,10 @@
-/*
- *  Adapted from the TarsosDsP Java library for use in Javascript
- *
- */
+
+"use strict";
 
 var PitchManager = (function() {
 
 
-    var _pMap = new _PitchMap();
+    var _pMap = new PitchMap();
     var _pitchMap = _pMap.pitchMap;
     var _pitchArray = _pMap.pitchArray;
     var _reverseMap = _pMap.reverseMap;
@@ -87,7 +85,7 @@ module.exports = PitchManager;
 *  the pitchMap with a trivial lookup.
 *
 */
-function _PitchMap() {
+function PitchMap() {
 
     // the raw data used to generate the stuff
     var _noteNames = ["C", "Db",    "D",   "Eb",    "E",    "F",   "Gb",    "G",   "Ab",    "A",   "Bb",    "B"];
@@ -128,7 +126,7 @@ function _PitchMap() {
             // use the frequency from pitchArray[x] to get the name for Note objects in pitchMap
             reverseMap[thisNotesFreq] = {
                 name : thisNotesName
-            }
+            };
 
 
         }
@@ -151,7 +149,7 @@ function _PitchMap() {
         var prevOctave = (prevNoteNum === 11) ? curOctave - 1 : curOctave;
         //var nextNoteNum = (curNoteNum === 11) ? 0 : curNoteNum + 1;
         //var nextOctave = (nextNoteNum === 0) ? curOctave + 1 : curOctave;
-        pitchMap[_noteNames[prevNoteNum] + prevOctave]['nextNote'] = pitchMap[_noteNames[curNoteNum] + curOctave];
+        pitchMap[_noteNames[prevNoteNum] + prevOctave].nextNote = pitchMap[_noteNames[curNoteNum] + curOctave];
     }
 
     return {

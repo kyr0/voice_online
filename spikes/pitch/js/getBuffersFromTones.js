@@ -3,7 +3,7 @@
 (function () {
 
     var MPM = require("./MPM.js");
-    var pEval = require("./PitchManager.js");
+    var pEval = require("./../../../src/browser/js/PitchManager.js");
     var note = pEval.getNoteByName("C0");
     var startTime = Date.now();
     var elapsedTime = 0;
