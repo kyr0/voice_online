@@ -21,7 +21,7 @@
  * friendly, laggard time domain."
  */
 
-var PitchDetectionResult = require("./../../../spikes/pitch/js/PitchDetectionResult.js");
+var PitchDetectionResult = require("./PitchDetectionResult.js");
 
 
 function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {

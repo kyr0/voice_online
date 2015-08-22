@@ -1,31 +1,5 @@
-/*
- *  Adapted from the TarsosDsP Java library for use in Javascript
- *
- *  Info: http://0110.be/tag/TarsosDSP
- *  Github: https://github.com/JorenSix/TarsosDSP
- *
- * A class with information about the result of a pitch detection on a block of
- * audio.
- *
- * It contains:
- *
- * - The pitch in Hertz.
- *
- * - A probability (noisiness, (a)periodicity, salience, voicedness or clarity
- * measure) for the detected pitch. This is somewhat similar to the term voiced
- * which is used in speech recognition. This probability is calculated
- * together with the pitch. The exact meaning of the value depends on MPM method used
- * and requires further research.
- *
- * - A boolean that indicates if the algorithm thinks the signal is pitched
- *
- * The separate pitched or unpitched boolean can coexist with a defined pitch.
- * E.g. if the algorithm detects 220Hz in a noisy signal it may respond with
- * 220Hz "unpitched".
- *
- * For performance reasons it's best if the object is reused. Please create a copy of the object
- * if you want to use it on an other thread.
- */
+
+"use strict";
 
 function PitchDetectionResult () {
 
