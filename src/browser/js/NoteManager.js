@@ -29,14 +29,15 @@ var NoteManager = (function() {
 
     function _getHighestDenominator(arrayOfNotes){
         var highestDenom = 0;
+        var currentDenom;
         for (var i = 0; i < arrayOfNotes.length; i++) {
-            var currentDenom = _getDenominator(arrayOfNotes[i].noteLength);
+            currentDenom = Number(_getDenominator(arrayOfNotes[i].noteLength));
             if (currentDenom > highestDenom) highestDenom = currentDenom;
         }
         return highestDenom;
     }
 
-    function _convertNumeratorToHighestDenominator(noteLength, highestDenom){
+    function _sumNumeratorToHighestDenominator(noteLength, highestDenom){
         var numerator = _getNumerator(noteLength);
         var denominator = _getDenominator(noteLength);
         while (denominator < highestDenom) {
@@ -51,16 +52,24 @@ var NoteManager = (function() {
         var numerator = 0;
         for (var i = 0; i < arrayOfNotes.length; i++) {
             var noteLength = arrayOfNotes[i].noteLength;
-            numerator += _convertNumeratorToHighestDenominator(noteLength, highestDenom);
+            numerator += _sumNumeratorToHighestDenominator(noteLength, highestDenom);
         }
         return numerator + "/" + highestDenom;
     };
 
     var publicCreateListOfNoteObjects = function(newNotes) {
         var noteObjArr = [];
+        var name;
+        var noteLength;
         for (var i = 0; i < newNotes.length; i++) {
-            var name = newNotes[i].name;
-            var noteLength = newNotes[i].noteLength;
+            if (newNotes[i].constructor === Array){
+                name = newNotes[i][0];
+                noteLength = newNotes[i][1];
+            }
+            else if (typeof newNotes[i].name !== 'undefined'){
+                name = newNotes[i].name;
+                noteLength = newNotes[i].noteLength;
+            }
             noteObjArr.push(new Note(name, noteLength));
         }
         return noteObjArr;
@@ -120,7 +129,7 @@ var NoteManager = (function() {
         __testonly__getDenominator : _getDenominator,
         __testonly__getNumerator : _getNumerator,
         __testonly__getHighestDenominator : _getHighestDenominator,
-        __testonly__convertNumeratorToHighestDenominator : _convertNumeratorToHighestDenominator
+        __testonly__convertNumeratorToHighestDenominator : _sumNumeratorToHighestDenominator
         /* end-test-code */
     };
 

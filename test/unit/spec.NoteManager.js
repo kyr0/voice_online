@@ -16,27 +16,35 @@ describe('Note Management library', function() {
                 {name: "B2", noteLength: "1/8"},
                 {name: "A1", noteLength: "1/2"},
                 {name: "Db3", noteLength: "1/4"},
-                {name: "B2", noteLength: "1/1"}
+                {name: "B2", noteLength: "1/32"}
+            ];
+            this.expectedList = [
+                {name: "B2", noteLength: "1/8"},
+                {name: "A1", noteLength: "1/2"},
+                {name: "Db3", noteLength: "1/4"},
+                {name: "B2", noteLength: "1/32"}
             ];
             this.actualList = noteMgr.createListOfNoteObjects(this.createTheseNotes);
         });
 
-        it('can be created at once', function () {
-            var expectedList = [
-                {name: "B2", noteLength: "1/8"},
-                {name: "A1", noteLength: "1/2"},
-                {name: "Db3", noteLength: "1/4"},
-                {name: "B2", noteLength: "1/1"}
+        it('can be created at once with object literal notation', function () {
+            compareNoteLists(this.actualList, this.expectedList);
+        });
+
+        it('can be created at once with nested arrays', function () {
+            var arrayList = [
+                ["B2","1/8"],["A1","1/2"],["Db3","1/4"],["B2","1/32"]
             ];
-            compareNoteLists(this.actualList, expectedList);
+            var fromArray = noteMgr.createListOfNoteObjects(arrayList);
+            compareNoteLists(fromArray, this.expectedList);
         });
 
         it("passed to _getHighestDenominator() should return the highest denominator", function () {
-            expect(noteMgr.__testonly__getHighestDenominator(this.actualList)).toBe("8");
+            expect(noteMgr.__testonly__getHighestDenominator(this.actualList)).toBe(32);
         });
 
         it("getCombinedNoteLength() should return the combined length from a list of notes", function () {
-            expect(noteMgr.getCombinedNoteLength(this.actualList)).toBe("15/8");
+            expect(noteMgr.getCombinedNoteLength(this.actualList)).toBe("29/32");
         });
     });
 

@@ -34,10 +34,10 @@ describe('Lesson', function() {
             expect(this.lesson.countNoteObjects()).toEqual(this.newNotes.noteLength);
         });
 
-        //it('should always know the combined length of all the notes it contains', function () {
-        //    this.lesson.addNotes("1/16");
-        //    expect(this.lesson.getLessonLength()).toEqual('30/16');
-        //});
+        it('should always know the combined length of all the notes it contains', function () {
+            this.lesson.addNotes([["B3","1/16"],["C4","1/32"]]);
+            expect(this.lesson.getLessonLength()).toEqual('63/32');
+        });
     });
 
 });
