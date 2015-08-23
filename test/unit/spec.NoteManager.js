@@ -18,7 +18,7 @@ describe('Note Management library', function() {
                 {name: "Db3", noteLength: "1/4"},
                 {name: "B2", noteLength: "1/1"}
             ];
-            this.actualList = noteMgr.getNoteObjectList(this.createTheseNotes);
+            this.actualList = noteMgr.createListOfNoteObjects(this.createTheseNotes);
         });
 
         it('can be created at once', function () {
@@ -60,7 +60,7 @@ describe('Pitch Evaluation library', function() {
     var freqC0 = 16.352;
 
     it("note object should know its own name", function() {
-        expect(noteMgr.getClosestNoteFromPitch(freqC0).name).toEqual("C0");
+        expect(noteMgr.getClosestNoteNameFromPitch(freqC0)).toEqual("C0");
     });
 
     describe('getCentsDiff()', function() {
@@ -123,17 +123,12 @@ describe('Pitch Evaluation library', function() {
 
     });
 
-    it("should be able to use frequencies to lookup note object", function() {
-        var testFreq = noteMgr.__testonly__pMap.pitchArray[0];
-        expect(noteMgr.__testonly__pMap.reverseMap[testFreq].name).toEqual("C0");
-    });
-
     it("should be able to lookup note object when frequency <= 50 cents off", function() {
         // NOTE: 50 cents equals .5 semitone
         var sharpA7Freq = 3623.1;
-        expect(noteMgr.getClosestFreqFromPitch(sharpA7Freq)).toEqual(noteMgr.getNoteByName("A7").frequency);
+        expect(noteMgr.getClosestFreqFromPitch(sharpA7Freq)).toEqual(3520.0);
         var flatA1Freq = 53.435;
-        expect(noteMgr.getClosestFreqFromPitch(flatA1Freq)).toEqual(noteMgr.getNoteByName("A1").frequency);
+        expect(noteMgr.getClosestFreqFromPitch(flatA1Freq)).toEqual(55.000);
     });
 
 });

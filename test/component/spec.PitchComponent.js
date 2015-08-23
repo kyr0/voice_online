@@ -9,7 +9,7 @@
 var assert = require("assert");
 var MPM = require("../../src/browser/js/MPM.js");
 var buffer = require("../resources/audioBuffers.js");
-var pEval = require("../../src/browser/js/NoteManager.js");
+var nMgr = require("../../src/browser/js/NoteManager.js");
 
 /*
  * A suite of longer running tests to test all apect of the pitch component.
@@ -42,21 +42,21 @@ describe('Pitch component', function() {
 });
 
 function assertValidPitchDetectionOnRangeOfNotes(startNote, endNote, mpm) {
-    var note = pEval.getNoteByName(startNote);
+    var note = nMgr.getNoteMapAtName(startNote);
     var noteFreq = note.frequency;
     var tone;
     var pitchDetected;
     while (note.name !== endNote){
         tone = buffer.noteBuffers[note.name + "_1024"];
         pitchDetected = mpm.detectPitch(tone);
-        expect(pEval.getCentsDiff(pitchDetected, noteFreq)).toBe(0);
+        expect(nMgr.getCentsDiff(pitchDetected, noteFreq)).toBe(0);
         note = note.nextNote;
         noteFreq = note.frequency;
     }
 }
 
 function assertInvalidPitchDetectionOnRangeOfNotes(startNote, endNote, mpm) {
-    var note = pEval.getNoteByName(startNote);
+    var note = nMgr.getNoteMapAtName(startNote);
     var tone;
     var result;
     while (note.name !== endNote){

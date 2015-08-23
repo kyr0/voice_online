@@ -9,7 +9,7 @@ function Lesson () {
     this.range = "";
 
     this.addNotes = function(newNotes) {
-        var noteObjArr = noteMgr.getNoteObjectList(newNotes);
+        var noteObjArr = noteMgr.createListOfNoteObjects(newNotes);
         this.notes = this.notes.concat(noteObjArr);
     };
 
