@@ -63,53 +63,38 @@ describe('Pitch Evaluation library', function() {
         expect(noteMgr.getClosestNoteFromPitch(freqC0).name).toEqual("C0");
     });
 
-    describe('getNoteByName()', function() {
-
-        it("lowest note C0 should show a frequency of 16.352", function () {
-            expect(noteMgr.getNoteByName("C0").frequency).toEqual(freqC0);
-        });
-
-        it("lowest note C0 should have previousNote set to null", function () {
-            expect(noteMgr.getNoteByName("C0").previousNote).toBeNull();
-        });
-
-        it("highest note B8 should have nextNote set to null", function () {
-            expect(noteMgr.getNoteByName("B8").nextNote).toBeNull();
-        });
-    });
-
     describe('getCentsDiff()', function() {
         beforeEach(function(){
-            this.nameGb0 = "Gb0";
+            this.Gb0 = "Gb0";
         });
 
         it("should return zero cents for perfect pitch", function () {
             var incomingFreq = 23.125;
-            expect(noteMgr.getCentsDiff(incomingFreq, this.nameGb0)).toEqual(0);
+            expect(noteMgr.getCentsDiff(incomingFreq, this.Gb0)).toEqual(0);
         });
 
         it("should give zero for near perfect pitch (slightly flat)", function () {
-            expect(noteMgr.getCentsDiff(23.119, this.nameGb0)).toBe(0);
+            expect(noteMgr.getCentsDiff(23.119, this.Gb0)).toBe(0);
         });
 
         it("should give zero for near perfect pitch (slightly sharp)", function () {
-            expect(noteMgr.getCentsDiff(23.130, this.nameGb0)).toEqual(0);
+            expect(noteMgr.getCentsDiff(23.130, this.Gb0)).toEqual(0);
         });
 
         it("should give null for diff = 1 semitone flat", function () {
-            expect(noteMgr.getCentsDiff(21.827, this.nameGb0)).toBeNull();
+            expect(noteMgr.getCentsDiff(21.827, this.Gb0)).toBeNull();
         });
 
         it("should give null for diff > 1 semitone flat", function () {
-            expect(noteMgr.getCentsDiff(20, this.nameGb0)).toBeNull();
+            expect(noteMgr.getCentsDiff(20, this.Gb0)).toBeNull();
         });
 
         it("should give null for diff = 1 semitone sharp", function () {
-            expect(noteMgr.getCentsDiff(24.500, this.nameGb0)).toBeNull();
+            expect(noteMgr.getCentsDiff(24.500, this.Gb0)).toBeNull();
         });
 
         it("should give null for diff > 1 semitone sharp", function () {
-            expect(noteMgr.getCentsDiff(25, this.nameGb0)).toBeNull();
+            expect(noteMgr.getCentsDiff(25, this.Gb0)).toBeNull();
         });
 
         it("should throw an error for flat notes below C0", function () {

@@ -1,9 +1,11 @@
 
 "use strict";
 
+var NoteMaps = require("./NoteMaps.js");
+
 function Note (name, noteLength) {
-    // TODO get rid of this next line
-    var noteMgr = require("./NoteManager.js");  // I know this is ugly need to work it out
+
+    var nMaps = new NoteMaps();
 
     this.setNoteLength = function(noteLength){
         var _noteLengths = [ '1/32', '1/16', '1/8', '1/4', '1/2', '1/1'];
@@ -24,12 +26,19 @@ function Note (name, noteLength) {
     };
 
     function validateNoteName(noteName){
-        return noteMgr.getNoteByName(noteName).name;
+        try {
+            if (typeof nMaps.pitchMap[noteName].name !== 'undefined') {
+                return nMaps.pitchMap[noteName].name;
+            }
+        }
+        catch (err) {
+            throw new Error ("Note(): the supplied note name is invalid - " + noteName);
+        }
     }
 
     this.name = validateNoteName(name);
     this.noteLength = this.setNoteLength(noteLength);
-    this.frequency = noteMgr.getNoteByName(this.name).frequency;
+    this.frequency = nMaps.pitchMap[this.name].frequency;
 
 }
 

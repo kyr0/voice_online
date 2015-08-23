@@ -15,19 +15,19 @@ describe('Note Object', function() {
         this.noteName = "B2";
     });
 
-    it('should create a note with default length of 1/1', function () {
+    it('should have passed in name, related frequency, and default length of 1/1', function () {
         var expectNoteLength = "1/1";
-        var expectedNoteObj = { name : this.noteName, noteLength : expectNoteLength };
+        var expectFrequency = 123.47;
         var noteObj = new Note(this.noteName);
-        expect(noteObj.name).toBe(expectedNoteObj.name);
-        expect(noteObj.noteLength).toBe(expectedNoteObj.noteLength);
+        expect(noteObj.name).toBe(this.noteName);
+        expect(noteObj.noteLength).toBe(expectNoteLength);
+        expect(noteObj.frequency).toBe(expectFrequency);
     });
 
-    it('should create a note using name and length', function () {
+    it('should set length when passed in to constructor', function () {
         var noteLength = "1/8";
-        var expectedNoteObj = { name : this.noteName, noteLength : noteLength };
         var noteObj = new Note(this.noteName, noteLength);
-        expect(noteObj.noteLength).toBe(expectedNoteObj.noteLength);
+        expect(noteObj.noteLength).toBe(noteLength);
     });
 
     it('should convert length of "1" to a note using a length of "1/1"', function () {
@@ -37,7 +37,7 @@ describe('Note Object', function() {
         expect(noteObj.noteLength).toBe(expectedNoteObj.noteLength  );
     });
 
-    describe('should throw an error when attempting to create a note with invalid length', function() {
+    describe('should throw an error when', function() {
 
         beforeEach(function() {
             this.createNote = function (name, noteLength) {
@@ -45,17 +45,24 @@ describe('Note Object', function() {
             };
         });
 
-        it('(1/6)', function () {
+        it('attempting to create a note with invalid length (1/6)', function () {
             var noteLength = "1/6";
             var errMsg = "Note(): the supplied note length is invalid - " + noteLength;
             expect(catchError(this.createNote, [this.noteName, noteLength])).toEqual(errMsg);
         });
 
-        it('(invalid type)', function () {
+        it('attempting to create a note with invalid length (invalid type)', function () {
             var noteLength = ["random", "stuff"];
             var errMsg = "Note(): the supplied note length is invalid - " + noteLength;
             expect(catchError(this.createNote, [this.noteName, noteLength])).toEqual(errMsg);
         });
+
+        it('attempting to create a note with invalid name (string)', function () {
+            var noteName = "X8";
+            var errMsg = "Note(): the supplied note name is invalid - " + noteName
+            expect(catchError(this.createNote, [noteName])).toEqual(errMsg);
+        });
+
     });
 
 
