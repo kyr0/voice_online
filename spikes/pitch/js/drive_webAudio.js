@@ -3,7 +3,7 @@
 (function () {
 
     var MPM = require("./../../../src/browser/js/MPM.js");
-    var pEval = require("./../../../src/browser/js/PitchManager.js");
+    var pEval = require("./../../../src/browser/js/NoteManager.js");
     var note = pEval.getNoteByName("C0");
     var startTime = Date.now();
     var elapsedTime = 0;
@@ -50,7 +50,7 @@
             document.getElementById('list').innerHTML =
                 //"Note - " + note.name + " : " + note.frequency +
                 //" Pitch detected: " + pitchDetected
-                // + "Cents Off: " + pEval.getCentsDiff(pitchDetected, note.name) + "<br>";
+                // + "Cents Off: " + noteMgr.getCentsDiff(pitchDetected, note.name) + "<br>";
                 //+ "<br><br>"
                 makeCodeOutput + makeDataLog;
             //console.log("Buffer length: " + inputBuffer.length + "\n" +

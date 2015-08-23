@@ -9,7 +9,7 @@
 var assert = require("assert");
 var MPM = require("../../src/browser/js/MPM.js");
 var buffer = require("../resources/audioBuffers.js");
-var pEval = require("../../src/browser/js/PitchManager.js");
+var pEval = require("../../src/browser/js/NoteManager.js");
 
 /*
  * A suite of longer running tests to test all apect of the pitch component.
