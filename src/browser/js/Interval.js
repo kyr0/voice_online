@@ -64,6 +64,7 @@ function Interval (startNote, endNote) {
     this.endNoteMap = nMaps.pitchMap[endNote];
     this.direction = getIntervalDirection();
     this.halfsteps = getIntervalDistance(this.startNoteMap, this.endNoteMap, this.direction);
+    this.name = this.startNoteMap.name + this.endNoteMap.name;
 
 }
 

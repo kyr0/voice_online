@@ -5,6 +5,7 @@
  *
  */
 var Note = require("./Note.js");
+var Interval = require("./Interval.js");
 var NoteMaps = require("./NoteMaps.js");
 
 var NoteManager = (function() {
@@ -17,65 +18,6 @@ var NoteManager = (function() {
 
     var lowThreshold = _pitchMap.C0.frequency;
     var highThreshold = _pitchMap.B8.frequency;
-
-
-    function _getDenominator(noteLength){
-        return noteLength.split('/')[1];
-    }
-
-    function _getNumerator(noteLength){
-        return noteLength.split('/')[0];
-    }
-
-    function _getHighestDenominator(arrayOfNotes){
-        var highestDenom = 0;
-        var currentDenom;
-        for (var i = 0; i < arrayOfNotes.length; i++) {
-            currentDenom = Number(_getDenominator(arrayOfNotes[i].noteLength));
-            if (currentDenom > highestDenom) highestDenom = currentDenom;
-        }
-        return highestDenom;
-    }
-
-    function _sumNumeratorToHighestDenominator(noteLength, highestDenom){
-        var numerator = _getNumerator(noteLength);
-        var denominator = _getDenominator(noteLength);
-        while (denominator < highestDenom) {
-            numerator *= 2;
-            denominator *= 2;
-        }
-        return Number(numerator);
-    }
-
-    var publicGetCombinedNoteLength = function(arrayOfNotes){
-        var highestDenom = _getHighestDenominator(arrayOfNotes);
-        var numerator = 0;
-        for (var i = 0; i < arrayOfNotes.length; i++) {
-            var noteLength = arrayOfNotes[i].noteLength;
-            numerator += _sumNumeratorToHighestDenominator(noteLength, highestDenom);
-        }
-        return numerator + "/" + highestDenom;
-    };
-
-    var publicGetInterval = function(note1, note2){};
-
-    var publicCreateListOfNoteObjects = function(newNotes) {
-        var noteObjArr = [];
-        var name;
-        var noteLength;
-        for (var i = 0; i < newNotes.length; i++) {
-            if (newNotes[i].constructor === Array){
-                name = newNotes[i][0];
-                noteLength = newNotes[i][1];
-            }
-            else if (typeof newNotes[i].name !== 'undefined'){
-                name = newNotes[i].name;
-                noteLength = newNotes[i].noteLength;
-            }
-            noteObjArr.push(new Note(name, noteLength));
-        }
-        return noteObjArr;
-    };
 
     // take a raw frequency and returns the frequency of the nearest musical note
     // thanks to Chris Wilson for most of this function
@@ -124,15 +66,7 @@ var NoteManager = (function() {
         getClosestFreqFromPitch : publicGetClosestFreqFromPitch,
         getClosestNoteNameFromPitch : publicGetClosestNoteNameFromPitch,
         getCentsDiff : publicGetCentsDiff,
-        getCombinedNoteLength : publicGetCombinedNoteLength,
-        createListOfNoteObjects : publicCreateListOfNoteObjects,
-        getNoteMapAtName : publicGetNoteMapAtName,
-        /* start-test-code */
-        __testonly__getDenominator : _getDenominator,
-        __testonly__getNumerator : _getNumerator,
-        __testonly__getHighestDenominator : _getHighestDenominator,
-        __testonly__convertNumeratorToHighestDenominator : _sumNumeratorToHighestDenominator
-        /* end-test-code */
+        getNoteMapAtName : publicGetNoteMapAtName
     };
 
 })();

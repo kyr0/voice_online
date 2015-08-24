@@ -19,6 +19,12 @@ describe('Interval Object', function() {
         this.itvl3 = new Interval(this.note2, this.note2);
     });
 
+    it("should have the right name", function () {
+        expect(this.itvl.name).toBe("A1B2");
+        expect(this.itvl2.name).toBe("B2A1");
+        expect(this.itvl3.name).toBe("B2B2");
+    });
+
     it("should create an Interval with correct distance (up)", function () {
         expect(this.itvl.halfsteps).toBe(14);
     });

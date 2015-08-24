@@ -33,12 +33,10 @@ To build, lint, and run all tests:
 **At this time only OSX & Ubuntu Linux are officially supported**
 
     1. Install Git (OSX Only: install XCode command line tools along with git)
-        - to install git on OSX, simply type 'git' on the command line and follow instructions)
-    2. Install Node: v0.12.7 (OSX) or v0.10.25** (Ubuntu) 
+        - OSX Only: simply type 'git' on the command line and follow instructions)
+    2. Install Node: v0.12.7  ** this exact version is required
         - OSX, http://howtonode.org/how-to-install-nodejs)
-        - Linux, https://github.com/joyent/node/wiki/installing-node.js-via-package-manager
-    2.5 Linux only: you will need to update package.json before building and change 
-        the version to "node": "0.10.25"
+        - Linux, https://gist.github.com/isaacs/579814
     3. Install Java Development Kit
     4. type './jake.sh' and relax 
     
