@@ -22,20 +22,22 @@ describe('Pitch component', function() {
     describe('detectPitch()', function() {
 
         beforeEach(function () {
-            this.timeout(0);
             var sample44k = 44100;   // sampleRate of 44100
             this.mpm = new MPM(sample44k);
         });
 
         it("should accurately detect all pitches within range (A1 - G7 inclusive) at a .5 cent accuracy", function() {
+            this.timeout(0);
             assertValidPitchDetectionOnRangeOfNotes("A1", "Ab7", this.mpm);
         });
 
         it("should not attempt to determine pitch *below* A1", function() {
+            this.timeout(0);
             assertInvalidPitchDetectionOnRangeOfNotes("C0", "A1", this.mpm);
         });
 
         it("should not attempt to determine pitch *above* G7", function() {
+            this.timeout(0);
             assertInvalidPitchDetectionOnRangeOfNotes("Ab7", "B8", this.mpm);
         });
 
