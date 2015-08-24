@@ -13,12 +13,12 @@ function Lesson () {
         this.notes = this.notes.concat(noteObjArr);
     };
 
-    this.countNoteObjects = function() {
-        return this.notes.noteLength;
-    };
-
     this.getLessonLength = function() {
         return noteMgr.getCombinedNoteLength(this.notes);
+    };
+
+    this.getLessonRange = function() {
+        return noteMgr.getLargestInterval(this.notes);
     };
 
 }

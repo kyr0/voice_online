@@ -57,6 +57,8 @@ var NoteManager = (function() {
         return numerator + "/" + highestDenom;
     };
 
+    var publicGetInterval = function(note1, note2){};
+
     var publicCreateListOfNoteObjects = function(newNotes) {
         var noteObjArr = [];
         var name;

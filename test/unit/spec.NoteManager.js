@@ -10,6 +10,18 @@ for (var key in helpers) {
 
 describe('Note Management library', function() {
 
+    it("_getDenominator() should retrieve the length denominator of a single note", function () {
+        expect(noteMgr.__testonly__getDenominator("11/16")).toBe("16");
+    });
+
+    it("_getNumerator() should retrieve the length numerator of a single note", function () {
+        expect(noteMgr.__testonly__getNumerator("11/16")).toBe("11");
+    });
+
+    it("_convertNumeratorToHighestDenominator() should retrieve the converted numerator", function () {
+        expect(noteMgr.__testonly__convertNumeratorToHighestDenominator("1/4", 32)).toBe(8);
+    });
+
     describe('multiple notes', function () {
         beforeEach(function () {
             this.createTheseNotes = [
@@ -48,27 +60,24 @@ describe('Note Management library', function() {
         });
     });
 
-    it("_getDenominator() should retrieve the length denominator of a single note", function () {
-        expect(noteMgr.__testonly__getDenominator("11/16")).toBe("16");
-    });
-
-    it("_getNumerator() should retrieve the length numerator of a single note", function () {
-        expect(noteMgr.__testonly__getNumerator("11/16")).toBe("11");
-    });
-
-    it("_convertNumeratorToHighestDenominator() should retrieve the converted numerator", function () {
-        expect(noteMgr.__testonly__convertNumeratorToHighestDenominator("1/4", 32)).toBe(8);
-    });
 });
 
     //it("should allow creation of a single note", function() {});
     //it("should not allow incorrectly formatted notes to be created", function() {});
 
 describe('Pitch Evaluation library', function() {
-    var freqC0 = 16.352;
 
-    it("note object should know its own name", function() {
+    it("getClosestNoteNameFromPitch() should find the name with exact input", function() {
+        var freqC0 = 16.352;
         expect(noteMgr.getClosestNoteNameFromPitch(freqC0)).toEqual("C0");
+    });
+
+    it("getClosestNoteNameFromPitch() should be accurate when frequency <= 50 cents off", function() {
+        // NOTE: 50 cents equals .5 semitone
+        var sharpA7Freq = 3623.1;
+        expect(noteMgr.getClosestFreqFromPitch(sharpA7Freq)).toEqual(3520.0);
+        var flatA1Freq = 53.435;
+        expect(noteMgr.getClosestFreqFromPitch(flatA1Freq)).toEqual(55.000);
     });
 
     describe('getCentsDiff()', function() {
@@ -128,15 +137,6 @@ describe('Pitch Evaluation library', function() {
             expect(noteMgr.getCentsDiff(427.59, 'Ab4')).toEqual(50);
         });
 
-
-    });
-
-    it("should be able to lookup note object when frequency <= 50 cents off", function() {
-        // NOTE: 50 cents equals .5 semitone
-        var sharpA7Freq = 3623.1;
-        expect(noteMgr.getClosestFreqFromPitch(sharpA7Freq)).toEqual(3520.0);
-        var flatA1Freq = 53.435;
-        expect(noteMgr.getClosestFreqFromPitch(flatA1Freq)).toEqual(55.000);
     });
 
 });

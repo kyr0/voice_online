@@ -26,7 +26,7 @@ module.exports.catchError = function(method, value, object){
     }
     else {
         try {
-            method.apply(null, value);
+            method.apply(this, value);
         }
         catch (err) {
             return err.message;

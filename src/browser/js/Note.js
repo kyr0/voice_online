@@ -25,18 +25,7 @@ function Note (name, noteLength) {
         return newNoteLength;
     };
 
-    function validateNoteName(noteName){
-        try {
-            if (typeof nMaps.pitchMap[noteName].name !== 'undefined') {
-                return nMaps.pitchMap[noteName].name;
-            }
-        }
-        catch (err) {
-            throw new Error ("Note(): the supplied note name is invalid - " + noteName);
-        }
-    }
-
-    this.name = validateNoteName(name);
+    this.name = nMaps.validateNoteName(name);
     this.noteLength = this.setNoteLength(noteLength);
     this.frequency = nMaps.pitchMap[this.name].frequency;
 

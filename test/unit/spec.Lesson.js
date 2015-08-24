@@ -28,16 +28,18 @@ describe('Lesson', function() {
                 {name: "B2", noteLength: "1"}
             ];
             this.lesson.addNotes(this.newNotes);
-        });
-
-        it('should know how many notes it contains', function () {
-            expect(this.lesson.countNoteObjects()).toEqual(this.newNotes.noteLength);
+            this.lesson.addNotes([["B3","1/16"],["C4","1/32"]]);
         });
 
         it('should always know the combined length of all the notes it contains', function () {
-            this.lesson.addNotes([["B3","1/16"],["C4","1/32"]]);
             expect(this.lesson.getLessonLength()).toEqual('63/32');
         });
+
+        //it('should always know the full range of the notes it contains', function () {
+        //    expect(this.lesson.getLessonRange()).toEqual(52);
+        //});
+
+
     });
 
 });

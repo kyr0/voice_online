@@ -57,12 +57,6 @@ describe('Note Object', function() {
             expect(catchError(this.createNote, [this.noteName, noteLength])).toEqual(errMsg);
         });
 
-        it('attempting to create a note with invalid name (string)', function () {
-            var noteName = "X8";
-            var errMsg = "Note(): the supplied note name is invalid - " + noteName
-            expect(catchError(this.createNote, [noteName])).toEqual(errMsg);
-        });
-
     });
 
 

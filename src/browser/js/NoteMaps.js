@@ -31,6 +31,17 @@ function NoteMaps() {
     this.pitchArray = []; // when we need index for quick lookups
     this.reverseMap = {}; // makes it simple to take results from Array back into Map
 
+    this.validateNoteName = function(noteName) {
+        try {
+            if (typeof this.pitchMap[noteName].name !== 'undefined') {
+                return this.pitchMap[noteName].name;
+            }
+        }
+        catch (err) {
+            throw new Error ("validateNoteName(): the supplied note name is invalid - " + noteName);
+        }
+    };
+
     // will loop through all notes and create the maps, arrays etc
     for (var octave = 0; octave < _notes2D.length; octave++) {
         for (var note = 0; note < _notes2D[octave].length; note++) {

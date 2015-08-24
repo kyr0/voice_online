@@ -48,5 +48,11 @@ describe('NoteMaps', function() {
         expect(this.nMaps.pitchArray[0]).toBe(16.352);
     });
 
+    it('attempting to create a note with invalid name (string)', function () {
+        var noteName = "X8";
+        var errMsg = "validateNoteName(): the supplied note name is invalid - " + noteName;
+        expect(catchError(this.nMaps.validateNoteName, noteName)).toEqual(errMsg);
+    });
+
 
 });
