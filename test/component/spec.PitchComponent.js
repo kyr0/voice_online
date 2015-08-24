@@ -22,6 +22,7 @@ describe('Pitch component', function() {
     describe('detectPitch()', function() {
 
         beforeEach(function () {
+            this.timeout(0);
             var sample44k = 44100;   // sampleRate of 44100
             this.mpm = new MPM(sample44k);
         });
