@@ -1,7 +1,7 @@
 // spec.js
 "use strict";
 
-var ContextKeyPage = require("./pageObjects/ContextKeyPage");
+var ContextKeyPage = require("./PageObjects/ContextKeyPage");
 
 describe('Context Key Page', function() {
     beforeEach(function() {
