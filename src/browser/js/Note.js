@@ -27,7 +27,10 @@ function Note (name, noteLength) {
 
     this.name = nMaps.validateNoteName(name);
     this.noteLength = this.setNoteLength(noteLength);
-    this.frequency = nMaps.pitchMap[this.name].frequency;
+    var _noteMap = nMaps.pitchMap[this.name];
+    this.previousNote = _noteMap.previousNote;
+    this.nextNote = _noteMap.nextNote;
+    this.frequency = _noteMap.frequency;
 
 }
 

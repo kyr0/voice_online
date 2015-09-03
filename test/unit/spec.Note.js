@@ -60,6 +60,7 @@ describe('Note Object', function() {
     });
 
 
+
     //it('should have a frequency assigned to it', function () {});
     //it('should validate note name before creation', function () {});
 

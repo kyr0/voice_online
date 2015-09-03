@@ -48,12 +48,23 @@ describe('Lesson', function() {
 
         it('should always have the intervals of all the notes it contains', function () {
             expect(this.lesson.intervals.length).toEqual(5);
-
         });
 
-        //it('should always know the full range of the notes it contains', function () {
-        //    expect(this.lesson.getLessonRange()).toEqual(52);
-        //});
+        it('should always know the lowest note it contains', function () {
+            expect(this.lesson.__testonly__.getLowestNote().name).toEqual("A1");
+            this.lesson.addNotes([["C0","1/16"],["Ab1","1/32"]]);
+            expect(this.lesson.__testonly__.getLowestNote().name).toEqual("C0");
+        });
+
+        it('should always know the highest note it contains', function () {
+            expect(this.lesson.__testonly__.getHighestNote().name).toEqual("C4");
+            this.lesson.addNotes([["C5","1/16"],["B4","1/32"]]);
+            expect(this.lesson.__testonly__.getHighestNote().name).toEqual("C5");
+        });
+
+        it('should always know the full range of the notes it contains', function () {
+            expect(this.lesson.getLessonRange()).toEqual(27);
+        });
 
     });
 

@@ -1,11 +1,6 @@
 "use strict";
 
-/*
- *  Adapted from the TarsosDsP Java library for use in Javascript
- *
- */
 var Note = require("./Note.js");
-var Interval = require("./Interval.js");
 var NoteMaps = require("./NoteMaps.js");
 
 var NoteManager = (function() {

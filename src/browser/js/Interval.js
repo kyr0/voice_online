@@ -1,17 +1,17 @@
 
 "use strict";
 
-var NoteMaps = require("./NoteMaps.js");
+var Note = require("./Note.js");
 
 function Interval (startNote, endNote) {
 
     var startFreq;
     var endFreq;
 
-    function getIntervalDirection() {
+    function getIntervalDirection(startNote, endNote) {
         var direction;
-        startFreq = nMaps.pitchMap[startNote].frequency;
-        endFreq = nMaps.pitchMap[endNote].frequency;
+        startFreq = startNote.frequency;
+        endFreq = endNote.frequency;
         if (startFreq === endFreq){
             direction = "none";
         }
@@ -57,15 +57,11 @@ function Interval (startNote, endNote) {
     };
     /* end-test-code */
 
-    var nMaps = new NoteMaps();
-    nMaps.validateNoteName(startNote);
-    nMaps.validateNoteName(endNote);
-    this.startNoteMap = nMaps.pitchMap[startNote];
-    this.endNoteMap = nMaps.pitchMap[endNote];
-    this.direction = getIntervalDirection();
-    this.halfsteps = getIntervalDistance(this.startNoteMap, this.endNoteMap, this.direction);
-    this.name = this.startNoteMap.name + this.endNoteMap.name;
-
+    this.startNote = new Note(startNote);
+    this.endNote = new Note(endNote);
+    this.direction = getIntervalDirection(this.startNote, this.endNote);
+    this.halfsteps = getIntervalDistance(this.startNote, this.endNote, this.direction);
+    this.name = this.startNote.name + ":" + this.endNote.name;
 }
 
 module.exports = Interval;

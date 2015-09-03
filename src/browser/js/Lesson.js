@@ -2,13 +2,13 @@
 "use strict";
 var Note = require("./Note.js");
 var Interval = require("./Interval.js");
-var noteMgr = require("./NoteManager.js");
 
 function Lesson () {
     this.notes = [];
     this.intervals = [];
     this.bpm = 120;
-    this.range = null;  // is an Interval Object
+    var lowestNote = null;
+    var highestNote = null;
 
     function _getDenominator(noteLength){
         return noteLength.split('/')[1];
@@ -16,6 +16,8 @@ function Lesson () {
     /* start-test-code */
     this.__testonly__ = {};
     this.__testonly__.getDenominator = _getDenominator;
+    this.__testonly__.getLowestNote = function(){return lowestNote;};
+    this.__testonly__.getHighestNote = function(){return highestNote;};
     /* end-test-code */
 
 
@@ -52,10 +54,25 @@ function Lesson () {
     this.__testonly__.sumNumeratorToHighestDenominator = _sumNumeratorToHighestDenominator;
     /* end-test-code */
 
+    function _setRangeDelimiters(note) {
+        if (lowestNote === null) {
+            lowestNote = note;
+        }
+        if (highestNote === null) {
+            highestNote = note;
+        }
+        if (note.frequency < lowestNote.frequency) {
+            lowestNote = note;
+        }
+        else if (note.frequency > highestNote.frequency) {
+            highestNote = note;
+        }
+    }
 
     function _createListOfNoteObjects(newNotes) {
         var noteObjArr = [];
         var name;
+        var newNoteObj;
         var noteLength;
         for (var i = 0; i < newNotes.length; i++) {
             if (newNotes[i].constructor === Array){
@@ -66,7 +83,9 @@ function Lesson () {
                 name = newNotes[i].name;
                 noteLength = newNotes[i].noteLength;
             }
-            noteObjArr.push(new Note(name, noteLength));
+            newNoteObj = new Note(name, noteLength);
+            noteObjArr.push(newNoteObj);
+            _setRangeDelimiters(newNoteObj);
         }
         return noteObjArr;
     }
@@ -105,7 +124,8 @@ function Lesson () {
     };
 
     this.getLessonRange = function() {
-
+        var range = new Interval(lowestNote.name, highestNote.name);
+        return range.halfsteps;
     };
 
 }

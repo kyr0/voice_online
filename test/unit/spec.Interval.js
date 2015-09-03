@@ -20,9 +20,9 @@ describe('Interval Object', function() {
     });
 
     it("should have the right name", function () {
-        expect(this.itvl.name).toBe("A1B2");
-        expect(this.itvl2.name).toBe("B2A1");
-        expect(this.itvl3.name).toBe("B2B2");
+        expect(this.itvl.name).toBe("A1:B2");
+        expect(this.itvl2.name).toBe("B2:A1");
+        expect(this.itvl3.name).toBe("B2:B2");
     });
 
     it("should create an Interval with correct distance (up)", function () {
@@ -50,8 +50,8 @@ describe('Interval Object', function() {
     });
 
     it('should throw a not found error if endNoteMap not found', function () {
-        var startNote = this.itvl2.startNoteMap;
-        var endNote = this.itvl2.endNoteMap;
+        var startNote = this.itvl2.startNote;
+        var endNote = this.itvl2.endNote;
         // we have to create a method that can be passed into catchError without wiping the data
         //  objects in arrays such as [startNoteMap, endNoteMap] come through as 'undefined
         var method = this.itvl2.__testonly__.getIntervalDistance;
