@@ -4,7 +4,7 @@
 
     var MPM = require("./../../../src/browser/js/MPM.js");
     var pEval = require("./../../../src/browser/js/NoteManager.js");
-    var note = pEval.getNoteByName("C0");
+    var note = pEval.getNoteMapAtName("C0");
     var startTime = Date.now();
     var elapsedTime = 0;
 

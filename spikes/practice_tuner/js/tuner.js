@@ -128,7 +128,7 @@ function updatePitch(buf) {
     } else {
         //console.log("Pitch: " + pitchFreq + " Probability: " + probability);
         detectorElem.className = "confident";
-        var noteObj =  pEval.getClosestNoteFromPitch(pitchFreq);
+        var noteObj =  pEval.getClosestNoteNameFromPitch(pitchFreq);
         pitchElem.innerHTML = Math.round(pitchFreq);
         noteElem.innerHTML = noteObj.name;
         var detune = pEval.getCentsDiff(pitchFreq, noteObj.frequency);
