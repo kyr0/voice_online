@@ -1,3 +1,5 @@
+// this is paperscript, responsible for drawing the dot
+//  uses the pitchFreq variable set in the window
 var dot = new Path.Circle({
     center: new Point(150, 290),
     radius: 3,
@@ -8,6 +10,8 @@ var range = 108;
 var unitSize = view.size.height / range;
 var gridArray = [];
 
+// divides the canvas into chunks based on range size
+// TODO horizontal grid
 for (var i = 0; i < range; i++) {
     gridArray.push(unitSize * i);
 }

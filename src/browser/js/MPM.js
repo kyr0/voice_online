@@ -325,7 +325,6 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
     this.__testonly__.peakPicking = peakPicking;
     /* end-test-code */
 
-
 }
 
 module.exports = MPM;

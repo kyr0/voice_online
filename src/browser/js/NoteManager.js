@@ -5,7 +5,6 @@ var NoteMaps = require("./NoteMaps.js");
 
 var NoteManager = (function() {
 
-
     var _nMaps = new NoteMaps();
     var _pitchMap = _nMaps.pitchMap;
     var _pitchArray = _nMaps.pitchArray;
