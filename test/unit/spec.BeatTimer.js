@@ -17,11 +17,12 @@ describe('BeatTimer Object', function() {
     });
 
     it("should return 50 percent", function () {
-        var numBeats = 2;
-        var bpm = 240;
+        var numBeats = 10; // 1 beat per millisecond
+        var bpm = 60000; // 1000 beats a second
         this.btTmr.start(numBeats, bpm);
-        sleep(250);
-        expect(this.btTmr.getPercentComplete()).toBe(1);
+        sleep(5); // should be 50%
+        // 1 ms of latency + 5 seconds sleep = 60% or .6
+        expect(this.btTmr.getPercentComplete()).toBe(.6);
     });
 
 });

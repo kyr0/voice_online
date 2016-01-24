@@ -30,6 +30,7 @@ function BeatTimer(){
         }
 
         //window.setTimeout(_instance, beatLength);
+        startTime = new Date().getTime();
         setTimeout(_instance, beatLength);
     }
 
@@ -38,12 +39,11 @@ function BeatTimer(){
     function _onInstance(){}
 
     this.start = function(numBeats, bpm){
-        startTime = new Date().getTime();
-        console.log(startTime);
         _beginTimer(numBeats, bpm);
     };
 
     this.getPercentComplete = function(){
+        // the result of thsi function has 1 ms of latency
         var elapsedTime = (new Date().getTime() - startTime);
         return elapsedTime / timerLength;
     };
