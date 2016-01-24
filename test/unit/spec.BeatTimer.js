@@ -22,7 +22,7 @@ describe('BeatTimer Object', function() {
         this.btTmr.start(numBeats, bpm);
         sleep(5); // should be 50%
         // 1 ms of latency + 5 seconds sleep = 60% or .6
-        expect(this.btTmr.getPercentComplete()).toBe(.6);
+        expect(this.btTmr.getPercentComplete()).to.be.within(.5,.7);
     });
 
 });

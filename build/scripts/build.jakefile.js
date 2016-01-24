@@ -107,8 +107,7 @@
     task("testClientUnit", function(){
         process.stdout.write("\n\nRunning client unit tests:\n\n");
         mochify("test/unit/**/spec.*.js", {
-            phantomjs: "./node_modules/.bin/phantomjs",
-            require: ["expectations"]
+            node: true
         }).bundle(function(err,buf){
             if (buf) {
                 console.log(buf.toString());
@@ -125,8 +124,7 @@
     task("testComponents", function(){
         process.stdout.write("\n\nRunning client component tests:\n\n");
         mochify("test/component/**/spec.*.js", {
-            phantomjs: "./node_modules/.bin/phantomjs",
-            require: ["expectations"]
+            node: true
         }).bundle(function(err,buf){
             if (buf) {
                 console.log(buf.toString());

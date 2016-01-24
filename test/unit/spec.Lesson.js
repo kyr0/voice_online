@@ -9,24 +9,24 @@ describe('Lesson', function() {
     });
 
     it('should have default bpm of 120', function () {
-        expect(this.lesson.bpm).toEqual(120);
+        expect(this.lesson.bpm).to.equal(120);
     });
 
     it('should be able to set its BPM speed', function () {
         this.lesson.bpm = 130;
-        expect(this.lesson.bpm).toEqual(130);
+        expect(this.lesson.bpm).to.equal(130);
     });
 
     it("_getDenominator() should retrieve the length denominator of a single note", function () {
-        expect(this.lesson.__testonly__.getDenominator("11/16")).toBe("16");
+        expect(this.lesson.__testonly__.getDenominator("11/16")).to.equal("16");
     });
 
     it("_getNumerator() should retrieve the length numerator of a single note", function () {
-        expect(this.lesson.__testonly__.getNumerator("11/16")).toBe("11");
+        expect(this.lesson.__testonly__.getNumerator("11/16")).to.equal("11");
     });
 
     it("_sumNumeratorToHighestDenominator() should retrieve the converted numerator", function () {
-        expect(this.lesson.__testonly__.sumNumeratorToHighestDenominator("1/4", 32)).toBe(8);
+        expect(this.lesson.__testonly__.sumNumeratorToHighestDenominator("1/4", 32)).to.equal(8);
     });
 
 
@@ -43,27 +43,27 @@ describe('Lesson', function() {
         });
 
         it('should always know the combined length of all the notes it contains', function () {
-            expect(this.lesson.getLessonLength()).toEqual('63/32');
+            expect(this.lesson.getLessonLength()).to.equal('63/32');
         });
 
         it('should always have the intervals of all the notes it contains', function () {
-            expect(this.lesson.intervals.length).toEqual(5);
+            expect(this.lesson.intervals.length).to.equal(5);
         });
 
         it('should always know the lowest note it contains', function () {
-            expect(this.lesson.__testonly__.getLowestNote().name).toEqual("A1");
+            expect(this.lesson.__testonly__.getLowestNote().name).to.equal("A1");
             this.lesson.addNotes([["C0","1/16"],["Ab1","1/32"]]);
-            expect(this.lesson.__testonly__.getLowestNote().name).toEqual("C0");
+            expect(this.lesson.__testonly__.getLowestNote().name).to.equal("C0");
         });
 
         it('should always know the highest note it contains', function () {
-            expect(this.lesson.__testonly__.getHighestNote().name).toEqual("C4");
+            expect(this.lesson.__testonly__.getHighestNote().name).to.equal("C4");
             this.lesson.addNotes([["C5","1/16"],["B4","1/32"]]);
-            expect(this.lesson.__testonly__.getHighestNote().name).toEqual("C5");
+            expect(this.lesson.__testonly__.getHighestNote().name).to.equal("C5");
         });
 
         it('should always know the full range of the notes it contains', function () {
-            expect(this.lesson.getLessonRange()).toEqual(27);
+            expect(this.lesson.getLessonRange()).to.equal(27);
         });
 
     });
@@ -98,15 +98,15 @@ describe('Lesson', function() {
         });
 
         it("passed to _getHighestDenominator() should return the highest denominator", function () {
-            expect(this.lesson.__testonly__.getHighestDenominator(this.lesson.notes)).toBe(32);
+            expect(this.lesson.__testonly__.getHighestDenominator(this.lesson.notes)).to.equal(32);
         });
 
         it("getCombinedNoteLength() should return the combined length from a list of notes", function () {
-            expect(this.lesson.getLessonLength(this.actualList)).toBe("29/32");
+            expect(this.lesson.getLessonLength(this.actualList)).to.equal("29/32");
         });
 
         it("createListOfIntervalsFromNotes() should return an accurate list", function () {
-            expect(this.lesson.intervals.length).toBe(3);
+            expect(this.lesson.intervals.length).to.equal(3);
         });
 
 
@@ -117,7 +117,7 @@ describe('Lesson', function() {
 
 function compareNoteLists(noteList, expectedList) {
     for (var i = 0; i < noteList.length; i++) {
-        expect(noteList[i].name).toEqual(expectedList[i].name);
-        expect(noteList[i].noteLength).toEqual(expectedList[i].noteLength);
+        expect(noteList[i].name).to.equal(expectedList[i].name);
+        expect(noteList[i].noteLength).to.equal(expectedList[i].noteLength);
     }
 }

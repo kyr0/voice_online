@@ -19,22 +19,22 @@ describe('Note Object', function() {
         var expectNoteLength = "1/1";
         var expectFrequency = 123.47;
         var noteObj = new Note(this.noteName);
-        expect(noteObj.name).toBe(this.noteName);
-        expect(noteObj.noteLength).toBe(expectNoteLength);
-        expect(noteObj.frequency).toBe(expectFrequency);
+        expect(noteObj.name).to.equal(this.noteName);
+        expect(noteObj.noteLength).to.equal(expectNoteLength);
+        expect(noteObj.frequency).to.equal(expectFrequency);
     });
 
     it('should set length when passed in to constructor', function () {
         var noteLength = "1/8";
         var noteObj = new Note(this.noteName, noteLength);
-        expect(noteObj.noteLength).toBe(noteLength);
+        expect(noteObj.noteLength).to.equal(noteLength);
     });
 
     it('should convert length of "1" to a note using a length of "1/1"', function () {
         var noteLength = "1";
         var expectedNoteObj = { name : this.noteName, noteLength : "1/1" };
         var noteObj = new Note(this.noteName, noteLength);
-        expect(noteObj.noteLength).toBe(expectedNoteObj.noteLength  );
+        expect(noteObj.noteLength).to.equal(expectedNoteObj.noteLength  );
     });
 
     describe('should throw an error when', function() {
@@ -48,13 +48,13 @@ describe('Note Object', function() {
         it('attempting to create a note with invalid length (1/6)', function () {
             var noteLength = "1/6";
             var errMsg = "Note(): the supplied note length is invalid - " + noteLength;
-            expect(catchError(this.createNote, [this.noteName, noteLength])).toEqual(errMsg);
+            expect(catchError(this.createNote, [this.noteName, noteLength])).to.equal(errMsg);
         });
 
         it('attempting to create a note with invalid length (invalid type)', function () {
             var noteLength = ["random", "stuff"];
             var errMsg = "Note(): the supplied note length is invalid - " + noteLength;
-            expect(catchError(this.createNote, [this.noteName, noteLength])).toEqual(errMsg);
+            expect(catchError(this.createNote, [this.noteName, noteLength])).to.equal(errMsg);
         });
 
     });
