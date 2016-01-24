@@ -8,6 +8,7 @@
   "devDependencies": {
     "browser-sync": "^2.8.2",
     "browserify": "^11.0.0",
+    "chai": "^3.4.1",
     "expectations": "^0.5.1",
     "grunt": "^0.4.5",
     "grunt-strip-code": "^0.1.2",
