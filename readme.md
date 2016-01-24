@@ -34,7 +34,7 @@ To build, lint, and run all tests:
 
     1. Install Git (OSX Only: install XCode command line tools along with git)
         - OSX Only: simply type 'git' on the command line and follow instructions)
-    2. Install Node: v0.12.7  ** this exact version is required
+    2. Install Node:  ** see package.json for exact version required
         - OSX, http://howtonode.org/how-to-install-nodejs)
         - Linux, https://gist.github.com/isaacs/579814
     3. Install Java Development Kit
