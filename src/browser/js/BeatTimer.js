@@ -43,7 +43,7 @@ function BeatTimer(){
     };
 
     this.getPercentComplete = function(){
-        // the result of thsi function has 1 ms of latency
+        // the result of this function has 1 ms of latency
         var elapsedTime = (new Date().getTime() - startTime);
         return elapsedTime / timerLength;
     };

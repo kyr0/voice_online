@@ -24,6 +24,7 @@
 
 var MPM = require("../../../src/browser/js/MPM.js");
 var pEval = require("../../../src/browser/js/NoteManager.js");
+var BeatTimer = require("../../../src/browser/js/BeatTimer.js");
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -69,6 +70,8 @@ window.onload = function() {
         }, gotStream
     );
 
+    beatTimer = new BeatTimer();
+    beatTimer.start(10, 120);
 
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function(audioProcessingEvent) {
@@ -78,6 +81,7 @@ window.onload = function() {
         var inputData = inputBuffer.getChannelData(0);
         //console.log(inputData);
         updatePitch(inputData);
+        window.percentComplete = beatTimer.getPercentComplete()
     };
     //console.log(scriptNode
     //    + "target: " + scriptNode.target
