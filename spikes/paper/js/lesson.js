@@ -1,30 +1,10 @@
-/*
- The MIT License (MIT)
-
- Copyright (c) 2014 Chris Wilson
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
- */
-
 var MPM = require("../../../src/browser/js/MPM.js");
 var pEval = require("../../../src/browser/js/NoteManager.js");
 var BeatTimer = require("../../../src/browser/js/BeatTimer.js");
+var Lesson = require("../../../src/browser/js/Lesson.js");
+
+window.percentComplete = 0;  // these must be here for sharing with paper.js
+window.pitchFreq = -1;
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -39,9 +19,9 @@ var detectorElem,
     noteElem,
     detuneElem,
     detuneAmount;
+var lesson = new Lesson([["A2", "1/4"], ["B2", "1/4"], ["C2", "1/4"], ["D2", "1/4"]]);
 
 window.onload = function() {
-    window.pitchFreq = -1;
     console.log("Window OnLoad");
     audioContext = new AudioContext();
     mpm = new MPM(audioContext.sampleRate, bufferLength);
@@ -71,7 +51,7 @@ window.onload = function() {
     );
 
     beatTimer = new BeatTimer();
-    beatTimer.start(10, 120);
+    beatTimer.start(40, 120);
 
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function(audioProcessingEvent) {
@@ -81,7 +61,7 @@ window.onload = function() {
         var inputData = inputBuffer.getChannelData(0);
         //console.log(inputData);
         updatePitch(inputData);
-        window.percentComplete = beatTimer.getPercentComplete()
+        window.percentComplete = beatTimer.getPercentComplete();
     };
     //console.log(scriptNode
     //    + "target: " + scriptNode.target

@@ -1,7 +1,29 @@
 
 "use strict";
 
-var Lesson = require("../../src/browser/js/Lesson.js");
+    var Lesson = require("../../src/browser/js/Lesson.js");
+
+
+describe('Lesson constructor given note list', function() {
+    beforeEach(function () {
+        var arrayList = [["B2", "1/8"], ["A2", "1/2"], ["B2", "1/4"], ["B2", "1/32"]];
+        this.lesson = new Lesson(arrayList);
+    });
+
+    it('should get correct length', function () {
+        expect(this.lesson.getLessonLength()).to.equal("29/32");
+    });
+    it('should get correct range', function () {
+        expect(this.lesson.getLessonRange()).to.equal(2);
+    });
+    it('should have the right number of notes', function () {
+        expect(this.lesson.notes.length).to.equal(4);
+    });
+    it('should have the right number of intervals', function () {
+        expect(this.lesson.intervals.length).to.equal(3);
+    });
+});
+
 
 describe('Lesson', function() {
     beforeEach(function () {
@@ -90,10 +112,8 @@ describe('Lesson', function() {
         });
 
         it('can be created at once with nested arrays', function () {
-            var arrayList = [
-                ["B2","1/8"],["A1","1/2"],["Db3","1/4"],["B2","1/32"]
-            ];
-            var fromArray = this.lesson.__testonly__.createListOfNoteObjects(arrayList);
+            var arrayList = [["B2","1/8"],["A1","1/2"],["Db3","1/4"],["B2","1/32"]];
+            var fromArray = this.lesson.__testonly__._createListOfNoteObjects(arrayList);
             compareNoteLists(fromArray, this.expectedList);
         });
 

@@ -1,30 +1,53 @@
-// this is paperscript, responsible for drawing the dot
-//  uses the pitchFreq variable set in the window
+// This is PaperScript
+
+var height = view.size.height;
+var width = view.size.width;
+var range = 108;
+var unitSize = height / range;
+var gridArray = [];
+
+var pct = 0;
+var freq = null;
+
+//var border = new Path.Rectangle({
+//    rectangle: view.bounds,
+//    strokeColor: 'black',
+//    strokeWidth: 1
+//});
+
+var timeline =  new Path();
+timeline.strokeColor = 'black';
+timeline.add(new Point(0, 0), new Point(0, height));
+
 var dot = new Path.Circle({
-    radius: 30,
+    center: [0, 0],
+    radius: 20,
     fillColor: 'black'
 });
 
-var range = 108;
-var unitSize = view.size.height / range;
-var width = view.size.width;
-var gridArray = [];
+var timeGroup = new Group([dot, timeline]);
+timeGroup.onFrame = function(event) {
+    console.log(window.percentComplete);
+    this.position.x = width * window.percentComplete;
+};
 
+// TODO get rid of this shit, do something more elegant with smoother visual
 // divides the canvas into chunks based on range size
-// TODO horizontal grid
 for (var i = 0; i < range; i++) {
     gridArray.push(unitSize * i);
 }
 
 function onFrame(event) {
-    var freq = window.pitchFreq;
-    var pct = window.percentComplete;
-    var x = Math.round(width * pct);
-    console.log(x);
+    freq = window.pitchFreq;
     if (freq !== -1) {
-        dot.position = [x, gridArray[Math.abs((Math.round(12 * (Math.log(freq / 440) / Math.log(2)) + 57)) - range)]];
+        dot.position.y = gridArray[Math.abs((Math.round(12 * (Math.log(freq / 440) / Math.log(2)) + 57)) - range)];
     }
-    else {
-        dot.position = [10, 10];
-    }
+    else {}
+}
+
+function onResize(event) {
+    //border.bounds = view.bounds;
+    height = view.size.height;
+    width = view.size.width;
+    unitSize = height / range;
 }

@@ -1,9 +1,9 @@
-
 "use strict";
 var Note = require("./Note.js");
 var Interval = require("./Interval.js");
 
-function Lesson () {
+function Lesson (noteList) {
+
     this.notes = [];
     this.intervals = [];
     this.bpm = 120;
@@ -90,7 +90,7 @@ function Lesson () {
         return noteObjArr;
     }
     /* start-test-code */
-    this.__testonly__.createListOfNoteObjects = _createListOfNoteObjects;
+    this.__testonly__._createListOfNoteObjects = _createListOfNoteObjects;
     /* end-test-code */
 
 
@@ -127,6 +127,10 @@ function Lesson () {
         var range = new Interval(lowestNote.name, highestNote.name);
         return range.halfsteps;
     };
+
+    if (typeof noteList !== 'undefined') {
+        this.addNotes(noteList);
+    }
 
 }
 

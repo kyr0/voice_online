@@ -16,13 +16,13 @@ describe('BeatTimer Object', function() {
         this.btTmr = new BeatTimer();
     });
 
-    it("should return 50 percent", function () {
-        var numBeats = 10; // 1 beat per millisecond
+    it("should return accurate percent complete after time", function () {
+        var numBeats = 1000; // 1 beat per millisecond
         var bpm = 60000; // 1000 beats a second
         this.btTmr.start(numBeats, bpm);
-        sleep(5); // should be 50%
-        // 1 ms of latency + 5 seconds sleep = 60% or .6
-        expect(this.btTmr.getPercentComplete()).to.be.within(.5,.7);
+        sleep(5);
+        // 1 ms of latency + 5 milliseconds sleep = ~.006
+        expect(this.btTmr.getPercentComplete()).to.be.below(0.01);
     });
 
 });

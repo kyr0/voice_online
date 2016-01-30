@@ -61,7 +61,7 @@
     });
 
     desc("Run only unit tests");
-    task("unitOnly", [ "browserify", "testServerUnit", "testClientUnit" ], function(){
+    task("unitOnly", [ "browserify", "testClientUnit" ], function(){
         wrapUp();
     });
 
