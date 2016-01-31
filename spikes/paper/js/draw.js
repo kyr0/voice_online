@@ -2,8 +2,12 @@
 
 var height = view.size.height;
 var width = view.size.width;
-var range = 108;
-var unitSize = height / range;
+var curLesson = window.lessons[0];
+var range = curLesson.getLessonRange();
+console.log("RANGE: " + range); // should not be 11 should be 5 or 6
+var measureCount = curLesson.getLessonLength();
+var unitHeight = height / range;
+var unitWidth = width / measureCount;
 var gridArray = [];
 
 var pct = 0;
@@ -14,6 +18,21 @@ var freq = null;
 //    strokeColor: 'black',
 //    strokeWidth: 1
 //});
+
+var grid = [];
+for (var msr = 1; msr < measureCount; msr++){
+    x = unitWidth * msr;
+    var path = new Path(new Point(x, 0), new Point(x, height));
+    path.strokeColor = 'black';
+    grid.push(path);
+}
+for (var semi = 1; semi < range; semi++){
+    y = unitHeight * semi;
+    var path = new Path(new Point(0, y), new Point(width, y));
+    path.strokeColor = 'black';
+    grid.push(path);
+}
+
 
 var timeline =  new Path();
 timeline.strokeColor = 'black';
@@ -27,14 +46,13 @@ var dot = new Path.Circle({
 
 var timeGroup = new Group([dot, timeline]);
 timeGroup.onFrame = function(event) {
-    console.log(window.percentComplete);
     this.position.x = width * window.percentComplete;
 };
 
 // TODO get rid of this shit, do something more elegant with smoother visual
 // divides the canvas into chunks based on range size
 for (var i = 0; i < range; i++) {
-    gridArray.push(unitSize * i);
+    gridArray.push(unitHeight * i);
 }
 
 function onFrame(event) {
@@ -49,5 +67,5 @@ function onResize(event) {
     //border.bounds = view.bounds;
     height = view.size.height;
     width = view.size.width;
-    unitSize = height / range;
+    unitHeight = height / range;
 }

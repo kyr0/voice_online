@@ -3,7 +3,7 @@
 
     var Lesson = require("../../src/browser/js/Lesson.js");
 
-
+//new Lesson([["A2", "2"], ["B2", "1"], ["C2", "1/4"], ["D2", "1"]]) // 11?
 describe('Lesson constructor given note list', function() {
     beforeEach(function () {
         var arrayList = [["B2", "1/8"], ["A2", "1/2"], ["B2", "1/4"], ["B2", "1/32"]];
@@ -11,7 +11,7 @@ describe('Lesson constructor given note list', function() {
     });
 
     it('should get correct length', function () {
-        expect(this.lesson.getLessonLength()).to.equal("29/32");
+        expect(this.lesson.getLessonLength()).to.equal(8);
     });
     it('should get correct range', function () {
         expect(this.lesson.getLessonRange()).to.equal(2);
@@ -55,17 +55,20 @@ describe('Lesson', function() {
     describe('with multiple notes', function() {
         beforeEach(function () {
             this.newNotes = [
-                {name: "B2", noteLength: "1/8"},
+                {name: "B2", noteLength: "3/8"},
                 {name: "A1", noteLength: "1/2"},
                 {name: "Db3", noteLength: "1/4"},
-                {name: "B2", noteLength: "1"}
+                {name: "B2", noteLength: "2"}
             ];
             this.lesson.addNotes(this.newNotes);
             this.lesson.addNotes([["B3","1/16"],["C4","1/32"]]);
         });
 
         it('should always know the combined length of all the notes it contains', function () {
-            expect(this.lesson.getLessonLength()).to.equal('63/32');
+            // 3/8 *4 = 12/32, 1/2 *16 = 16/32, 1/4 *8 = 8/32, 2 = 64/32, 1/16 = 2/32, 1/32
+            // 12 + 16 + 8 + 64 + 2 + 1 = 103
+            // 103 / 4 (meter) = 25.x, remainder 3, so 26
+            expect(this.lesson.getLessonLength()).to.equal(26);
         });
 
         it('should always have the intervals of all the notes it contains', function () {
@@ -119,10 +122,6 @@ describe('Lesson', function() {
 
         it("passed to _getHighestDenominator() should return the highest denominator", function () {
             expect(this.lesson.__testonly__.getHighestDenominator(this.lesson.notes)).to.equal(32);
-        });
-
-        it("getCombinedNoteLength() should return the combined length from a list of notes", function () {
-            expect(this.lesson.getLessonLength(this.actualList)).to.equal("29/32");
         });
 
         it("createListOfIntervalsFromNotes() should return an accurate list", function () {

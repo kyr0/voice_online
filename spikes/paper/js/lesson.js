@@ -3,7 +3,9 @@ var pEval = require("../../../src/browser/js/NoteManager.js");
 var BeatTimer = require("../../../src/browser/js/BeatTimer.js");
 var Lesson = require("../../../src/browser/js/Lesson.js");
 
-window.percentComplete = 0;  // these must be here for sharing with paper.js
+// these window assignments must be done outside of onLoad
+// for sharing with paper.js in case they are accessed before load
+window.percentComplete = 0;
 window.pitchFreq = -1;
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -19,7 +21,11 @@ var detectorElem,
     noteElem,
     detuneElem,
     detuneAmount;
-var lesson = new Lesson([["A2", "1/4"], ["B2", "1/4"], ["C2", "1/4"], ["D2", "1/4"]]);
+
+var lessons = [];
+window.lessons = lessons;
+window.lessons.push(new Lesson([["A2", "2"], ["B2", "1"], ["C2", "1/4"], ["D2", "1"]]));
+
 
 window.onload = function() {
     console.log("Window OnLoad");
@@ -51,6 +57,8 @@ window.onload = function() {
     );
 
     beatTimer = new BeatTimer();
+    bpm = lessons[0].bpm;
+    measureCount = lessons[0].notes.length;
     beatTimer.start(40, 120);
 
     // When the buffer is full of frames this event is executed

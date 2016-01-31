@@ -37,33 +37,61 @@ describe('Note Object', function() {
         expect(noteObj.noteLength).to.equal(expectedNoteObj.noteLength  );
     });
 
-    describe('should throw an error when', function() {
 
-        beforeEach(function() {
-            this.createNote = function (name, noteLength) {
-                new Note(name, noteLength)
-            };
-        });
+describe('Note Object', function() {
 
-        it('attempting to create a note with invalid length (1/6)', function () {
-            var noteLength = "1/6";
-            var errMsg = "Note(): the supplied note length is invalid - " + noteLength;
-            expect(catchError(this.createNote, [this.noteName, noteLength])).to.equal(errMsg);
-        });
-
-        it('attempting to create a note with invalid length (invalid type)', function () {
-            var noteLength = ["random", "stuff"];
-            var errMsg = "Note(): the supplied note length is invalid - " + noteLength;
-            expect(catchError(this.createNote, [this.noteName, noteLength])).to.equal(errMsg);
-        });
-
+    it('should accept a note length longer than a full measure', function () {
+        var expectLength = "2/1";
+        var noteObj = new Note("A2", "2");
+        expect(noteObj.noteLength).to.equal(expectLength);
     });
 
+    it('should accept any multiple of a full measure', function () {
+        var expectLength = "200/1";
+        var noteObj = new Note("A2", "200");
+        expect(noteObj.noteLength).to.equal(expectLength);
+    });
 
+    it('should accept a note length where numerator > 1 ', function () {
+        var expectLength = "3/32";
+        var noteObj = new Note("A2", "3/32");
+        expect(noteObj.noteLength).to.equal(expectLength);
+    });
 
-    //it('should have a frequency assigned to it', function () {});
-    //it('should validate note name before creation', function () {});
+});
 
+describe('should throw an error when', function() {
 
+    beforeEach(function() {
+        this.createNote = function (name, noteLength) {
+            return new Note(name, noteLength)
+        };
+    });
+
+    it('attempting to create a note with invalid length (invalid numerator)', function () {
+        var noteLength = "random/4";
+        var errMsg = "Note(): the supplied note length is invalid: " + noteLength;
+        expect(catchError(this.createNote, [this.noteName, noteLength])).to.equal(errMsg);
+    });
+
+    it('attempting to create a note with invalid length (invalid denominator)', function () {
+        var noteLength = "1/stuff";
+        var errMsg = "Note(): the supplied note length is invalid: " + noteLength;
+        expect(catchError(this.createNote, [this.noteName, noteLength])).to.equal(errMsg);
+    });
+
+    it('attempting to create a note with invalid length (string)', function () {
+        var noteLength = "random";
+        var errMsg = "Note(): the supplied note length is invalid: " + noteLength;
+        expect(catchError(this.createNote, [this.noteName, noteLength])).to.equal(errMsg);
+    });
+
+    it('attempting to create a note with invalid length (array)', function () {
+        var noteLength = ["random", 4];
+        var errMsg = "Note(): the supplied note length is invalid: " + noteLength;
+        expect(catchError(this.createNote, [this.noteName, noteLength])).to.equal(errMsg);
+    });
+
+});
 
 });

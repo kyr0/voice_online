@@ -7,6 +7,7 @@ function Lesson (noteList) {
     this.notes = [];
     this.intervals = [];
     this.bpm = 120;
+    this.meter = "4/4";  // todo: add validation to meter setting
     var lowestNote = null;
     var highestNote = null;
 
@@ -112,7 +113,13 @@ function Lesson (noteList) {
     };
 
 
-    this.getLessonLength = function() {
+    this.getLessonLength = function (){
+        /**
+         * Returns an integer, # of measures, according to the current
+         * meter settings. If there are fractions of a measure remaining
+         * we count the fraction as a complete measure.
+         */
+
         var arrayOfNotes = this.notes;
         var highestDenom = _getHighestDenominator(arrayOfNotes);
         var numerator = 0;
@@ -120,7 +127,11 @@ function Lesson (noteList) {
             var noteLength = arrayOfNotes[i].noteLength;
             numerator += _sumNumeratorToHighestDenominator(noteLength, highestDenom);
         }
-        return numerator + "/" + highestDenom;
+        var measure = _getDenominator(this.meter);
+        var measureCount = Math.floor(numerator / measure);
+        var remainder = numerator % measure;
+        if (remainder) measureCount += 1;
+        return measureCount;
     };
 
     this.getLessonRange = function() {

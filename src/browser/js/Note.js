@@ -8,20 +8,26 @@ function Note (name, noteLength) {
     var nMaps = new NoteMaps();
 
     this.setNoteLength = function(noteLength){
-        var _noteLengths = [ '1/32', '1/16', '1/8', '1/4', '1/2', '1/1'];
-        var newNoteLength = noteLength;
-        if (noteLength === '1' || typeof noteLength === 'undefined') newNoteLength = '1/1';
 
-        var isLengthParamValid = false;
-        for (var i = 0; i < _noteLengths.length; i++){
-            if (newNoteLength === _noteLengths[i]) {
-                isLengthParamValid = true;
-                break;
-            }
+        function _getDenominator(nLen){
+            return nLen.split('/')[1];
         }
-        if (!isLengthParamValid)
-            throw new Error("Note(): the supplied note length is invalid - " + noteLength);
+        function _getNumerator(nLen){
+            return nLen.split('/')[0];
+        }
 
+        var newNoteLength = noteLength;
+
+        // handle whole numbers eg. 1, 2, 10
+        if (!isNaN(noteLength)) newNoteLength = noteLength + '/1';
+        else if (typeof noteLength === 'undefined') newNoteLength = '1/1';
+
+        if ((newNoteLength.indexOf("/") == -1) ||
+            (isNaN(_getDenominator(newNoteLength))) ||
+            (isNaN(_getNumerator(newNoteLength))))
+        {
+            throw new Error('Note(): the supplied note length is invalid: ' + noteLength);
+        }
         return newNoteLength;
     };
 
