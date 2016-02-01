@@ -3,7 +3,6 @@
 
     var Lesson = require("../../src/browser/js/Lesson.js");
 
-//new Lesson([["A2", "2"], ["B2", "1"], ["C2", "1/4"], ["D2", "1"]]) // 11?
 describe('Lesson constructor given note list', function() {
     beforeEach(function () {
         var arrayList = [["B2", "1/8"], ["A2", "1/2"], ["B2", "1/4"], ["B2", "1/32"]];
@@ -11,7 +10,7 @@ describe('Lesson constructor given note list', function() {
     });
 
     it('should get correct length', function () {
-        expect(this.lesson.getLessonLength()).to.equal(8);
+        expect(this.lesson.getLessonLength()).to.equal(0.90625);
     });
     it('should get correct range', function () {
         expect(this.lesson.getLessonRange()).to.equal(2);
@@ -23,7 +22,6 @@ describe('Lesson constructor given note list', function() {
         expect(this.lesson.intervals.length).to.equal(3);
     });
 });
-
 
 describe('Lesson', function() {
     beforeEach(function () {
@@ -64,11 +62,36 @@ describe('Lesson', function() {
             this.lesson.addNotes([["B3","1/16"],["C4","1/32"]]);
         });
 
-        it('should always know the combined length of all the notes it contains', function () {
+        describe('_updateRelativeIntervals', function() {
+
+            it('should set the relative interval to distance from highest note', function () {
+                expect(this.lesson.notes[0].relativeInterval).to.equal(13);
+            });
+
+            it('should show the highest note having distance zero', function () {
+                expect(this.lesson.notes[5].relativeInterval).to.equal(0);
+            });
+
+            it('should update when higher notes are added', function () {
+                this.lesson.addNotes([["Db4","1"]]);
+                expect(this.lesson.notes[0].relativeInterval).to.equal(14);
+            });
+        });
+
+        describe('_updateRelativeNoteLengths', function() {
+
+            it('should set the relative length to a percent of a measure', function () {
+                var expectedRelLen = 3 / 8;
+                expect(this.lesson.notes[0].relativeLength).to.equal(expectedRelLen);
+            });
+
+        });
+
+        it('should always know the combined length (in measures) of notes contained', function () {
             // 3/8 *4 = 12/32, 1/2 *16 = 16/32, 1/4 *8 = 8/32, 2 = 64/32, 1/16 = 2/32, 1/32
             // 12 + 16 + 8 + 64 + 2 + 1 = 103
-            // 103 / 4 (meter) = 25.x, remainder 3, so 26
-            expect(this.lesson.getLessonLength()).to.equal(26);
+            // 103 / 32 (highest denominator) = 3.21875
+            expect(this.lesson.getLessonLength()).to.equal(3.21875);
         });
 
         it('should always have the intervals of all the notes it contains', function () {

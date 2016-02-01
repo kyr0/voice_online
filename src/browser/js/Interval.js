@@ -5,8 +5,8 @@ var Note = require("./Note.js");
 
 function Interval (startNote, endNote) {
 
-    var startFreq;
-    var endFreq;
+    var startFreq = null;
+    var endFreq = null;
 
     function getIntervalDirection(startNote, endNote) {
         var direction;

@@ -22,9 +22,10 @@ var detectorElem,
     detuneElem,
     detuneAmount;
 
-var lessons = [];
-window.lessons = lessons;
-window.lessons.push(new Lesson([["A2", "2"], ["B2", "1"], ["C2", "1/4"], ["D2", "1"]]));
+window.lessons = [];
+window.lessons.push(new Lesson([["A2", "2"], ["B2", "2"], ["G2", "3"], ["A2", "1/4"],
+["A2", "1/4"], ["A2", "1/4"], ["A2", "1/4"], ["Gb2", "2"]
+]));
 
 
 window.onload = function() {

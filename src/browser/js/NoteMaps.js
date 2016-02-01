@@ -15,6 +15,7 @@
 function NoteMaps() {
 
     // the raw data used to generate the stuff
+    // TODO make sharps a possible choice
     var _noteNames = ["C", "Db",    "D",   "Eb",    "E",    "F",   "Gb",    "G",   "Ab",    "A",   "Bb",    "B"];
     var _oct0 = [16.352, 17.324, 18.354, 19.445, 20.602, 21.827, 23.125, 24.500, 25.957, 27.500, 29.135, 30.868];
     var _oct1 = [32.703, 34.648, 36.708, 38.891, 41.203, 43.653, 46.249, 48.999, 51.913, 55.000, 58.270, 61.735];

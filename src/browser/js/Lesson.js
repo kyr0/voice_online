@@ -7,7 +7,6 @@ function Lesson (noteList) {
     this.notes = [];
     this.intervals = [];
     this.bpm = 120;
-    this.meter = "4/4";  // todo: add validation to meter setting
     var lowestNote = null;
     var highestNote = null;
 
@@ -85,6 +84,7 @@ function Lesson (noteList) {
                 noteLength = newNotes[i].noteLength;
             }
             newNoteObj = new Note(name, noteLength);
+            newNoteObj.relativeLength = _getRelativeNoteLength(newNoteObj);
             noteObjArr.push(newNoteObj);
             _setRangeDelimiters(newNoteObj);
         }
@@ -105,19 +105,39 @@ function Lesson (noteList) {
         return itvlObjArr;
     };
 
+    this._updateRelativeIntervals = function (){
+        /**
+        Whenever notes are added the note is made aware of how far away it
+        is from the highest note in the lesson.
+         */
+        for (var i = 0; i < this.notes.length; i++) {
+            var intervalSteps = new Interval(this.notes[i].name, highestNote.name).halfsteps;
+            this.notes[i].relativeInterval = intervalSteps;
+        }
+    };
+
+    var _getRelativeNoteLength = function (noteObj){
+        /**
+        Whenever notes are added the note is made aware of how long it
+        is compared to the length of a measure.
+         */
+        var num = _getNumerator(noteObj.noteLength);
+        var den = _getDenominator(noteObj.noteLength);
+        return (num / den);
+    };
+
 
     this.addNotes = function(newNotes) {
         var noteObjArr = _createListOfNoteObjects(newNotes);
         this.notes = this.notes.concat(noteObjArr);
         this.intervals = _updateIntervals(this.notes);
+        this._updateRelativeIntervals();
     };
 
 
     this.getLessonLength = function (){
         /**
-         * Returns an integer, # of measures, according to the current
-         * meter settings. If there are fractions of a measure remaining
-         * we count the fraction as a complete measure.
+         * Returns a float, # of measures
          */
 
         var arrayOfNotes = this.notes;
@@ -125,13 +145,10 @@ function Lesson (noteList) {
         var numerator = 0;
         for (var i = 0; i < arrayOfNotes.length; i++) {
             var noteLength = arrayOfNotes[i].noteLength;
+            // TODO handle odd time signatures eg. 5/7 and find common denominator
             numerator += _sumNumeratorToHighestDenominator(noteLength, highestDenom);
         }
-        var measure = _getDenominator(this.meter);
-        var measureCount = Math.floor(numerator / measure);
-        var remainder = numerator % measure;
-        if (remainder) measureCount += 1;
-        return measureCount;
+        return numerator / highestDenom;
     };
 
     this.getLessonRange = function() {
