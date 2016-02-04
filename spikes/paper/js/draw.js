@@ -7,10 +7,12 @@ var range = curLesson.getLessonRange() + 2;  // pad top and bottom
 var measureCount = Math.floor(curLesson.getLessonLength()) + 1; // todo: bug
 var unitHeight = height / range;
 var unitWidth = width / measureCount;
-var gridArray = [];
+
+var timeGroup = null;
 
 var pct = 0;
 var freq = null;
+
 
 function draw() {
     var border = new Path.Rectangle({
@@ -23,51 +25,52 @@ function draw() {
     var grid = [];
     for (var msr = 1; msr < measureCount; msr++) {
         x = unitWidth * msr;
-        var path = new Path(new Point(x, 0), new Point(x, height));
-        path.strokeColor = 'grey';
-        grid.push(path);
+        var vert = new Path(new Point(x, 0), new Point(x, height));
+        vert.strokeColor = 'grey';
+        grid.push(vert);
     }
     for (var semi = 1; semi < range; semi++) {
         y = unitHeight * semi;
-        var path = new Path(new Point(0, y), new Point(width, y));
-        path.strokeColor = 'grey';
-        grid.push(path);
+        var horz = new Path(new Point(0, y), new Point(width, y));
+        horz.strokeColor = 'grey';
+        grid.push(horz);
     }
 
-    var timeline = new Path();
-    timeline.strokeColor = 'white';
-    timeline.add(new Point(0, 0), new Point(0, height));
-
-    var dot = new Path.Circle({
-        center: [0, 0],
-        radius: height * .08,
-        fillColor: 'coral'
-    });
-
-    var timeGroup = new Group([dot, timeline]);
-    timeGroup.onFrame = function (event) {
-        this.position.x = width * window.percentComplete;
-    };
-
     var bubbles = [];
+    var noteLbls = [];
     var consumedX = 0;
-    for (var bub = 0; bub < curLesson.notes.length; bub++) {
-        var curNote = curLesson.notes[bub];
+    for (var nt = 0; nt < curLesson.notes.length; nt++) {
+        var curNote = curLesson.notes[nt];
         var curNoteWidth = unitWidth * curNote.relativeLength;
         var curNoteY = unitHeight * curNote.relativeInterval + (unitHeight / 2);
+
+        // Bubble related
         var bubRect = new Rectangle(consumedX, curNoteY, curNoteWidth, unitHeight);
         var cornerSize = new Size((unitWidth / 6),(unitHeight / 2));
         var bubble = new Path.RoundRectangle(bubRect, cornerSize);
-        bubble.fillColor = 'white';
+        bubble.fillColor = 'AntiqueWhite';
         bubbles.push(bubble);
         consumedX += curNoteWidth;
-    }
-}
 
-// TODO get rid of this shit, do something more elegant with smoother visual
-// divides the canvas into chunks based on range size
-for (var i = 0; i < range; i++) {
-    gridArray.push(unitHeight * i);
+        // Note label related
+        var noteName = new PointText([10, curNoteY + (unitHeight / 2)]);
+        noteName.content = curNote.name;
+        noteName.strokeColor = 'white';
+        noteLbls.push(noteName);
+    }
+
+    var timeline = new Path();
+    timeline.strokeColor = 'CadetBlue';
+    timeline.add(new Point(0, 0), new Point(0, height));
+
+    var dot = new Path.Circle({
+        center: [0, unitHeight],
+        radius: unitHeight / 2,
+        fillColor: 'coral'
+    });
+
+    timeGroup = new Group([timeline, dot]);
+
 }
 
 draw();
@@ -75,14 +78,15 @@ draw();
 
 function onFrame(event) {
     freq = window.pitchFreq;
+    timeGroup.position.x = width * window.percentComplete;
+
     if (freq !== -1) {
-        dot.position.y = gridArray[Math.abs((Math.round(12 * (Math.log(freq / 440) / Math.log(2)) + 57)) - range)];
+        //dot.position.y = gridArray[Math.abs((Math.round(12 * (Math.log(freq / 440) / Math.log(2)) + 57)) - range)];
     }
     else {}
 }
 
 function onResize(event) {
-    //border.bounds = view.bounds;
     height = view.size.height;
     width = view.size.width;
     unitHeight = height / range;
