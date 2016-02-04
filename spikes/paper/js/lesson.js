@@ -2,6 +2,7 @@ var MPM = require("../../../src/browser/js/MPM.js");
 var pEval = require("../../../src/browser/js/NoteManager.js");
 var BeatTimer = require("../../../src/browser/js/BeatTimer.js");
 var Lesson = require("../../../src/browser/js/Lesson.js");
+var User = require("../../../src/browser/js/User.js");
 
 // these window assignments must be done outside of onLoad
 // for sharing with paper.js in case they are accessed before load
@@ -23,9 +24,14 @@ var detectorElem,
     detuneAmount;
 
 window.lessons = [];
-window.lessons.push(new Lesson([["A2", "2"], ["B2", "2"], ["G2", "3"], ["A2", "1/4"],
-["A2", "1/4"], ["A2", "1/4"], ["A2", "1/4"], ["Gb2", "2"]
+window.lessons.push(new Lesson([["A2", "1"], ["B2", "2"], ["G2", "3"], ["A2", "1/4"],
+["A2", "1/4"], ["A2", "1/4"], ["Gb2", "2"]
 ]));
+window.users = [];
+window.users.push(new User("F1", "F3"));
+
+// start practice at the lowest note of user range
+console.log(pEval.getDistanceBetweenTwoNotes(window.users[0].bottomNote.name, window.lessons[0].getLowestNote().name));
 
 
 window.onload = function() {
