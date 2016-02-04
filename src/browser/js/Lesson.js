@@ -16,8 +16,6 @@ function Lesson (noteList) {
     /* start-test-code */
     this.__testonly__ = {};
     this.__testonly__.getDenominator = _getDenominator;
-    this.__testonly__.getLowestNote = function(){return lowestNote;};
-    this.__testonly__.getHighestNote = function(){return highestNote;};
     /* end-test-code */
 
 
@@ -126,6 +124,8 @@ function Lesson (noteList) {
         return (num / den);
     };
 
+    this.getLowestNote = function(){return lowestNote;};
+    this.getHighestNote = function(){return highestNote;};
 
     this.addNotes = function(newNotes) {
         var noteObjArr = _createListOfNoteObjects(newNotes);

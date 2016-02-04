@@ -99,15 +99,15 @@ describe('Lesson', function() {
         });
 
         it('should always know the lowest note it contains', function () {
-            expect(this.lesson.__testonly__.getLowestNote().name).to.equal("A1");
+            expect(this.lesson.getLowestNote().name).to.equal("A1");
             this.lesson.addNotes([["C0","1/16"],["Ab1","1/32"]]);
-            expect(this.lesson.__testonly__.getLowestNote().name).to.equal("C0");
+            expect(this.lesson.getLowestNote().name).to.equal("C0");
         });
 
         it('should always know the highest note it contains', function () {
-            expect(this.lesson.__testonly__.getHighestNote().name).to.equal("C4");
+            expect(this.lesson.getHighestNote().name).to.equal("C4");
             this.lesson.addNotes([["C5","1/16"],["B4","1/32"]]);
-            expect(this.lesson.__testonly__.getHighestNote().name).to.equal("C5");
+            expect(this.lesson.getHighestNote().name).to.equal("C5");
         });
 
         it('should always know the full range of the notes it contains', function () {
