@@ -9,6 +9,18 @@ for (var key in helpers) {
 
 describe('Pitch Evaluation library', function() {
 
+    it("getDistanceBetweenTwoNotes() should return the distance (positive)", function() {
+        expect(noteMgr.getDistanceBetweenTwoNotes("A2", "B2")).to.equal(2);
+    });
+
+    it("getDistanceBetweenTwoNotes() should return the distance (negative)", function() {
+        expect(noteMgr.getDistanceBetweenTwoNotes("A2", "C2")).to.equal(-9);
+    });
+
+    it("getDistanceBetweenTwoNotes() should return the distance (same)", function() {
+        expect(noteMgr.getDistanceBetweenTwoNotes("A2", "A2")).to.equal(0);
+    });
+
     it("getClosestNoteNameFromPitch() should find the name with exact input", function() {
         var freqC0 = 16.352;
         expect(noteMgr.getClosestNoteNameFromPitch(freqC0)).to.equal("C0");

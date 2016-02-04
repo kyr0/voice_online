@@ -1,6 +1,6 @@
 "use strict";
 
-var Note = require("./Note.js");
+var Interval = require("./Interval.js");
 var NoteMaps = require("./NoteMaps.js");
 
 var NoteManager = (function() {
@@ -56,11 +56,18 @@ var NoteManager = (function() {
     };
 
 
+    var publicGetDistanceBetweenTwoNotes = function(firstNote, secondNote){
+        var itvl = new Interval(firstNote, secondNote);
+        return itvl.halfsteps;
+    };
+
+
     return {
         getClosestFreqFromPitch : publicGetClosestFreqFromPitch,
         getClosestNoteNameFromPitch : publicGetClosestNoteNameFromPitch,
         getCentsDiff : publicGetCentsDiff,
-        getNoteMapAtName : publicGetNoteMapAtName
+        getNoteMapAtName : publicGetNoteMapAtName,
+        getDistanceBetweenTwoNotes : publicGetDistanceBetweenTwoNotes
     };
 
 })();
