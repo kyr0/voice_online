@@ -3,7 +3,7 @@
 
 var NoteMaps = require("./NoteMaps.js");
 
-function Note (name, noteLength) {
+function Note (name, noteLength){
 
     var nMaps = new NoteMaps();
 
@@ -29,6 +29,11 @@ function Note (name, noteLength) {
             throw new Error('Note(): the supplied note length is invalid: ' + noteLength);
         }
         return newNoteLength;
+    };
+
+    this.transpose = function(distance){
+        var newIndex = distance + nMaps.pitchMap[this.name].index;
+        return nMaps.pitchArray[newIndex].name;
     };
 
     this.name = nMaps.validateNoteName(name);

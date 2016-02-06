@@ -37,6 +37,20 @@ describe('Note Object', function() {
         expect(noteObj.noteLength).to.equal(expectedNoteObj.noteLength  );
     });
 
+    it('should transpose the note accurately (up)', function () {
+        var noteObj = new Note(this.noteName);
+        expect(noteObj.transpose(35)).to.equal("Bb5");
+    });
+
+    it('should transpose the note accurately (down)', function () {
+        var noteObj = new Note(this.noteName);
+        expect(noteObj.transpose(-12)).to.equal("B1");
+    });
+
+    it('should transpose the note accurately (zero)', function () {
+        var noteObj = new Note(this.noteName);
+        expect(noteObj.transpose(0)).to.equal("B2");
+    });
 
 describe('Note Object', function() {
 
