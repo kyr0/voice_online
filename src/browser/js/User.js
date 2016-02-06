@@ -9,7 +9,7 @@ function User (bottom, top) {
     }
     this.bottomNote = range.startNote;
     this.topNote = range.endNote;
-
+    this.range = range.halfsteps;
 }
 
 module.exports = User;
