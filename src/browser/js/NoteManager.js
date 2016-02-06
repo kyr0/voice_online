@@ -10,20 +10,21 @@ var NoteManager = (function() {
     var _pitchArray = _nMaps.pitchArray;
     var _reverseMap = _nMaps.reverseMap;
 
-    var lowThreshold = _pitchMap.C0.frequency;
-    var highThreshold = _pitchMap.B8.frequency;
+    // thresholds are not inclusive ie. A1 is lowest viable note
+    var lowThreshold = _pitchMap.Ab1.frequency;
+    var highThreshold = _pitchMap.Ab7.frequency;
 
     // take a raw frequency and returns the frequency of the nearest musical note
     // thanks to Chris Wilson for most of this function
     var publicGetClosestFreqFromPitch = function(frequency){
-        var noteNum = 12 * (Math.log( frequency / 440 )/Math.log(2) );
-        return _pitchArray[Math.round( noteNum ) + 57];
+        var noteNum = 12 * (Math.log(frequency / 440)/Math.log(2) );
+        return _pitchArray[Math.round(noteNum) + 57].frequency;
     };
 
-    // takes a raw frequency and returns the Object of the nearest musical note
+    // takes a raw frequency and returns the nearest musical note name
     var publicGetClosestNoteNameFromPitch = function(frequency){
-        var noteName = _reverseMap[publicGetClosestFreqFromPitch(frequency)].name;
-        return _pitchMap[noteName].name;
+        var noteNum = 12 * (Math.log(frequency / 440)/Math.log(2) );
+        return _pitchArray[Math.round(noteNum) + 57].name;
     };
 
     // actualPitch is a float representing the incoming frequency
@@ -60,7 +61,6 @@ var NoteManager = (function() {
         var itvl = new Interval(firstNote, secondNote);
         return itvl.halfsteps;
     };
-
 
     return {
         getClosestFreqFromPitch : publicGetClosestFreqFromPitch,

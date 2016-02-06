@@ -12,12 +12,24 @@ describe('NoteMaps', function() {
         this.nMaps = new NoteMaps();
     });
 
-    it('should have an index of every standard note', function () {
+    it('should have an index of every standard note (lowest)', function () {
         expect(this.nMaps.pitchMap["C0"].name).to.equal("C0");
     });
 
-    it('should have an index of every standard note', function () {
+    it('should have an index of every standard note (highest)', function () {
         expect(this.nMaps.pitchMap["B8"].name).to.equal("B8");
+    });
+
+    it('pitchMap member should know its index number (lowest)', function () {
+        expect(this.nMaps.pitchMap["C0"].index).to.equal(0);
+    });
+
+    it('pitchMap member should know its index number (middle)', function () {
+        expect(this.nMaps.pitchMap["C1"].index).to.equal(12);
+    });
+
+    it('pitchMap member should know its index number (highest)', function () {
+        expect(this.nMaps.pitchMap["B8"].index).to.equal(107);
     });
 
     it('pitchMap member should have frequency info on each index', function () {
@@ -41,11 +53,11 @@ describe('NoteMaps', function() {
     });
 
     it("pitchArray's highest note B8 should exist", function () {
-        expect(this.nMaps.pitchArray[107]).to.equal(7902.1);
+        expect(this.nMaps.pitchArray[107].frequency).to.equal(7902.1);
     });
 
     it("pitchArray's lowest note C0 should exist", function () {
-        expect(this.nMaps.pitchArray[0]).to.equal(16.352);
+        expect(this.nMaps.pitchArray[0].frequency).to.equal(16.352);
     });
 
     it('attempting to create a note with invalid name (string)', function () {

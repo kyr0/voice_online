@@ -52,6 +52,7 @@ function NoteMaps() {
             // pitch map is for convenient-yet-slow lookups
             this.pitchMap[thisNotesName] = {
                 name : thisNotesName,
+                index : note + (12 * octave),
                 frequency : thisNotesFreq,
                 previousNote : getPreviousNote(octave, note, this.pitchMap),
                 nextNote : null
@@ -67,7 +68,7 @@ function NoteMaps() {
             }
 
             // pitchArray is used with root-finding algorithm Brent's Method (arrays are fast)
-            this.pitchArray.push(thisNotesFreq);
+            this.pitchArray.push(this.pitchMap[thisNotesName]);
 
             // use the frequency from pitchArray[x] to get the name for Note objects in pitchMap
             this.reverseMap[thisNotesFreq] = {

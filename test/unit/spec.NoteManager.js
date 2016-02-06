@@ -36,36 +36,36 @@ describe('Pitch Evaluation library', function() {
 
     describe('getCentsDiff()', function() {
         beforeEach(function(){
-            this.Gb0 = "Gb0";
+            this.Bb1 = "Bb1";
         });
 
         it("should return zero cents for perfect pitch", function () {
-            var incomingFreq = 23.125;
-            expect(noteMgr.getCentsDiff(incomingFreq, this.Gb0)).to.equal(0);
+            var incomingFreq = 58.270;
+            expect(noteMgr.getCentsDiff(incomingFreq, this.Bb1)).to.equal(0);
         });
 
         it("should give zero for near perfect pitch (slightly flat)", function () {
-            expect(noteMgr.getCentsDiff(23.119, this.Gb0)).to.equal(0);
+            expect(noteMgr.getCentsDiff(58.260, this.Bb1)).to.equal(0);
         });
 
         it("should give zero for near perfect pitch (slightly sharp)", function () {
-            expect(noteMgr.getCentsDiff(23.130, this.Gb0)).to.equal(0);
+            expect(noteMgr.getCentsDiff(58.285, this.Bb1)).to.equal(0);
         });
 
         it("should give null for diff = 1 semitone flat", function () {
-            expect(noteMgr.getCentsDiff(21.827, this.Gb0)).to.be.a('null');
+            expect(noteMgr.getCentsDiff(55.000, this.Bb1)).to.be.a('null');
         });
 
         it("should give null for diff > 1 semitone flat", function () {
-            expect(noteMgr.getCentsDiff(20, this.Gb0)).to.be.a('null');
+            expect(noteMgr.getCentsDiff(54.000, this.Bb1)).to.be.a('null');
         });
 
-        it("should give null for diff = 1 semitone sharp", function () {
-            expect(noteMgr.getCentsDiff(24.500, this.Gb0)).to.be.a('null');
+        it("should give null for diff slightly less than 1 semitone sharp", function () {
+            expect(noteMgr.getCentsDiff(60.735, this.Bb1)).to.be.a('null');
         });
 
         it("should give null for diff > 1 semitone sharp", function () {
-            expect(noteMgr.getCentsDiff(25, this.Gb0)).to.be.a('null');
+            expect(noteMgr.getCentsDiff(62, this.Bb1)).to.be.a('null');
         });
 
         it("should throw an error for flat notes below C0", function () {
