@@ -1,8 +1,8 @@
 var MPM = require("../../../src/browser/js/MPM.js");
 var pEval = require("../../../src/browser/js/NoteManager.js");
-var BeatTimer = require("../../../src/browser/js/BeatTimer.js");
 var Lesson = require("../../../src/browser/js/Lesson.js");
 var User = require("../../../src/browser/js/User.js");
+var LessonPlayer = require("../../../src/browser/js/LessonPlayer.js");
 
 // these window assignments must be done outside of onLoad
 // for sharing with paper.js in case they are accessed before load
@@ -23,15 +23,15 @@ var detectorElem,
     detuneElem,
     detuneAmount;
 
-window.lessons = [];
-window.lessons.push(new Lesson([["A2", "1"], ["B2", "2"], ["G2", "3"], ["A2", "1/4"],
-["A2", "1/4"], ["A2", "1/4"], ["Gb2", "2"]
+var lessons = [];
+lessons.push(new Lesson([["A2", "1"], ["B2", "2"], ["G2", "3"], ["A2", "1/4"],
+    ["A2", "1/4"], ["A2", "1/4"], ["Gb2", "2"]
 ]));
-window.users = [];
-window.users.push(new User("F1", "F3"));
 
-// start practice at the lowest note of user range
-console.log(pEval.getDistanceBetweenTwoNotes(window.users[0].bottomNote.name, window.lessons[0].getLowestNote().name));
+var users = [];
+users.push(new User("F1", "F3"));
+
+window.lPlayer = new LessonPlayer(users[0], lessons[0]);
 
 
 window.onload = function() {
@@ -63,10 +63,7 @@ window.onload = function() {
         }, gotStream
     );
 
-    beatTimer = new BeatTimer();
-    bpm = lessons[0].bpm;
-    measureCount = lessons[0].notes.length;
-    beatTimer.start(40, 120);
+    lPlayer.start();
 
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function(audioProcessingEvent) {
@@ -76,7 +73,7 @@ window.onload = function() {
         var inputData = inputBuffer.getChannelData(0);
         //console.log(inputData);
         updatePitch(inputData);
-        window.percentComplete = beatTimer.getPercentComplete();
+        window.percentComplete = lPlayer.getCurSetPctComplete();
     };
     //console.log(scriptNode
     //    + "target: " + scriptNode.target

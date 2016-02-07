@@ -2,9 +2,9 @@
 
 var height = view.size.height;
 var width = view.size.width;
-var curLesson = window.lessons[0];
-var range = curLesson.getLessonRange() + 2;  // pad top and bottom
-var measureCount = Math.floor(curLesson.getLessonLength()) + 1; // todo: bug
+var curSet = window.lPlayer.currentSet;
+var range = curSet.getLessonRange() + 2;  // pad top and bottom
+var measureCount = Math.floor(curSet.getLessonLength()) + 1; // todo: bug
 var unitHeight = height / range;
 var unitWidth = width / measureCount;
 
@@ -39,8 +39,8 @@ function draw() {
     var bubbles = [];
     var noteLbls = [];
     var consumedX = 0;
-    for (var nt = 0; nt < curLesson.notes.length; nt++) {
-        var curNote = curLesson.notes[nt];
+    for (var nt = 0; nt < curSet.notes.length; nt++) {
+        var curNote = curSet.notes[nt];
         var curNoteWidth = unitWidth * curNote.relativeLength;
         var curNoteY = unitHeight * curNote.relativeInterval + (unitHeight / 2);
 
