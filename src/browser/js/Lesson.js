@@ -7,6 +7,7 @@ function Lesson (noteList) {
     this.notes = [];
     this.intervals = [];
     this.bpm = 120;
+    this.tempo = 4; // beats per measure
     var lowestNote = null;
     var highestNote = null;
 

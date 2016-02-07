@@ -8,13 +8,28 @@ for (var key in helpers) {
     global[key] = helpers[key];
 }
 
-describe('LessonPlayer', function() {
+describe('LessonPlayer constructor', function() {
 
     it("should throw error if user range is smaller than lesson range", function () {
         var aUser = new User("A2", "E3");
         var aLesson = new Lesson([["A2", "1"], ["F3", "1"]]);
         var fn = function() {new LessonPlayer(aUser, aLesson)};
         expect(fn).to.throw(Error, /User range must be same size or smaller than lesson range/);
+    });
+});
+
+describe('LessonsPlayer', function() {
+
+    it("should increase percent of completion after start when time passes", function () {
+        var aUser = new User("A2", "A4");
+        var aLesson = new Lesson([["B2", "1"], ["F3", "1"]]);
+        var lPlayer = new LessonPlayer(aUser, aLesson);
+        lPlayer.start();
+        sleep(1);
+        var pct = lPlayer.getCurSetPctComplete();
+        expect(pct).to.be.above(0);
+        sleep(1);
+        expect(lPlayer.getCurSetPctComplete()).to.be.above(pct);
     });
 
     it("should start with a new Lesson object at the bottom of user's range", function () {
@@ -36,7 +51,18 @@ describe('LessonPlayer', function() {
         ];
         compareNoteLists(lPlayer.currentSet.notes, expectedList);
     });
+
 });
+
+
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+            break;
+        }
+    }
+}
 
 
 function compareNoteLists(noteList, expectedList) {
