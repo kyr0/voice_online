@@ -2,19 +2,20 @@
 
 var height = view.size.height;
 var width = view.size.width;
-var curSet = window.lPlayer.currentSet;
+var curSet = window.lPlayer.getCurrentSet();
 var range = curSet.getLessonRange() + 2;  // pad top and bottom
 var measureCount = Math.floor(curSet.getLessonLength()) + 1; // todo: bug
 var unitHeight = height / range;
 var unitWidth = width / measureCount;
 
 var timeGroup = null;
-
 var pct = 0;
 var freq = null;
 
 
-function draw() {
+function drawWidget() {
+    curSet = window.lPlayer.getCurrentSet();
+
     var border = new Path.Rectangle({
         rectangle: view.bounds,
         strokeColor: 'grey',
@@ -37,7 +38,6 @@ function draw() {
     }
 
     var bubbles = [];
-    var noteLbls = [];
     var consumedX = 0;
     for (var nt = 0; nt < curSet.notes.length; nt++) {
         var curNote = curSet.notes[nt];
@@ -53,6 +53,7 @@ function draw() {
         consumedX += curNoteWidth;
 
         // Note label related
+        var noteLbls = [];
         var noteName = new PointText([10, curNoteY + (unitHeight / 2)]);
         noteName.content = curNote.name;
         noteName.strokeColor = 'white';
@@ -73,12 +74,19 @@ function draw() {
 
 }
 
-draw();
+drawWidget();
 
 
+var lastPctComplete = 0;
 function onFrame(event) {
+    var pctComplete = window.percentComplete;
     freq = window.pitchFreq;
-    timeGroup.position.x = width * window.percentComplete;
+    timeGroup.position.x = width * pctComplete;
+    if (pctComplete < lastPctComplete){
+        drawWidget();
+    }
+    lastPctComplete = pctComplete;
+    //console.log(window.percentComplete);
 
     if (freq !== -1) {
         //dot.position.y = gridArray[Math.abs((Math.round(12 * (Math.log(freq / 440) / Math.log(2)) + 57)) - range)];
@@ -91,5 +99,5 @@ function onResize(event) {
     width = view.size.width;
     unitHeight = height / range;
     unitWidth = width / measureCount;
-    draw();
+    drawWidget();
 }
