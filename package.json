@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": "4.1.1"
+    "node": "5.5.0"
   },
   "devDependencies": {
     "browser-sync": "^2.8.2",

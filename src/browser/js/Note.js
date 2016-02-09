@@ -22,7 +22,7 @@ function Note (name, noteLength){
         if (!isNaN(noteLength)) newNoteLength = noteLength + '/1';
         else if (typeof noteLength === 'undefined') newNoteLength = '1/1';
 
-        if ((newNoteLength.indexOf("/") == -1) ||
+        if ((newNoteLength.indexOf("/") === -1) ||
             (isNaN(_getDenominator(newNoteLength))) ||
             (isNaN(_getNumerator(newNoteLength))))
         {
