@@ -6,6 +6,7 @@
     "node": "5.5.0"
   },
   "devDependencies": {
+    "bower": "^1.7.7",
     "browser-sync": "^2.8.2",
     "browserify": "^11.0.0",
     "chai": "^3.4.1",
