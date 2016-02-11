@@ -1,8 +1,8 @@
-var MPM = require("../../../src/browser/js/MPM.js");
-var pEval = require("../../../src/browser/js/NoteManager.js");
-var Lesson = require("../../../src/browser/js/Lesson.js");
-var User = require("../../../src/browser/js/User.js");
-var LessonPlayer = require("../../../src/browser/js/LessonPlayer.js");
+var MPM = require("../../../src/client/js/MPM.js");
+var pEval = require("../../../src/client/js/NoteManager.js");
+var Lesson = require("../../../src/client/js/Lesson.js");
+var User = require("../../../src/client/js/User.js");
+var LessonPlayer = require("../../../src/client/js/LessonPlayer.js");
 
 // these window assignments must be done outside of onLoad
 // for sharing with paper.js in case they are accessed before load

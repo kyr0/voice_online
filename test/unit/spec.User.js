@@ -3,7 +3,7 @@
 // */
 "use strict";
 
-var User = require("../../src/browser/js/User.js");
+var User = require("../../src/client/js/User.js");
 var helpers = require("../resources/testHelpers.js");
 for (var key in helpers) {
     global[key] = helpers[key];

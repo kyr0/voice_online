@@ -3,7 +3,7 @@
 // */
 "use strict";
 
-var MPM = require("../../src/browser/js/MPM.js");
+var MPM = require("../../src/client/js/MPM.js");
 var buffers = require("../resources/audioBuffers.js");
 var helpers = require("../resources/testHelpers.js");
 for (var key in helpers) {

@@ -22,8 +22,8 @@
  SOFTWARE.
  */
 
-var MPM = require("../../../src/browser/js/MPM.js");
-var pEval = require("../../../src/browser/js/NoteManager.js");
+var MPM = require("../../../src/client/js/MPM.js");
+var pEval = require("../../../src/client/js/NoteManager.js");
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 

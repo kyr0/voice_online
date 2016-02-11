@@ -1,7 +1,7 @@
 
 "use strict";
 
-var noteMgr = require("../../src/browser/js/NoteManager.js");
+var noteMgr = require("../../src/client/js/NoteManager.js");
 var helpers = require("../resources/testHelpers.js");
 for (var key in helpers) {
     global[key] = helpers[key];

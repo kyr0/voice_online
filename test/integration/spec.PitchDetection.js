@@ -7,9 +7,9 @@
 "use strict";
 
 var assert = require("assert");
-var MPM = require("../../src/browser/js/MPM.js");
+var MPM = require("../../src/client/js/MPM.js");
 var buffer = require("../resources/audioBuffers.js");
-var nMgr = require("../../src/browser/js/NoteManager.js");
+var nMgr = require("../../src/client/js/NoteManager.js");
 
 var helpers = require("../resources/testHelpers.js");
 

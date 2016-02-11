@@ -4,7 +4,7 @@
 "use strict";
 
 var assert = require("assert");
-var PitchDetectionResult = require("../../src/browser/js/PitchDetectionResult.js");
+var PitchDetectionResult = require("../../src/client/js/PitchDetectionResult.js");
 
 var helpers = require("../resources/testHelpers.js");
 for (var key in helpers) {

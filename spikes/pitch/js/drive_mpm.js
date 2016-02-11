@@ -1,6 +1,6 @@
 "use strict";
 
-var MPM = require("./../../../src/browser/js/MPM.js");
+var MPM = require("./../../../src/client/js/MPM.js");
 
 (function () {
     var audioCtx = new (window.AudioContext || window.webkitAudioContext)();

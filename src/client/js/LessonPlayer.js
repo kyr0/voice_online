@@ -1,6 +1,6 @@
 "use strict";
-var nMgr = require("../../../src/browser/js/NoteManager.js");
-var Lesson = require("../../../src/browser/js/Lesson.js");
+var nMgr = require("../../../src/client/js/NoteManager.js");
+var Lesson = require("../../../src/client/js/Lesson.js");
 
 function LessonPlayer(aUser, aLesson){
 

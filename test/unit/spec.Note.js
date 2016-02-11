@@ -3,7 +3,7 @@
 // */
 "use strict";
 
-var Note = require("../../src/browser/js/Note.js");
+var Note = require("../../src/client/js/Note.js");
 var helpers = require("../resources/testHelpers.js");
 for (var key in helpers) {
     global[key] = helpers[key];

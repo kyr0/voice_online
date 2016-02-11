@@ -1,7 +1,7 @@
 
 "use strict";
 
-    var Lesson = require("../../src/browser/js/Lesson.js");
+    var Lesson = require("../../src/client/js/Lesson.js");
 
 describe('Lesson constructor given note list', function() {
     beforeEach(function () {

@@ -1,6 +1,6 @@
 "use strict";
 
-var NoteMaps = require("../../src/browser/js/NoteMaps.js");
+var NoteMaps = require("../../src/client/js/NoteMaps.js");
 var helpers = require("../resources/testHelpers.js");
 for (var key in helpers) {
     global[key] = helpers[key];

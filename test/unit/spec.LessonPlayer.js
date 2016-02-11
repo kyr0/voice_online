@@ -1,8 +1,8 @@
 "use strict";
 
-var LessonPlayer = require("../../src/browser/js/LessonPlayer.js");
-var User = require("../../src/browser/js/User.js");
-var Lesson = require("../../src/browser/js/Lesson.js");
+var LessonPlayer = require("../../src/client/js/LessonPlayer.js");
+var User = require("../../src/client/js/User.js");
+var Lesson = require("../../src/client/js/Lesson.js");
 var helpers = require("../resources/testHelpers.js");
 for (var key in helpers) {
     global[key] = helpers[key];

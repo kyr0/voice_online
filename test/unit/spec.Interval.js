@@ -3,7 +3,7 @@
 // */
 "use strict";
 
-var Interval = require("../../src/browser/js/Interval.js");
+var Interval = require("../../src/client/js/Interval.js");
 var helpers = require("../resources/testHelpers.js");
 for (var key in helpers) {
     global[key] = helpers[key];
