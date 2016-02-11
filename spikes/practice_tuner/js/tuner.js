@@ -22,8 +22,8 @@
  SOFTWARE.
  */
 
-var MPM = require("../../../src/browser/js/MPM.js");
-var pEval = require("../../../src/browser/js/NoteManager.js");
+var MPM = require("../../../src/client/js/MPM.js");
+var pEval = require("../../../src/client/js/NoteManager.js");
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -128,7 +128,7 @@ function updatePitch(buf) {
     } else {
         //console.log("Pitch: " + pitchFreq + " Probability: " + probability);
         detectorElem.className = "confident";
-        var noteObj =  pEval.getClosestNoteFromPitch(pitchFreq);
+        var noteObj =  pEval.getClosestNoteNameFromPitch(pitchFreq);
         pitchElem.innerHTML = Math.round(pitchFreq);
         noteElem.innerHTML = noteObj.name;
         var detune = pEval.getCentsDiff(pitchFreq, noteObj.frequency);

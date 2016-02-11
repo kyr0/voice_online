@@ -1,29 +1,13 @@
-/*
- The MIT License (MIT)
+var MPM = require("../../../src/client/js/MPM.js");
+var pEval = require("../../../src/client/js/NoteManager.js");
+var Lesson = require("../../../src/client/js/Lesson.js");
+var User = require("../../../src/client/js/User.js");
+var LessonPlayer = require("../../../src/client/js/LessonPlayer.js");
 
- Copyright (c) 2014 Chris Wilson
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
- */
-
-var MPM = require("../../../src/browser/js/MPM.js");
-var pEval = require("../../../src/browser/js/NoteManager.js");
+// these window assignments must be done outside of onLoad
+// for sharing with paper.js in case they are accessed before load
+window.percentComplete = 0;
+window.pitchFreq = -1;
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -39,8 +23,16 @@ var detectorElem,
     detuneElem,
     detuneAmount;
 
+var lessons = [];
+lessons.push(new Lesson([["A2", "1/4"], ["B2", "2"], ["G2", "1/2"], ["A2", "2/4"]]));
+
+var users = [];
+users.push(new User("F1", "F3"));
+
+window.lPlayer = new LessonPlayer(users[0], lessons[0]);
+
+
 window.onload = function() {
-    window.pitchFreq = -1;
     console.log("Window OnLoad");
     audioContext = new AudioContext();
     mpm = new MPM(audioContext.sampleRate, bufferLength);
@@ -69,6 +61,7 @@ window.onload = function() {
         }, gotStream
     );
 
+    lPlayer.start();
 
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function(audioProcessingEvent) {
@@ -78,6 +71,7 @@ window.onload = function() {
         var inputData = inputBuffer.getChannelData(0);
         //console.log(inputData);
         updatePitch(inputData);
+        window.percentComplete = lPlayer.getCurSetPctComplete();
     };
     //console.log(scriptNode
     //    + "target: " + scriptNode.target
@@ -130,7 +124,7 @@ function updatePitch(buf) {
     } else {
         //console.log("Pitch: " + pitchFreq + " Probability: " + probability);
         detectorElem.className = "confident";
-        var noteObj =  pEval.getClosestNoteFromPitch(pitchFreq);
+        var noteObj =  pEval.getClosestNoteNameFromPitch(pitchFreq);
         pitchElem.innerHTML = Math.round(pitchFreq);
         noteElem.innerHTML = noteObj.name;
         var detune = pEval.getCentsDiff(pitchFreq, noteObj.frequency);

@@ -2,7 +2,7 @@
 .DS_Store
 
 # Webstorm
-.idea/workspace.xml
+.idea/**
 
 # NPM
 npm-debug.log
@@ -16,23 +16,5 @@ node_modules/mochify/node_modules/watchify/node_modules/chokidar/node_modules/fs
 node_modules/phantomjs/lib/location.js
 node_modules/phantomjs/lib/phantom/
 
-# Protractor related build artifacts
-node_modules/protractor/node_modules/selenium-webdriver/node_modules/ws/node_modules/bufferutil/build/
-node_modules/protractor/node_modules/selenium-webdriver/node_modules/ws/node_modules/utf-8-validate/build/
-
-# webdriver-update downloads specific binaries based on the system running it
-node_modules/protractor/selenium/
-
-# browser-sync build artifacts
-node_modules/browser-sync/node_modules/chokidar/node_modules/fsevents/build/
-node_modules/browser-sync/node_modules/socket.io/node_modules/engine.io/node_modules/ws/node_modules/bufferutil/build/
-node_modules/browser-sync/node_modules/socket.io/node_modules/engine.io/node_modules/ws/node_modules/utf-8-validate/build/
-node_modules/browser-sync/node_modules/socket.io/node_modules/socket.io-client/node_modules/engine.io-client/node_modules/ws/node_modules/bufferutil/build/
-node_modules/browser-sync/node_modules/socket.io/node_modules/socket.io-client/node_modules/engine.io-client/node_modules/ws/node_modules/utf-8-validate/build/
-
 # watchify build artifacts
 node_modules/watchify/node_modules/chokidar/node_modules/fsevents/build/
-
-# phantomjs2 build artifacts
-node_modules/phantomjs2/lib/location.js
-node_modules/phantomjs2/lib/phantom/

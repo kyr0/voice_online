@@ -5,7 +5,21 @@
     <meta charset="utf-8">
     <link href='http://fonts.googleapis.com/css?family=Alike' rel='stylesheet' type='text/css'>
     <style>
-        body { font: 14pt 'Alike', sans-serif;}
+        /* Weirdly, the HTML canvas element defaults to a fixed 300 pixels wide by 150 pixels high */
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden; /*  Disable scrollbars */
+            display: block;  /* No floating content on sides */
+        }
+
+        /* Scale canvas with resize attribute to full size */
+        canvas[resize] {
+            width: 100%;
+            height: 100%;
+        }
+
+        /*body { font: 14pt 'Alike', sans-serif;}*/
         #note { font-size: 164px; }
         .droptarget { background-color: #348781}
         div.confident { color: black; }
@@ -20,19 +34,21 @@
         .sharp #sharp { display: inline; }
     </style>
     <!-- Load the Paper.js library -->
-    <script type="text/javascript" src="js/paper.js"></script>
-    <!-- Load external PaperScript and associate it with myCanvas -->
-    <script type="text/paperscript" src="js/draw.js" canvas="lesson">
-    </script>
+    <script type="text/javascript" src="../../src/dependencies/jquery-1.12.0.min.js"></script>
+    <script type="text/javascript" src="../../src/dependencies/paper-full.min.js"></script>
 </head>
-<body>
-<script src="js/lesson.bundle.js"></script>
-<canvas id="lesson" width="300" height="300"></canvas>
-<div id="detector" class="vague">
-    <div class="pitch"><span id="pitch">--</span>Hz</div>
-    <div class="note"><span id="note">--</span></div>
-    <div id="detune"><span id="detune_amt">--</span><span id="flat">cents &#9837;</span><span id="sharp">cents &#9839;</span></div>
-</div>
 
+<body>
+    <canvas id="lesson" resize="true"></canvas>
+
+    <div id="detector" class="vague" style="display:none">
+        <div class="pitch"><span id="pitch">--</span>Hz</div>
+        <div class="note"><span id="note">--</span></div>
+        <div id="detune"><span id="detune_amt">--</span><span id="flat">cents &#9837;</span><span id="sharp">cents &#9839;</span></div>
+    </div>
+    <script src="js/lesson.bundle.js"></script>
+    <!-- Load external PaperScript and associate it with myCanvas -->
+    <script type="text/paperscript" src="js/draw.js" canvas="lesson"></script>
 </body>
+
 </html>

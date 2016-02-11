@@ -6,23 +6,27 @@ var startTime = Date.now();
 var elapsedTime = 0;
 var c = 1;
 
+// rewrite as a class with methods described below and tests
 
-function doTimer(length, resolution, oninstance, oncomplete)
+// 10 notes @ 120bpm = (60 / 120) * 10 = 5 seconds
+function beatTimer(beats, bpm, oninstance, oncomplete)
 {
-    var steps = (length / 100) * (resolution / 10),
-        speed = length / steps,
+
+    var minute = 60000,
+        length = beats * (minute / bpm),
+        speed = length / beats,
         count = 0,
         start = new Date().getTime();
 
     function instance()
     {
-        if(count++ == steps)
+        if(count++ == beats)
         {
-            oncomplete(steps, count);
+            oncomplete(beats, count);
         }
         else
         {
-            oninstance(steps, count);
+            oninstance(beats, count);
 
             var diff = (new Date().getTime() - start) - (count * speed);
             //window.setTimeout(instance, (speed - diff));
@@ -34,17 +38,21 @@ function doTimer(length, resolution, oninstance, oncomplete)
     setTimeout(instance, speed);
 }
 
+// timer currentBeat property could be used to switch statistic recording to next note
+// timer should be on call to provide exact time-passed since start of lesson for Frame events to poll
+//    for rendering purposes -- or maybe % complete?
+// current-time-location = canvas-width / #notes / (60s / BPM)
 
-doTimer(8000, 2, function(steps)
-    {
+beatTimer(11, 320,
+    function(steps) {
         elapsedTime = ((Date.now() - startTime) / 1000);
         console.log("Total seconds passed: " + elapsedTime + "\n" +
             "Beat #" + c + "\n");
         c = c+1;
     },
-    function()
-    {
+    function() {
         elapsedTime = ((Date.now() - startTime) / 1000);
         console.log("Final total seconds passed: " + elapsedTime);
-    });
+    }
+);
 
