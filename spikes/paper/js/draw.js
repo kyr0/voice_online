@@ -8,22 +8,30 @@ var measureCount = Math.floor(curSet.getLessonLength()) + 1; // todo: bug
 var unitHeight = height / range;
 var unitWidth = width / measureCount;
 
-var timeGroup = null;
-var pct = 0;
+var consumedX = 0;
+var lastPctComplete = 0;
+var initHasRun = false;
 var freq = null;
 
+var border = null;
+var grid = null;
+var bubbles = null;
+var noteLbls = null;
+var timeline = null;
+var dot = null;
+var timeGroup = null;
 
-function drawWidget() {
-    curSet = window.lPlayer.getCurrentSet();
 
-    var border = new Path.Rectangle({
+function initWidget() {
+
+    border = new Path.Rectangle({
         rectangle: view.bounds,
         strokeColor: 'grey',
         strokeWidth: 1,
         fillColor: '#282828'
     });
 
-    var grid = [];
+    grid = [];
     for (var msr = 1; msr < measureCount; msr++) {
         x = unitWidth * msr;
         var vert = new Path(new Point(x, 0), new Point(x, height));
@@ -37,8 +45,9 @@ function drawWidget() {
         grid.push(horz);
     }
 
-    var bubbles = [];
-    var consumedX = 0;
+    bubbles = [];
+    consumedX = 0;
+    curSet = window.lPlayer.getCurrentSet();
     for (var nt = 0; nt < curSet.notes.length; nt++) {
         var curNote = curSet.notes[nt];
         var curNoteWidth = unitWidth * curNote.relativeLength;
@@ -53,45 +62,59 @@ function drawWidget() {
         consumedX += curNoteWidth;
 
         // Note label related
-        var noteLbls = [];
+        noteLbls = [];
         var noteName = new PointText([10, curNoteY + (unitHeight / 2)]);
         noteName.content = curNote.name;
         noteName.strokeColor = 'white';
         noteLbls.push(noteName);
     }
 
-    var timeline = new Path();
+    console.log("LENGTH: " + noteLbls.length);
+
+    timeline = new Path();
     timeline.strokeColor = 'CadetBlue';
     timeline.add(new Point(0, 0), new Point(0, height));
 
-    var dot = new Path.Circle({
+    dot = new Path.Circle({
         center: [0, unitHeight],
         radius: unitHeight / 2,
         fillColor: 'coral'
     });
 
     timeGroup = new Group([timeline, dot]);
-
+    initHasRun = true;
 }
 
-drawWidget();
+function updateSet(){
+    curSet = window.lPlayer.getCurrentSet();
+    console.log(curSet.notes.length);
+    if (noteLbls.length == curSet.notes.length){
+        for (var nt2 = 0; nt2 < curSet.notes.length; nt2++) {
+            var curNote = curSet.notes[nt2];
+            noteLbls[nt2].content = curNote.name;
+            console.log(noteLbls[nt2].content);
+        }
+    }
+}
 
 
-var lastPctComplete = 0;
 function onFrame(event) {
-    var pctComplete = window.percentComplete;
-    freq = window.pitchFreq;
-    timeGroup.position.x = width * pctComplete;
-    if (pctComplete < lastPctComplete){
-        drawWidget();
-    }
-    lastPctComplete = pctComplete;
-    //console.log(window.percentComplete);
+    if (initHasRun) {
+        var pctComplete = window.percentComplete;
+        freq = window.pitchFreq;
+        timeGroup.position.x = consumedX * pctComplete;
 
-    if (freq !== -1) {
-        //dot.position.y = gridArray[Math.abs((Math.round(12 * (Math.log(freq / 440) / Math.log(2)) + 57)) - range)];
+        if (pctComplete < lastPctComplete) {
+            updateSet();
+        }
+        lastPctComplete = pctComplete;
+
+        if (freq !== -1) {
+            //dot.position.y = gridArray[Math.abs((Math.round(12 * (Math.log(freq / 440) / Math.log(2)) + 57)) - range)];
+        }
+        else {
+        }
     }
-    else {}
 }
 
 function onResize(event) {
@@ -99,5 +122,7 @@ function onResize(event) {
     width = view.size.width;
     unitHeight = height / range;
     unitWidth = width / measureCount;
-    drawWidget();
+    initWidget();
 }
+
+initWidget();

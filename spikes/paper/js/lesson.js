@@ -24,7 +24,7 @@ var detectorElem,
     detuneAmount;
 
 var lessons = [];
-lessons.push(new Lesson([["A2", "1"], ["B2", "2"], ["G2", "3"], ["A2", "1/4"]]));
+lessons.push(new Lesson([["A2", "1/4"], ["B2", "2"], ["G2", "1/2"], ["A2", "2/4"]]));
 
 var users = [];
 users.push(new User("F1", "F3"));

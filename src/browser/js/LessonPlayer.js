@@ -17,7 +17,7 @@ function LessonPlayer(aUser, aLesson){
     var minute = 60000;
     var bpm = aLesson.bpm;
     var isPlaying = false;
-    var measureCount = aLesson.notes.length;
+    var measureCount = aLesson.getLessonLength();
     var numBeats = measureCount * aLesson.tempo;
     var baseDistance = nMgr.getDistanceBetweenTwoNotes(aLesson.getLowestNote().name, aUser.bottomNote.name);
 
@@ -32,11 +32,10 @@ function LessonPlayer(aUser, aLesson){
     }
 
     // eg. (60sec / 120bpm) * 10beats = 5 seconds
-    // TODO THERE IS A BUG, IT TAKES AS LONG FOR 4 BEAT AS 12 SAME BPM
-    // TODO ADD INTEGRATED TEST TO CHECK THAT MS IS RIGHT FOR MORE NOTES
-    function _beginTimer(numBeats, bpm){
-        timerLength = numBeats * (minute / bpm);
-        beatLength = timerLength / numBeats;
+    // TODO there is variability in set length by ~50ms, reduce to ~5
+    function _beginTimer(beatCount, bpm){
+        timerLength = beatCount * (minute / bpm);
+        beatLength = timerLength / beatCount;
         startTime = new Date().getTime();
         setTimeout(_instance, beatLength);
     }
@@ -44,6 +43,7 @@ function LessonPlayer(aUser, aLesson){
     function _instance(){
         if (_curSetPctComplete() >= 1) {
             console.log("Set " + curSetIdx + " complete.");
+            console.log("Milliseconds passed: " + (new Date().getTime() - startTime));
             curSetIdx++;
             if (curSetIdx < sets.length) {
                 _beginTimer(numBeats, bpm);
