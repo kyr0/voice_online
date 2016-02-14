@@ -4,9 +4,10 @@ var height = view.size.height;
 var width = view.size.width;
 var curSet = window.lPlayer.getCurrentSet();
 var range = curSet.getLessonRange() + 2;  // pad top and bottom
-var measureCount = Math.floor(curSet.getLessonLength()) + 1; // todo: bug
+var lessonLength = curSet.getLessonLength();
+var measureCount = Math.floor(lessonLength);
 var unitHeight = height / range;
-var unitWidth = width / measureCount;
+var unitWidth = width / lessonLength;
 
 var consumedX = 0;
 var lastPctComplete = 0;
@@ -24,7 +25,6 @@ var timeGroup = null;
 
 
 function initWidget() {
-    console.log("INITWIDGET YAYA");
 
     border = new Path.Rectangle({
         rectangle: view.bounds,
@@ -33,20 +33,26 @@ function initWidget() {
         fillColor: '#282828'
     });
 
-    for (var msr = 1; msr < measureCount; msr++) {
-        x = unitWidth * msr;
-        var vert = new Path.Line(new Point(x, 0), new Point(x, height));
-        vert.strokeColor = 'grey';
-        gridX.push(vert);
+    var vert = new Path.Line(new Point(0, 0), new Point(0, height));
+    vert.strokeColor = 'grey';
+    var symbolVert = new Symbol(vert);
+    gridX.push(symbolVert);
+    for (var msr = 0; msr < measureCount; msr++) {
+        x = unitWidth * (msr + 1);
+        gridX.push(symbolVert.place(new Point(x, height / 2)));
     }
+
+    var horz = new Path.Line(new Point(0, 0), new Point(width, 0));
+    horz.strokeColor = 'grey';
+    var symbolHorz = new Symbol(horz);
+    gridY.push(symbolHorz);
     for (var semi = 1; semi < range; semi++) {
         y = unitHeight * semi;
-        var horz = new Path.Line(new Point(0, y), new Point(width, y));
-        horz.strokeColor = 'grey';
-        gridY.push(horz);
+        gridY.push(symbolHorz.place(new Point(width / 2, y)));
     }
 
     consumedX = 0;
+    var tmpNtNames = [];  // used to filter out duplicate note labels
     for (var nt = 0; nt < curSet.notes.length; nt++) {
         var curNote = curSet.notes[nt];
         var curNoteWidth = unitWidth * curNote.relativeLength;
@@ -61,10 +67,15 @@ function initWidget() {
         consumedX += curNoteWidth;
 
         // Note label related
-        var noteName = new PointText([10, curNoteY + (unitHeight / 2)]);
-        noteName.content = curNote.name;
-        noteName.strokeColor = 'white';
-        noteLbls.push(noteName);
+        if (tmpNtNames.indexOf(curNote.name) === -1) {
+            tmpNtNames.push(curNote.name);
+            var noteName = new PointText([20, curNoteY + (unitHeight / 2)]);
+            noteName.content = curNote.name;
+            noteName.strokeColor = 'coral';
+            noteLbls.push(noteName);
+            noteLbls[nt].ntObj = curNote;
+            noteLbls[nt].relativeInterval = curNote.relativeInterval;
+        }
     }
 
     timeline = new Path();
@@ -74,22 +85,17 @@ function initWidget() {
     dot = new Path.Circle({
         center: [0, unitHeight],
         radius: unitHeight / 2,
-        fillColor: 'coral',
-        //blendMode: 'negation'
+        fillColor: 'coral'
     });
 
     timeGroup = new Group([timeline, dot]);
 }
 
 function updateSet(){
-    curSet = window.lPlayer.getCurrentSet();
-    console.log(curSet.notes.length);
-    if (noteLbls.length == curSet.notes.length){
-        for (var nt2 = 0; nt2 < curSet.notes.length; nt2++) {
-            var curNote = curSet.notes[nt2];
-            noteLbls[nt2].content = curNote.name;
-            console.log(noteLbls[nt2].content);
-        }
+    for (var lbl = 0; lbl < noteLbls.length; lbl++) {
+        var curNoteLbl = noteLbls[lbl];
+        curNoteLbl.ntObj = curNoteLbl.ntObj.nextNote;
+        curNoteLbl.content = curNoteLbl.ntObj.name;
     }
 }
 
@@ -114,45 +120,58 @@ function onFrame(event) {
 }
 
 jQuery(window).on('resize', function(){
-    console.log("ONRESIZE WOOOOOO!");
-    var scaleX = view.size.width / width;
-    var scaleY = view.size.height / height;
     height = view.size.height;
     width = view.size.width;
     unitHeight = height / range;
-    unitWidth = width / measureCount;
+    unitWidth = width / lessonLength;
 
     border.bounds = view.bounds;
 
-    for (var msr = 0; msr < gridX.length; msr++) {
-        x = unitWidth * (msr + 1);
-        gridX[msr].segments = [[x, 0], [x, height]];
+    gridX[0].definition.segments = [[0, 0], [0, height]];
+    for (var msr = 1; msr < gridX.length; msr++) {
+        x = unitWidth * msr;
+        gridX[msr].position = new Point(x, height / 2);
     }
-    for (var semi = 0; semi < gridY.length; semi++) {
-        y = unitHeight * (semi + 1);
-        gridY[semi].segments = [[0, y], [width, y]];
+    gridY[0].definition.segments = [[0, 0], [width, 0]];
+    for (var semi = 1; semi < gridY.length; semi++) {
+        y = unitHeight * semi;
+        gridY[semi].position = new Point(width / 2, y);
     }
 
     consumedX = 0;
     for (var nt = 0; nt < curSet.notes.length; nt++) {
         var curNote = curSet.notes[nt];
-        var curNoteWidth = unitWidth * curNote.relativeLength;
         var curNoteY = unitHeight * curNote.relativeInterval + (unitHeight / 2);
+        var curNoteWidth = unitWidth * curNote.relativeLength;
 
-        // Bubble related
-        console.log(bubbles[nt]);
         var bubRect = new Rectangle(consumedX, curNoteY, curNoteWidth, unitHeight);
         var cornerSize = new Size((unitWidth / 6),(unitHeight / 2));
         var bubble = new Path.RoundRectangle(bubRect, cornerSize);
+        bubble.fillColor = 'AntiqueWhite';
+        bubbles[nt].remove();
+        bubbles[nt] = bubble;
         consumedX += curNoteWidth;
-
-        // Note label related
-        var noteName = new PointText([10, curNoteY + (unitHeight / 2)]);
-        noteName.content = curNote.name;
-        noteName.strokeColor = 'white';
-        noteLbls.push(noteName);
     }
 
+    for (var lbl = 0; lbl < noteLbls.length; lbl++) {
+        noteLbls[lbl].position = [20, unitHeight * (1 + noteLbls[lbl].relativeInterval)];
+        noteLbls[lbl].insertAbove(bubbles[bubbles.length - 1]);
+    }
+
+    timeline.remove();
+    timeline = new Path();
+    timeline.strokeColor = 'CadetBlue';
+    timeline.add(new Point(0, 0), new Point(0, height));
+
+    dot.remove();
+    dot = new Path.Circle({
+        center: [0, unitHeight],
+        radius: unitHeight / 2,
+        fillColor: 'coral'
+    });
+
+    timeGroup.remove();
+    timeGroup = new Group([timeline, dot]);
 
 });
 
