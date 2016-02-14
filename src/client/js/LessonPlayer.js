@@ -10,9 +10,10 @@ function LessonPlayer(aUser, aLesson){
 
     var startTime = null;
     var timerLength = null;
-    var beatLength = null;
+    var curNoteLength = null;
     var baseSet = null;
     var curSetIdx = 0;
+    var curNoteIdx = 0;
     var elapsedBeats = 0;
     var minute = 60000;
     var bpm = aLesson.bpm;
@@ -32,12 +33,13 @@ function LessonPlayer(aUser, aLesson){
     }
 
     // eg. (60sec / 120bpm) * 10beats = 5 seconds
-    // TODO there is variability in set length by ~50ms, reduce to ~5
+    // TODO there is variability in set execution by ~50ms, reduce to ~5
     function _beginTimer(beatCount, bpm){
         timerLength = beatCount * (minute / bpm);
-        beatLength = timerLength / beatCount;
+        curNoteLength = sets[curSetIdx].notes[curNoteIdx].relativeLength;
+        curNoteLength = curNoteLength * (timerLength / measureCount);
         startTime = new Date().getTime();
-        setTimeout(_instance, beatLength);
+        setTimeout(_instance, curNoteLength);
     }
 
     function _instance(){
@@ -45,6 +47,7 @@ function LessonPlayer(aUser, aLesson){
             console.log("Set " + curSetIdx + " complete.");
             console.log("Milliseconds passed: " + (new Date().getTime() - startTime));
             curSetIdx++;
+            curNoteIdx = 0;
             if (curSetIdx < sets.length) {
                 _beginTimer(numBeats, bpm);
             }
@@ -53,13 +56,17 @@ function LessonPlayer(aUser, aLesson){
             }
         }
         else {
+            curNoteIdx++;
             _onInstance();
-            var diff = (new Date().getTime() - startTime) - (elapsedBeats * beatLength);
-            setTimeout(_instance, (beatLength - diff));
+            curNoteLength = sets[curSetIdx].notes[curNoteIdx].relativeLength;
+            curNoteLength = curNoteLength * (timerLength / measureCount);
+            setTimeout(_instance, curNoteLength);
         }
     }
 
-    function _onInstance(){}
+    function _onInstance(){
+        console.log("ONINSTANCE");
+    }
 
     function _generateSets(){
         var sets = [];
@@ -79,7 +86,7 @@ function LessonPlayer(aUser, aLesson){
 
     this._setCurSetIndex = function(newCurIdx){
         /**
-         * If you are using this outside of tests you are doing something wrong.
+         * This method only for use by tests
          */
         curSetIdx = newCurIdx;
     };

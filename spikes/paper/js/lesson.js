@@ -14,6 +14,7 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioContext = null;
 var bufferLength = 1024;
 var scriptNode = null;
+var oscillator = null;
 var mediaStreamSource = null;
 var mpm = null;
 var lastResult = null;
@@ -27,7 +28,7 @@ var lessons = [];
 lessons.push(new Lesson([["A2", "1/4"], ["B2", "2"], ["G2", "1/2"], ["A2", "2/4"]]));
 
 var users = [];
-users.push(new User("F1", "F3"));
+users.push(new User("G1", "F3"));  // anything lower than G1 will == -1 pitch
 
 window.lPlayer = new LessonPlayer(users[0], lessons[0]);
 
@@ -35,6 +36,8 @@ window.lPlayer = new LessonPlayer(users[0], lessons[0]);
 window.onload = function() {
     console.log("Window OnLoad");
     audioContext = new AudioContext();
+    oscillator = audioContext.createOscillator();
+    oscillator.frequency.value = lPlayer.getCurrentSet().notes[0].frequency;  // osc start frequency
     mpm = new MPM(audioContext.sampleRate, bufferLength);
     scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
 
@@ -46,20 +49,24 @@ window.onload = function() {
     detuneAmount = document.getElementById( "detune_amt" );
 
 
+    // use the oscillator
+    oscillator.connect(scriptNode); // Connect output of Oscillator to our scriptNode
+    oscillator.start();
+
     // get the mic
-    getUserMedia(
-        {
-            "audio": {
-                "mandatory": {
-                    "googEchoCancellation": "false",
-                    "googAutoGainControl": "false",
-                    "googNoiseSuppression": "false",
-                    "googHighpassFilter": "false"
-                },
-                "optional": []
-            }
-        }, gotStream
-    );
+    //getUserMedia(
+    //    {
+    //        "audio": {
+    //            "mandatory": {
+    //                "googEchoCancellation": "false",
+    //                "googAutoGainControl": "false",
+    //                "googNoiseSuppression": "false",
+    //                "googHighpassFilter": "false"
+    //            },
+    //            "optional": []
+    //        }
+    //    }, gotStream
+    //);
 
     lPlayer.start();
 
@@ -71,7 +78,6 @@ window.onload = function() {
         var inputData = inputBuffer.getChannelData(0);
         //console.log(inputData);
         updatePitch(inputData);
-        window.percentComplete = lPlayer.getCurSetPctComplete();
     };
     //console.log(scriptNode
     //    + "target: " + scriptNode.target
@@ -110,6 +116,7 @@ function gotStream(stream) {
 function updatePitch(buf) {
     var resultObj = mpm.detectPitch(buf);
     var pitchFreq = resultObj.getPitchFrequency();
+    //console.log(pitchFreq);
     var probability = resultObj.getProbability();
     if (pitchFreq == -1 || probability < .95) {
         pitchFreq = -1;

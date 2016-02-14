@@ -1,5 +1,8 @@
 // This is PaperScript
 
+// TODO optimize by planning the whole lesson, all information is calculated at creation and
+// TODO    not during execution.
+
 var height = view.size.height;
 var width = view.size.width;
 var curSet = window.lPlayer.getCurrentSet();
@@ -102,7 +105,7 @@ function updateSet(){
 
 function onFrame(event) {
     if (initHasRun) {
-        var pctComplete = window.percentComplete;
+        var pctComplete = window.lPlayer.getCurSetPctComplete();
         freq = window.pitchFreq;
         timeGroup.position.x = consumedX * pctComplete;
 
