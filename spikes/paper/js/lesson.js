@@ -14,7 +14,7 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioContext = null;
 var bufferLength = 1024;
 var scriptNode = null;
-var oscillator = null;
+window.oscillator = null;
 var mediaStreamSource = null;
 var mpm = null;
 var lastResult = null;
@@ -28,7 +28,7 @@ var lessons = [];
 lessons.push(new Lesson([["A2", "1/4"], ["B2", "2"], ["G2", "1/2"], ["A2", "2/4"]]));
 
 var users = [];
-users.push(new User("G1", "F3"));  // anything lower than G1 will == -1 pitch
+users.push(new User("A1", "F3"));  // anything lower than A1 will == -1 pitch
 
 window.lPlayer = new LessonPlayer(users[0], lessons[0]);
 
@@ -36,8 +36,8 @@ window.lPlayer = new LessonPlayer(users[0], lessons[0]);
 window.onload = function() {
     console.log("Window OnLoad");
     audioContext = new AudioContext();
-    oscillator = audioContext.createOscillator();
-    oscillator.frequency.value = lPlayer.getCurrentSet().notes[0].frequency;  // osc start frequency
+    window.oscillator = audioContext.createOscillator();
+    window.oscillator.frequency.value = lPlayer.getCurrentSet().notes[0].frequency;  // osc start frequency
     mpm = new MPM(audioContext.sampleRate, bufferLength);
     scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
 
@@ -50,8 +50,8 @@ window.onload = function() {
 
 
     // use the oscillator
-    oscillator.connect(scriptNode); // Connect output of Oscillator to our scriptNode
-    oscillator.start();
+    window.oscillator.connect(scriptNode); // Connect output of Oscillator to our scriptNode
+    window.oscillator.start();
 
     // get the mic
     //getUserMedia(
@@ -116,7 +116,7 @@ function gotStream(stream) {
 function updatePitch(buf) {
     var resultObj = mpm.detectPitch(buf);
     var pitchFreq = resultObj.getPitchFrequency();
-    //console.log(pitchFreq);
+    console.log(pitchFreq);
     var probability = resultObj.getProbability();
     if (pitchFreq == -1 || probability < .95) {
         pitchFreq = -1;

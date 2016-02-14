@@ -14,7 +14,7 @@ function LessonPlayer(aUser, aLesson){
     var baseSet = null;
     var curSetIdx = 0;
     var curNoteIdx = 0;
-    var elapsedBeats = 0;
+    var curNote = null;
     var minute = 60000;
     var bpm = aLesson.bpm;
     var isPlaying = false;
@@ -34,10 +34,12 @@ function LessonPlayer(aUser, aLesson){
 
     // eg. (60sec / 120bpm) * 10beats = 5 seconds
     // TODO there is variability in set execution by ~50ms, reduce to ~5
+    // TODO the _onInstance stops firing on time after a few sets, review original beatSync article
+    // TODO find a way to keep it in sync, maybe smaller intervals with counters
     function _beginTimer(beatCount, bpm){
         timerLength = beatCount * (minute / bpm);
-        curNoteLength = sets[curSetIdx].notes[curNoteIdx].relativeLength;
-        curNoteLength = curNoteLength * (timerLength / measureCount);
+        curNote = sets[curSetIdx].notes[curNoteIdx];
+        curNoteLength = curNote.relativeLength * (timerLength / measureCount);
         startTime = new Date().getTime();
         setTimeout(_instance, curNoteLength);
     }
@@ -58,14 +60,15 @@ function LessonPlayer(aUser, aLesson){
         else {
             curNoteIdx++;
             _onInstance();
-            curNoteLength = sets[curSetIdx].notes[curNoteIdx].relativeLength;
-            curNoteLength = curNoteLength * (timerLength / measureCount);
+            curNoteLength = curNote.relativeLength * (timerLength / measureCount);
             setTimeout(_instance, curNoteLength);
         }
     }
 
     function _onInstance(){
         console.log("ONINSTANCE");
+        curNote = sets[curSetIdx].notes[curNoteIdx];
+        window.oscillator.frequency.value = curNote.frequency;
     }
 
     function _generateSets(){
@@ -102,6 +105,10 @@ function LessonPlayer(aUser, aLesson){
 
     this.getCurrentSet = function(){
         return sets[curSetIdx];
+    };
+
+    this.getCurrentNote = function(){
+        return curNote;
     };
 
     this.isPlaying = function(){
