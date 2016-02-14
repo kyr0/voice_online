@@ -10,10 +10,13 @@ function LessonPlayer(aUser, aLesson){
 
     var startTime = null;
     var timerLength = null;
+    var fragmentLength = null;
     var curNoteLength = null;
     var baseSet = null;
     var curSetIdx = 0;
     var curNoteIdx = 0;
+    var elapsedFragments = 0;
+    var lastNoteElapsedFragments = 0;
     var curNote = null;
     var minute = 60000;
     var bpm = aLesson.bpm;
@@ -33,24 +36,35 @@ function LessonPlayer(aUser, aLesson){
     }
 
     // eg. (60sec / 120bpm) * 10beats = 5 seconds
-    // TODO there is variability in set execution by ~50ms, reduce to ~5
-    // TODO the _onInstance stops firing on time after a few sets, review original beatSync article
+    // TODO 1) there is variability in set execution by ~50ms, reduce to ~5
+    // TODO 2) the _onInstance stops firing on time after a few sets, review original beatSync article
     // TODO find a way to keep it in sync, maybe smaller intervals with counters
+    // TODO 3) find a way to test this properly (or even at all)
     function _beginTimer(beatCount, bpm){
+        var curSet = sets[curSetIdx];
         timerLength = beatCount * (minute / bpm);
-        curNote = sets[curSetIdx].notes[curNoteIdx];
+        var beatLength = timerLength / beatCount;
+        fragmentLength = beatLength / (curSet.getSmallestNoteSize() / curSet.tempo);
+        curNote = curSet.notes[curNoteIdx];
         curNoteLength = curNote.relativeLength * (timerLength / measureCount);
         startTime = new Date().getTime();
-        setTimeout(_instance, curNoteLength);
+        setTimeout(_instance, fragmentLength);
     }
 
     function _instance(){
+        elapsedFragments++;
         if (_curSetPctComplete() >= 1) {
             console.log("Set " + curSetIdx + " complete.");
             console.log("Milliseconds passed: " + (new Date().getTime() - startTime));
             curSetIdx++;
-            curNoteIdx = 0;
             if (curSetIdx < sets.length) {
+                curNoteIdx = 0;
+                curNote = sets[curSetIdx].notes[curNoteIdx];
+                curNoteLength = curNote.relativeLength * (timerLength / measureCount);
+                console.log("New Note: " + curNote.name + " " + curNote.frequency);
+                window.oscillator.frequency.value = curNote.frequency;
+                elapsedFragments = 0;
+                lastNoteElapsedFragments = 0;
                 _beginTimer(numBeats, bpm);
             }
             else {
@@ -58,17 +72,23 @@ function LessonPlayer(aUser, aLesson){
             }
         }
         else {
-            curNoteIdx++;
             _onInstance();
-            curNoteLength = curNote.relativeLength * (timerLength / measureCount);
-            setTimeout(_instance, curNoteLength);
+            // the diff resets latency which occurs during timer to keep it on track
+            var diff = (new Date().getTime() - startTime) - (elapsedFragments * fragmentLength);
+            setTimeout(_instance, (fragmentLength - diff));
         }
     }
 
     function _onInstance(){
-        console.log("ONINSTANCE");
-        curNote = sets[curSetIdx].notes[curNoteIdx];
-        window.oscillator.frequency.value = curNote.frequency;
+        var elapsedInCurrentNote = (elapsedFragments - lastNoteElapsedFragments) * fragmentLength;
+        if (curNoteLength <= elapsedInCurrentNote){
+            lastNoteElapsedFragments = elapsedFragments;
+            curNoteIdx++;
+            curNote = sets[curSetIdx].notes[curNoteIdx];
+            curNoteLength = curNote.relativeLength * (timerLength / measureCount);
+            console.log("New Note: " + curNote.name + " " + curNote.frequency);
+            window.oscillator.frequency.value = curNote.frequency;
+        }
     }
 
     function _generateSets(){

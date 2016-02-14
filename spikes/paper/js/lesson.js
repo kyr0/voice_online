@@ -25,7 +25,7 @@ var detectorElem,
     detuneAmount;
 
 var lessons = [];
-lessons.push(new Lesson([["A2", "1/4"], ["B2", "2"], ["G2", "1/2"], ["A2", "2/4"]]));
+lessons.push(new Lesson([["A2", "1"], ["B2", "1"], ["G2", "7/8"], ["A2", "2/4"]]));
 
 var users = [];
 users.push(new User("A1", "F3"));  // anything lower than A1 will == -1 pitch
@@ -116,7 +116,7 @@ function gotStream(stream) {
 function updatePitch(buf) {
     var resultObj = mpm.detectPitch(buf);
     var pitchFreq = resultObj.getPitchFrequency();
-    console.log(pitchFreq);
+    //console.log(pitchFreq);
     var probability = resultObj.getProbability();
     if (pitchFreq == -1 || probability < .95) {
         pitchFreq = -1;

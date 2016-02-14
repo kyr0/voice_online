@@ -49,6 +49,9 @@ describe('Lesson', function() {
         expect(this.lesson.__testonly__.sumNumeratorToHighestDenominator("1/4", 32)).to.equal(8);
     });
 
+    it("getSmallestNoteSize() should return null with no notes in lesson", function () {
+        expect(this.lesson.getSmallestNoteSize()).to.be.null;
+    });
 
     describe('with multiple notes', function() {
         beforeEach(function () {
@@ -150,6 +153,12 @@ describe('Lesson', function() {
         it("createListOfIntervalsFromNotes() should return an accurate list", function () {
             expect(this.lesson.intervals.length).to.equal(3);
         });
+
+        it("getSmallestNoteSize() should return the largest denominator", function () {
+            expect(this.lesson.getSmallestNoteSize()).to.equal(32);
+        });
+
+
 
 
     });
