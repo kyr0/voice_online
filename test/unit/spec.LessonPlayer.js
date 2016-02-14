@@ -101,11 +101,12 @@ describe('LessonsPlayer', function() {
             expect(this.lPlayer.isPlaying()).to.be.true;
         });
 
-        it("should show isPlaying = false after final set", function () {
-            this.lPlayer._setCurSetIndex(24);
-            this.lPlayer.start();
-            expect(this.lPlayer.isPlaying()).to.be.true;
-        });
+        // TODO move into integration
+        //it("should show isPlaying = false after final set", function () {
+        //    this.lPlayer._setCurSetIndex(24);
+        //    this.lPlayer.start();
+        //    expect(this.lPlayer.isPlaying()).to.be.true;
+        //});
     });
 });
 

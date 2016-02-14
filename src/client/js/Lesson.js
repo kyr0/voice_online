@@ -8,7 +8,7 @@ function Lesson (noteList) {
     this.intervals = [];
     this.bpm = 120;
     this.tempo = 4; // beats per measure
-    var smallestNoteSize = null;
+    this.smallestNoteSize = null;
     var lowestNote = null;
     var highestNote = null;
 
@@ -35,7 +35,6 @@ function Lesson (noteList) {
             currentDenom = Number(_getDenominator(arrayOfNotes[i].noteLength));
             if (currentDenom > highestDenom) highestDenom = currentDenom;
         }
-        smallestNoteSize = highestDenom;
         return highestDenom;
     }
     /* start-test-code */
@@ -135,7 +134,7 @@ function Lesson (noteList) {
         this.notes = this.notes.concat(noteObjArr);
         this.intervals = _updateIntervals(this.notes);
         this._updateRelativeIntervals();
-        _getHighestDenominator(this.notes); // sets smallestNoteSize
+        this.smallestNoteSize = _getHighestDenominator(this.notes);
     };
 
 
@@ -145,7 +144,7 @@ function Lesson (noteList) {
          */
 
         var arrayOfNotes = this.notes;
-        var highestDenom = smallestNoteSize;
+        var highestDenom = this.smallestNoteSize;
         var numerator = 0;
         for (var i = 0; i < arrayOfNotes.length; i++) {
             var noteLength = arrayOfNotes[i].noteLength;

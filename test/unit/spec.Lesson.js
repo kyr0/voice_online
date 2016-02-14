@@ -50,7 +50,7 @@ describe('Lesson', function() {
     });
 
     it("getSmallestNoteSize() should return null with no notes in lesson", function () {
-        expect(this.lesson.getSmallestNoteSize()).to.be.null;
+        expect(this.lesson.smallestNoteSize).to.be.null;
     });
 
     describe('with multiple notes', function() {
@@ -155,7 +155,7 @@ describe('Lesson', function() {
         });
 
         it("getSmallestNoteSize() should return the largest denominator", function () {
-            expect(this.lesson.getSmallestNoteSize()).to.equal(32);
+            expect(this.lesson.smallestNoteSize).to.equal(32);
         });
 
 

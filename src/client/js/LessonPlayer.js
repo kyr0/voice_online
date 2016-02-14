@@ -2,6 +2,8 @@
 var nMgr = require("../../../src/client/js/NoteManager.js");
 var Lesson = require("../../../src/client/js/Lesson.js");
 
+// TODO move audioContext setup / teardown into LessonPlayer Begin / End
+
 function LessonPlayer(aUser, aLesson){
 
     if (aUser.range < aLesson.getLessonRange()){
@@ -37,14 +39,12 @@ function LessonPlayer(aUser, aLesson){
 
     // eg. (60sec / 120bpm) * 10beats = 5 seconds
     // TODO 1) there is variability in set execution by ~50ms, reduce to ~5
-    // TODO 2) the _onInstance stops firing on time after a few sets, review original beatSync article
-    // TODO find a way to keep it in sync, maybe smaller intervals with counters
-    // TODO 3) find a way to test this properly (or even at all)
+    // TODO 2) find a way to test this properly (or even at all)
     function _beginTimer(beatCount, bpm){
         var curSet = sets[curSetIdx];
         timerLength = beatCount * (minute / bpm);
         var beatLength = timerLength / beatCount;
-        fragmentLength = beatLength / (curSet.getSmallestNoteSize() / curSet.tempo);
+        fragmentLength = beatLength / (curSet.smallestNoteSize / curSet.tempo);
         curNote = curSet.notes[curNoteIdx];
         curNoteLength = curNote.relativeLength * (timerLength / measureCount);
         startTime = new Date().getTime();
