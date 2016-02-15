@@ -3,8 +3,9 @@
 (function () {
 
     var MPM = require("./../../../src/client/js/MPM.js");
-    var pEval = require("./../../../src/client/js/NoteManager.js");
-    var note = pEval.getNoteMapAtName("C0");
+    var NoteMaps = require("./../../../src/client/js/NoteMaps.js");
+    var pEval = new NoteMaps();
+    var note = pEval.pitchMap["C0"];
     var startTime = Date.now();
     var elapsedTime = 0;
 

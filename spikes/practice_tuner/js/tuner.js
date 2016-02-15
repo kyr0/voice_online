@@ -23,10 +23,11 @@
  */
 
 var MPM = require("../../../src/client/js/MPM.js");
-var pEval = require("../../../src/client/js/NoteManager.js");
+var NoteMaps = require("../../../src/client/js/NoteMaps.js");
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
+var pEval = new NoteMaps();
 var audioContext = null;
 var bufferLength = 1024;
 var scriptNode = null;
@@ -128,10 +129,10 @@ function updatePitch(buf) {
     } else {
         //console.log("Pitch: " + pitchFreq + " Probability: " + probability);
         detectorElem.className = "confident";
-        var noteObj =  pEval.getClosestNoteNameFromPitch(pitchFreq);
+        var noteObj =  pEval.getClosestNoteFromPitch(pitchFreq);
         pitchElem.innerHTML = Math.round(pitchFreq);
         noteElem.innerHTML = noteObj.name;
-        var detune = pEval.getCentsDiff(pitchFreq, noteObj.frequency);
+        var detune = noteObj.getCentsDiff(pitchFreq);
         if (detune == 0 ) {
             detuneElem.className = "";
             detuneAmount.innerHTML = "Perfect.";

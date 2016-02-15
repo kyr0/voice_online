@@ -1,21 +1,18 @@
-/**
- * Created by jaboing on 2015-08-17.
- */
-///**
-// * Created by jaboing on 2015-07-31.
-// */
 "use strict";
 
 var assert = require("assert");
 var MPM = require("../../src/client/js/MPM.js");
 var buffer = require("../resources/audioBuffers.js");
-var nMgr = require("../../src/client/js/NoteManager.js");
+var NoteMaps = require("../../src/client/js/NoteMaps.js");
+var Note = require("../../src/client/js/Note.js");
 
 var helpers = require("../resources/testHelpers.js");
 
 for (var key in helpers) {
     global[key] = helpers[key];
 }
+
+var ntMaps = new NoteMaps();
 
 /*
  * A suite of longer running tests to test all apect of the pitch component.
@@ -51,21 +48,22 @@ describe('Pitch component', function() {
 });
 
 function assertValidPitchDetectionOnRangeOfNotes(startNote, endNote, mpm) {
-    var note = nMgr.getNoteMapAtName(startNote);
+    var note = new Note(startNote);
     var noteFreq = note.frequency;
     var tone;
     var pitchDetected;
     while (note.name !== endNote){
         tone = buffer.noteBuffers[note.name + "_1024"];
         pitchDetected = mpm.detectPitch(tone);
-        expect(nMgr.getCentsDiff(pitchDetected, noteFreq)).to.equal(0);
+        var noteObj = ntMaps.getClosestNoteFromPitch(pitchDetected);
+        expect(noteObj.getCentsDiff(pitchDetected)).to.equal(0);
         note = note.nextNote;
         noteFreq = note.frequency;
     }
 }
 
 function assertInvalidPitchDetectionOnRangeOfNotes(startNote, endNote, mpm) {
-    var note = nMgr.getNoteMapAtName(startNote);
+    var note = new Note(startNote);
     var tone;
     var result;
     while (note.name !== endNote){

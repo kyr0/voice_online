@@ -1,5 +1,4 @@
 "use strict";
-var nMgr = require("../../../src/client/js/NoteManager.js");
 var Lesson = require("../../../src/client/js/Lesson.js");
 
 // TODO move audioContext setup / teardown into LessonPlayer Begin / End
@@ -25,7 +24,7 @@ function LessonPlayer(aUser, aLesson){
     var isPlaying = false;
     var measureCount = aLesson.getLessonLength();
     var numBeats = measureCount * aLesson.tempo;
-    var baseDistance = nMgr.getDistanceBetweenTwoNotes(aLesson.getLowestNote().name, aUser.bottomNote.name);
+    var baseDistance = aLesson.getLowestNote().getDistanceToNote(aUser.bottomNote.name);
 
     function _transposeLesson(distance, baseLesson){
         var newNotes = [];
@@ -94,10 +93,18 @@ function LessonPlayer(aUser, aLesson){
     function _generateSets(){
         var sets = [];
         sets.push(baseSet);
-        var setCount = nMgr.getDistanceBetweenTwoNotes(baseSet.getHighestNote().name, aUser.topNote.name) + 1;
+        var setCount = baseSet.getHighestNote().getDistanceToNote(aUser.topNote.name) + 1;
         for (var set = 1; set < setCount; set++){
             sets.push(_transposeLesson(set, baseSet));
         }
+        //for (set = 0; set < sets.length; set++){
+        //    var ntList = sets[set].notes;
+        //    sets[set].chart = {};
+        //    //base && last befre loop
+        //    for (var nt = 0; nt < ntList.length; nt++){
+        //        sets[set].chart[ntList[nt].name] =
+       //     }
+       // }
         return sets;
     }
 

@@ -36,12 +36,67 @@ function Note (name, noteLength){
         return nMaps.pitchArray[newIndex].name;
     };
 
+    this.getDistanceToNote = function(otherNtName) {
+        var direction = null;
+        var startFreq = _noteObj.frequency;
+        var endFreq = nMaps.pitchMap[otherNtName].frequency;
+
+        if (startFreq === endFreq){
+            direction = "none";
+        }
+        else if (startFreq < endFreq) {
+            direction = "up";
+        }
+        else {
+            direction = "down";
+        }
+
+        var halfSteps = 0;
+        var stepTo = null;
+        var reverseSteps = 1;
+        var traversalNote = _noteObj;
+
+        if (direction === "none") {
+            return halfSteps;
+        }
+        else if (direction === "down") {
+            stepTo = "previousNote";
+            reverseSteps = -1;
+        }
+        else {
+            stepTo = "nextNote";
+        }
+        while (traversalNote.name !== otherNtName){
+            halfSteps += 1;
+            if (traversalNote[stepTo] === null) {
+                throw new Error ("getDistanceToNote() did not encounter the end point of the interval. End Point: " +
+                    otherNtName);
+            }
+            else traversalNote = traversalNote[stepTo];
+        }
+        return halfSteps * reverseSteps;
+    };
+
+    // Returns the difference from expected pitch, rounded to the nearest cent
+    this.getCentsDiff = function(incomingPitch){
+
+        // Math.round instead of Math.floor allows pitch within .5 cent of
+        //  intended note to be counted as "perfect"
+        var centsOff =  Math.round(1200 * Math.log(incomingPitch / this.frequency)/Math.log(2));
+
+        // Don't return a value if more than .5 semitone off target
+        if (Math.abs(centsOff) > 50) {
+            return null;
+        }
+        return centsOff;
+    };
+
     this.name = nMaps.validateNoteName(name);
     this.noteLength = this.setNoteLength(noteLength);
-    var _noteMap = nMaps.pitchMap[this.name];
-    this.previousNote = _noteMap.previousNote;
-    this.nextNote = _noteMap.nextNote;
-    this.frequency = _noteMap.frequency;
+    var _noteObj = nMaps.pitchMap[this.name];
+    this.previousNote = _noteObj.previousNote;
+    this.nextNote = _noteObj.nextNote;
+    this.frequency = _noteObj.frequency;
 
 }
 

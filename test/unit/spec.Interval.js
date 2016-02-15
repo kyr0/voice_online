@@ -37,30 +37,4 @@ describe('Interval Object', function() {
         expect(this.itvl3.halfsteps).to.equal(0);
     });
 
-    it("should create an Interval with correct direction (up)", function () {
-        expect(this.itvl.direction).to.equal("up");
-    });
-
-    it("should create an Interval with correct direction (down)", function () {
-        expect(this.itvl2.direction).to.equal("down");
-    });
-
-    it("should create an Interval with correct direction (unison)", function () {
-        expect(this.itvl3.direction).to.equal("none");
-    });
-
-    it('should throw a not found error if endNoteMap not found', function () {
-        var startNote = this.itvl2.startNote;
-        var endNote = this.itvl2.endNote;
-        // we have to create a method that can be passed into catchError without wiping the data
-        //  objects in arrays such as [startNoteMap, endNoteMap] come through as 'undefined
-        var method = this.itvl2.__testonly__.getIntervalDistance;
-        var parameter = function() { method(startNote, endNote, "up") };
-        var errMsg = "getIntervalDistance() did not encounter the end point of the interval. End Point: " +
-            endNote.name;
-        expect(catchError(parameter, null)).to.equal(errMsg);
-    });
-
-
-
 });

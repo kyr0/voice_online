@@ -1,5 +1,5 @@
 var MPM = require("../../../src/client/js/MPM.js");
-var pEval = require("../../../src/client/js/NoteManager.js");
+var NoteMaps = require("../../../src/client/js/NoteMaps.js");
 var Lesson = require("../../../src/client/js/Lesson.js");
 var User = require("../../../src/client/js/User.js");
 var LessonPlayer = require("../../../src/client/js/LessonPlayer.js");
@@ -17,6 +17,7 @@ var scriptNode = null;
 window.oscillator = null;
 var mediaStreamSource = null;
 var mpm = null;
+var ntMaps = new NoteMaps();
 var lastResult = null;
 var detectorElem,
     pitchElem,
@@ -116,25 +117,14 @@ function gotStream(stream) {
 function updatePitch(buf) {
     var resultObj = mpm.detectPitch(buf);
     var pitchFreq = resultObj.getPitchFrequency();
-    //console.log(pitchFreq);
     var probability = resultObj.getProbability();
     if (pitchFreq == -1 || probability < .95) {
         pitchFreq = -1;
-        if (lastResult !== -1) {
-            detectorElem.className = "vague";
-            pitchElem.innerHTML = "--";
-            noteElem.innerHTML = "-";
-            detuneElem.className = "";
-            detuneAmount.innerHTML = "--";
-            lastResult = -1;
-        }
-    } else {
-        //console.log("Pitch: " + pitchFreq + " Probability: " + probability);
-        detectorElem.className = "confident";
-        var noteObj =  pEval.getClosestNoteNameFromPitch(pitchFreq);
-        pitchElem.innerHTML = Math.round(pitchFreq);
-        noteElem.innerHTML = noteObj.name;
-        var detune = pEval.getCentsDiff(pitchFreq, noteObj.frequency);
+        lastResult = -1;
+    }
+    else {
+        var noteObj =  ntMaps.getClosestNoteFromPitch(pitchFreq);
+        var detune = noteObj.getCentsDiff(pitchFreq);
         if (detune == 0 ) {
             detuneElem.className = "";
             detuneAmount.innerHTML = "Perfect.";
