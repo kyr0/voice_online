@@ -15,7 +15,6 @@ var unitWidth = width / lessonLength;
 var consumedX = 0;
 var lastPctComplete = 0;
 var initHasRun = false;
-var freq = null;
 
 var border = null;
 var gridX = [];
@@ -31,8 +30,7 @@ function initWidget() {
 
     border = new Path.Rectangle({
         rectangle: view.bounds,
-        strokeColor: 'grey',
-        strokeWidth: 1,
+        strokeWidth: 0,
         fillColor: '#282828'
     });
 
@@ -88,7 +86,8 @@ function initWidget() {
     dot = new Path.Circle({
         center: [0, unitHeight],
         radius: unitHeight / 2,
-        fillColor: 'coral'
+        fillColor: 'coral',
+        visible: false
     });
 
     timeGroup = new Group([timeline, dot]);
@@ -105,8 +104,8 @@ function updateSet(){
 
 function onFrame(event) {
     if (initHasRun) {
-        var pctComplete = window.lPlayer.getCurSetPctComplete();
-        freq = window.pitchFreq;
+        var lPlayer = window.lPlayer;
+        var pctComplete = lPlayer.getCurSetPctComplete();
         timeGroup.position.x = consumedX * pctComplete;
 
         if (pctComplete < lastPctComplete) {
@@ -114,10 +113,13 @@ function onFrame(event) {
         }
         lastPctComplete = pctComplete;
 
-        if (freq !== -1) {
-            //dot.position.y = gridArray[Math.abs((Math.round(12 * (Math.log(freq / 440) / Math.log(2)) + 57)) - range)];
+        var yRatio = window.pitchYAxisRatio;
+        if (yRatio) {
+            dot.position.y = unitHeight * yRatio;
+            dot.visible = true;
         }
         else {
+            dot.visible = false;
         }
     }
 }
@@ -180,7 +182,6 @@ jQuery(window).on('resize', function(){
 
 jQuery(document).ready(function() {
     curSet = window.lPlayer.getCurrentSet();
-    console.log("HEY HEY ONREADY SUCKAS");
     initWidget();
     initHasRun = true;
 });

@@ -2,7 +2,7 @@
 var Lesson = require("../../../src/client/js/Lesson.js");
 
 // TODO move audioContext setup / teardown into LessonPlayer Begin / End
-
+// TODO make sure that curSet, curNote, curMap, etc are always at top level for speed
 function LessonPlayer(aUser, aLesson){
 
     if (aUser.range < aLesson.getLessonRange()){
@@ -53,14 +53,13 @@ function LessonPlayer(aUser, aLesson){
     function _instance(){
         elapsedFragments++;
         if (_curSetPctComplete() >= 1) {
-            console.log("Set " + curSetIdx + " complete.");
-            console.log("Milliseconds passed: " + (new Date().getTime() - startTime));
+            //console.log("Milliseconds passed: " + (new Date().getTime() - startTime));
             curSetIdx++;
             if (curSetIdx < sets.length) {
                 curNoteIdx = 0;
                 curNote = sets[curSetIdx].notes[curNoteIdx];
                 curNoteLength = curNote.relativeLength * (timerLength / measureCount);
-                console.log("New Note: " + curNote.name + " " + curNote.frequency);
+                //console.log("New Note: " + curNote.name + " " + curNote.frequency);
                 window.oscillator.frequency.value = curNote.frequency;
                 elapsedFragments = 0;
                 lastNoteElapsedFragments = 0;
@@ -85,7 +84,7 @@ function LessonPlayer(aUser, aLesson){
             curNoteIdx++;
             curNote = sets[curSetIdx].notes[curNoteIdx];
             curNoteLength = curNote.relativeLength * (timerLength / measureCount);
-            console.log("New Note: " + curNote.name + " " + curNote.frequency);
+            //console.log("New Note: " + curNote.name + " " + curNote.frequency);
             window.oscillator.frequency.value = curNote.frequency;
         }
     }
@@ -97,14 +96,13 @@ function LessonPlayer(aUser, aLesson){
         for (var set = 1; set < setCount; set++){
             sets.push(_transposeLesson(set, baseSet));
         }
-        //for (set = 0; set < sets.length; set++){
-        //    var ntList = sets[set].notes;
-        //    sets[set].chart = {};
-        //    //base && last befre loop
-        //    for (var nt = 0; nt < ntList.length; nt++){
-        //        sets[set].chart[ntList[nt].name] =
-       //     }
-       // }
+        for (set = 0; set < sets.length; set++){
+            var ntList = sets[set].notes;
+            sets[set].chart = {};
+            for (var nt = 0; nt < ntList.length; nt++){
+                sets[set].chart[ntList[nt].name] = ntList[nt].relativeInterval;
+            }
+        }
         return sets;
     }
 
@@ -136,6 +134,10 @@ function LessonPlayer(aUser, aLesson){
 
     this.getCurrentNote = function(){
         return curNote;
+    };
+
+    this.getCurrentChart = function(){
+        return sets[curSetIdx].chart;
     };
 
     this.isPlaying = function(){

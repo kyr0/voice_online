@@ -107,7 +107,7 @@ function Lesson (noteList) {
 
     this._updateRelativeIntervals = function (){
         /**
-        Whenever notes are added the note is made aware of how far away it
+        Whenever notes are added the Note is made aware of how far away it
         is from the highest note in the lesson.
          */
         for (var i = 0; i < this.notes.length; i++) {

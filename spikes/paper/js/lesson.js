@@ -35,7 +35,6 @@ window.lPlayer = new LessonPlayer(users[0], lessons[0]);
 
 
 window.onload = function() {
-    console.log("Window OnLoad");
     audioContext = new AudioContext();
     window.oscillator = audioContext.createOscillator();
     window.oscillator.frequency.value = lPlayer.getCurrentSet().notes[0].frequency;  // osc start frequency
@@ -69,11 +68,11 @@ window.onload = function() {
     //    }, gotStream
     //);
 
-    lPlayer.start();
+    window.lPlayer.start();
 
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function(audioProcessingEvent) {
-        console.log("OnAudioProcess");
+        //console.log("OnAudioProcess");
         var inputBuffer = audioProcessingEvent.inputBuffer;
         // The input buffer is from the oscillator we connected earlier
         var inputData = inputBuffer.getChannelData(0);
@@ -118,24 +117,22 @@ function updatePitch(buf) {
     var resultObj = mpm.detectPitch(buf);
     var pitchFreq = resultObj.getPitchFrequency();
     var probability = resultObj.getProbability();
-    if (pitchFreq == -1 || probability < .95) {
-        pitchFreq = -1;
+    if (pitchFreq === -1 || probability < .95) {
         lastResult = -1;
     }
     else {
         var noteObj =  ntMaps.getClosestNoteFromPitch(pitchFreq);
-        var detune = noteObj.getCentsDiff(pitchFreq);
-        if (detune == 0 ) {
-            detuneElem.className = "";
-            detuneAmount.innerHTML = "Perfect.";
-        } else {
-            if (detune < 0)
-                detuneElem.className = "flat";
-            else
-                detuneElem.className = "sharp";
-            detuneAmount.innerHTML = Math.abs( detune );
+        var noteName = noteObj.name;
+        var curChart = lPlayer.getCurrentChart();
+        var relativeItvl = curChart[noteName] + 1;
+        if (relativeItvl){
+            var detuneAmt = noteObj.getCentsDiff(pitchFreq);
+            window.pitchYAxisRatio = relativeItvl + (detuneAmt / 100);
         }
+        else {
+            window.pitchYAxisRatio = null;
+        }
+        // TODO lPlayer needs to build above map to match against.
         lastResult = 1;
     }
-    window.pitchFreq = pitchFreq;
 }
