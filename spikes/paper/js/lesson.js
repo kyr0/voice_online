@@ -19,14 +19,11 @@ var mediaStreamSource = null;
 var mpm = null;
 var ntMaps = new NoteMaps();
 var lastResult = null;
-var detectorElem,
-    pitchElem,
-    noteElem,
-    detuneElem,
-    detuneAmount;
 
 var lessons = [];
 lessons.push(new Lesson([["A2", "1"], ["B2", "1"], ["G2", "7/8"], ["A2", "2/4"]]));
+lessons.push(new Lesson([["A2", "2"], ["B2", "1/2"], ["G2", "3/8"], ["A2", "2/4"],["Ab2", "1/4"]]));
+lessons.push(new Lesson([["A2", "1"], ["B2", "3"], ["G2", "1/4"]]));
 
 var users = [];
 users.push(new User("A1", "F3"));  // anything lower than A1 will == -1 pitch
@@ -40,13 +37,6 @@ window.onload = function() {
     window.oscillator.frequency.value = lPlayer.getCurrentSet().notes[0].frequency;  // osc start frequency
     mpm = new MPM(audioContext.sampleRate, bufferLength);
     scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
-
-    // UI Elements
-    detectorElem = document.getElementById( "detector" );
-    pitchElem = document.getElementById( "pitch" );
-    noteElem = document.getElementById( "note" );
-    detuneElem = document.getElementById( "detune" );
-    detuneAmount = document.getElementById( "detune_amt" );
 
 
     // use the oscillator
@@ -74,9 +64,7 @@ window.onload = function() {
     scriptNode.onaudioprocess = function(audioProcessingEvent) {
         //console.log("OnAudioProcess");
         var inputBuffer = audioProcessingEvent.inputBuffer;
-        // The input buffer is from the oscillator we connected earlier
         var inputData = inputBuffer.getChannelData(0);
-        //console.log(inputData);
         updatePitch(inputData);
     };
     //console.log(scriptNode
@@ -132,7 +120,6 @@ function updatePitch(buf) {
         else {
             window.pitchYAxisRatio = null;
         }
-        // TODO lPlayer needs to build above map to match against.
         lastResult = 1;
     }
 }
