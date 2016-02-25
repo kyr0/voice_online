@@ -62,6 +62,7 @@ window.onload = function() {
 
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function(audioProcessingEvent) {
+        // TODO fix the transition detection errors by averaging frames
         //console.log("OnAudioProcess");
         var inputBuffer = audioProcessingEvent.inputBuffer;
         var inputData = inputBuffer.getChannelData(0);
