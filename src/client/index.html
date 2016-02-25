@@ -5,7 +5,11 @@
     <title>Pure Voice Pro</title>
     <meta charset="utf-8">
     <style>
-        /* Weirdly, the HTML canvas element defaults to a fixed 300 pixels wide by 150 pixels high */
+
+        /* Weirdly, the HTML canvas element defaults to a fixed 300 pixels wide by 150 pixels high
+         *   so the following is necessary to allow full screen.
+         */
+
         html, body {
             height: 100%;
             margin: 0;
@@ -13,10 +17,10 @@
             display: block;  /* No floating content on sides */
         }
 
-        /* Scale canvas with resize attribute to full size */
+        /* Scale canvas with resize attribute (can be % if needed) */
         canvas[resize] {
-            width: 100%;
-            height: 100%;
+            width: 800px;
+            height: 400px;
         }
     </style>
 
@@ -28,10 +32,16 @@
 
     <canvas id="lesson" resize="true"></canvas>
 
-    <div id="content"></div>
+    <div id="content">
+        <ul>
+            <li><span id="lesson-0">4 notes</span></li>
+            <li><span id="lesson-1">5 notes</span></li>
+            <li><span id="lesson-2">3 notes</span></li>
+        </ul>
+    </div>
 
     <script src="js/main.bundle.js"></script>
-    <!-- Load external PaperScript and associate it with myCanvas -->
+    <!-- Load custom PaperScript and associate it with canvas -->
     <script type="text/paperscript" src="js/draw.js" canvas="lesson"></script>
 
 </body>
