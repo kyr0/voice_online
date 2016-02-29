@@ -5,17 +5,16 @@
 
 var height = view.size.height;
 var width = view.size.width;
-var curSet = window.lPlayer.getCurrentSet();
-var range = curSet.getLessonRange() + 2;  // pad top and bottom
-var lessonLength = curSet.getLessonLength();
-var measureCount = Math.floor(lessonLength);
-var unitHeight = height / range;
-var unitWidth = width / lessonLength;
 
+var curSet = null;
+var range = null;
+var lessonLength = null;
+var measureCount = null;
+var unitHeight = null;
+var unitWidth = null;
 var consumedX = 0;
 var lastPctComplete = 0;
-var initHasRun = false;
-
+var hasStarted = false;
 var border = null;
 var gridX = [];
 var gridY = [];
@@ -26,8 +25,40 @@ var dot = null;
 var timeGroup = null;
 
 
-function initWidget() {
+var drawLesson = function(lPlayer) {
+    project.activeLayer.removeChildren();  // clear any potential previous lessons off
+    curSet = lPlayer.getCurrentSet();
+    range = curSet.getLessonRange() + 2;  // pad top and bottom
+    lessonLength = curSet.getLessonLength();
+    measureCount = Math.floor(lessonLength);
+    unitHeight = height / range;
+    unitWidth = width / lessonLength;
 
+    consumedX = 0;
+    lastPctComplete = 0;
+    hasStarted = false;
+
+    border = null;
+    gridX = [];
+    gridY = [];
+    bubbles = [];
+    noteLbls = [];
+    timeline = null;
+    dot = null;
+    timeGroup = null;
+    initWidget();
+};
+window.drawLesson = drawLesson;
+
+
+var startLesson = function() {
+    hasStarted = true;
+    window.lPlayer.start();
+};
+window.startLesson = startLesson;
+
+
+function initWidget() {
     border = new Path.Rectangle({
         rectangle: view.bounds,
         strokeWidth: 0,
@@ -103,7 +134,7 @@ function updateSet(){
 
 
 function onFrame(event) {
-    if (initHasRun) {
+    if (hasStarted) {
         var lPlayer = window.lPlayer;
         var pctComplete = lPlayer.getCurSetPctComplete();
         timeGroup.position.x = consumedX * pctComplete;
@@ -181,7 +212,9 @@ jQuery(window).on('resize', function(){
 });
 
 jQuery(document).ready(function() {
-    curSet = window.lPlayer.getCurrentSet();
-    initWidget();
-    initHasRun = true;
+    border = new Path.Rectangle({
+        rectangle: view.bounds,
+        strokeWidth: 0,
+        fillColor: '#282828'
+    });
 });

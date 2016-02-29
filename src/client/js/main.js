@@ -11,6 +11,7 @@ window.pitchFreq = -1;
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
+var drawLesson = null;
 var audioContext = null;
 var bufferLength = 1024;
 var scriptNode = null;
@@ -19,29 +20,50 @@ var mediaStreamSource = null;
 var mpm = null;
 var ntMaps = new NoteMaps();
 var lastResult = null;
+var hasDrawnLesson = false;
 
 var lessons = [];
-lessons.push(new Lesson([["A2", "1"], ["B2", "1"], ["G2", "7/8"], ["A2", "2/4"]]));
+lessons.push(new Lesson([["A2", "1/8"], ["B2", "1/8"], ["G2", "1/8"], ["A2", "1/8"]]));
 lessons.push(new Lesson([["A2", "2"], ["B2", "1/2"], ["G2", "3/8"], ["A2", "2/4"],["Ab2", "1/4"]]));
 lessons.push(new Lesson([["A2", "1"], ["B2", "3"], ["G2", "1/4"]]));
 
 var users = [];
-users.push(new User("A1", "F3"));  // anything lower than A1 will == -1 pitch
+users.push(new User("A1", "E2"));  // anything lower than A1 will == -1 pitch
 
-window.lPlayer = new LessonPlayer(users[0], lessons[0]);
+window.lPlayer = null;
+
+// Canvas onClick, start the lesson
+jQuery('#lesson').click(function(){
+    if (hasDrawnLesson){
+        window.oscillator = audioContext.createOscillator();
+        window.oscillator.connect(scriptNode); // Connect output of Oscillator to our scriptNode
+        window.oscillator.frequency.value = window.lPlayer.getCurrentSet().notes[0].frequency;  // osc start frequency
+        window.oscillator.start();
+        window.startLesson();
+    }
+});
+
+jQuery('#lesson-0').click(function(){
+    window.lPlayer = new LessonPlayer(users[0], lessons[0]);
+    window.drawLesson(window.lPlayer);
+    hasDrawnLesson = true;
+});
+jQuery('#lesson-1').click(function(){
+    window.lPlayer = new LessonPlayer(users[0], lessons[1]);
+    window.drawLesson(window.lPlayer);
+    hasDrawnLesson = true;
+});
+jQuery('#lesson-2').click(function(){
+    window.lPlayer = new LessonPlayer(users[0], lessons[2]);
+    window.drawLesson(window.lPlayer);
+    hasDrawnLesson = true;
+});
 
 
 window.onload = function() {
     audioContext = new AudioContext();
-    window.oscillator = audioContext.createOscillator();
-    window.oscillator.frequency.value = lPlayer.getCurrentSet().notes[0].frequency;  // osc start frequency
     mpm = new MPM(audioContext.sampleRate, bufferLength);
     scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
-
-
-    // use the oscillator
-    window.oscillator.connect(scriptNode); // Connect output of Oscillator to our scriptNode
-    window.oscillator.start();
 
     // get the mic
     //getUserMedia(
@@ -58,15 +80,18 @@ window.onload = function() {
     //    }, gotStream
     //);
 
-    window.lPlayer.start();
-
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function(audioProcessingEvent) {
         // TODO fix the transition detection errors by averaging frames
-        //console.log("OnAudioProcess");
+        console.log("OnAudioProcess");
         var inputBuffer = audioProcessingEvent.inputBuffer;
         var inputData = inputBuffer.getChannelData(0);
-        updatePitch(inputData);
+        if (window.lPlayer.isPlaying()){
+            updatePitch(inputData);
+        }
+        else{
+            stopAudio();
+        }
     };
     //console.log(scriptNode
     //    + "target: " + scriptNode.target
@@ -100,7 +125,10 @@ function gotStream(stream) {
 
 }
 
-
+function stopAudio(){
+    window.oscillator.disconnect();
+    window.oscillator.stop();
+}
 
 function updatePitch(buf) {
     var resultObj = mpm.detectPitch(buf);
@@ -112,7 +140,7 @@ function updatePitch(buf) {
     else {
         var noteObj =  ntMaps.getClosestNoteFromPitch(pitchFreq);
         var noteName = noteObj.name;
-        var curChart = lPlayer.getCurrentChart();
+        var curChart = window.lPlayer.getCurrentChart();
         var relativeItvl = curChart[noteName] + 1;
         if (relativeItvl){
             var detuneAmt = noteObj.getCentsDiff(pitchFreq);

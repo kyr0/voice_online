@@ -60,6 +60,7 @@ function LessonPlayer(aUser, aLesson){
                 curNote = sets[curSetIdx].notes[curNoteIdx];
                 curNoteLength = curNote.relativeLength * (timerLength / measureCount);
                 //console.log("New Note: " + curNote.name + " " + curNote.frequency);
+                // TODO find a better way to use this as a test harness, custom event emission?
                 window.oscillator.frequency.value = curNote.frequency;
                 elapsedFragments = 0;
                 lastNoteElapsedFragments = 0;
@@ -67,6 +68,10 @@ function LessonPlayer(aUser, aLesson){
             }
             else {
                 isPlaying = false;
+                curSetIdx = 0;
+                curNoteIdx = 0;
+                elapsedFragments = 0;
+                lastNoteElapsedFragments = 0;
             }
         }
         else {
@@ -120,6 +125,10 @@ function LessonPlayer(aUser, aLesson){
     };
 
     this.start = function(){
+        curSetIdx = 0;
+        curNoteIdx = 0;
+        elapsedFragments = 0;
+        lastNoteElapsedFragments = 0;
         _beginTimer(numBeats, bpm);
         isPlaying = true;
     };
