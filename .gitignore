@@ -6,14 +6,7 @@
 
 # NPM
 npm-debug.log
+node_modules/
 
 # Browserify bundles
 *.bundle.js
-
-# Mochify && Phantomjs build artifacts
-node_modules/mochify/node_modules/watchify/node_modules/chokidar/node_modules/fsevents/build/
-node_modules/phantomjs/lib/location.js
-node_modules/phantomjs/lib/phantom/
-
-# watchify build artifacts
-node_modules/watchify/node_modules/chokidar/node_modules/fsevents/build/
