@@ -23,7 +23,7 @@ var lastResult = null;
 var hasDrawnLesson = false;
 
 var lessons = [];
-lessons.push(new Lesson([["A2", "1/8"], ["B2", "1/8"], ["G2", "1/8"], ["A2", "1/8"]]));
+lessons.push(new Lesson([["A2", "1/32"], ["B2", "1/32"], ["G2", "1/32"], ["A2", "1/32"]]));
 lessons.push(new Lesson([["A2", "2"], ["B2", "1/2"], ["G2", "3/8"], ["A2", "2/4"],["Ab2", "1/4"]]));
 lessons.push(new Lesson([["A2", "1"], ["B2", "3"], ["G2", "1/4"]]));
 
