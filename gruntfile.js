@@ -1,13 +1,14 @@
 var istanbul = require("browserify-istanbul");
 
 module.exports = function(grunt) {
-    'use strict';
+    "use strict";
 
+    grunt.loadNpmTasks('grunt-webpack');
     require('load-grunt-tasks')(grunt);
 
     grunt.initConfig({
 
-        karma : {
+        karma: {
             options: {
                 configFile: 'karma.conf.js'
             },
@@ -18,7 +19,7 @@ module.exports = function(grunt) {
                     'src/client/**/*.js': ['coverage']
                 },
                 coverageReporter: {
-                    dir : 'test/coverage/'
+                    dir: 'test/coverage/'
                 },
                 reporters: ['progress', 'coverage'],
                 autoWatch: false,
@@ -33,7 +34,7 @@ module.exports = function(grunt) {
                                 includeUntested: false,
                                 defaultIgnore: true
                             }),
-                            { global: true }
+                            {global: true}
                         ]
                     ]
                 }
@@ -48,10 +49,53 @@ module.exports = function(grunt) {
                 singleRun: true,
                 browsers: ['PhantomJS']
             }
+        },
+
+        webpack: {
+            dev: {
+                // webpack options
+                entry: "./src/client/js/main.js",
+                output: {
+                    path: "./src/client/build/",
+                    filename: "[name].bundle.js"
+                },
+
+                stats: {
+                    modules: false,
+                    reasons: false,
+                    version: false,
+                    hash: false
+                },
+                progress: true,
+                failOnError: true, // don't report error to grunt if webpack find errors
+                // Use this if webpack errors are tolerable and grunt should continue
+
+                watch: true, // use webpacks watcher
+                // You need to keep the grunt process alive
+
+                keepalive: true, // don't finish the grunt task
+                // Use this in combination with the watch option
+
+                //inline: true,  // embed the webpack-dev-server runtime into the bundle
+                // Defaults to false
+
+                //hot: true // adds the HotModuleReplacementPlugin and switch the server to hot mode
+                // Use this in combination with the inline option
+            }
+        },
+
+        concurrent: {
+            dev: {
+                tasks: ['karma:dev', 'webpack'],
+                options: {
+                    logConcurrentOutput: true
+                }
+            }
         }
 
     });
 
-    grunt.registerTask('default');
+    grunt.registerTask('default', ['concurrent:dev']);
+    grunt.registerTask('coverage', ['karma:coverage']);
 
 };

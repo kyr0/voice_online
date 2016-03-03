@@ -9,6 +9,7 @@ npm-debug.log
 node_modules/
 
 # Browserify bundles
+src/client/build/
 *.bundle.js
 
 test/coverage/
