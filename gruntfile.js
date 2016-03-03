@@ -1,56 +1,49 @@
+var istanbul = require("browserify-istanbul");
+
 module.exports = function(grunt) {
     'use strict';
 
     require('load-grunt-tasks')(grunt);
 
     grunt.initConfig({
-        blanket_mocha: {
-            options: {
-                run: true,
-                reporter: 'Min',
-                // We want a minimum of 70% coverage
-                threshold: 70
-            },
-            files: {
-                src: 'test/**/*.js'
-            }
-        },
 
         karma : {
             options: {
-                // Configuration options that tell Karma how to run
-                configFile: 'karma.conf.js',
-                // For info about the files array for watching:
-                //   http://karma-runner.github.io/0.13/config/files.html
-                files: [
-                    // These files are probably going to be included in
-                    // all our tests that we'd write. The files object in
-                    // each individual karma target are added to these.
-                    'node_modules/chai/chai.js',
-                    'node_modules/sinon-chai/lib/sinon-chai.js',
-                    'node_modules/sinon/pkg/sinon.js',
+                configFile: 'karma.conf.js'
+            },
 
-                    // Test files
-                    'test/**/spec.*.js',
-
-                    // Watch the source files
-                    {pattern: 'src/client/js/*.js', watched: true, served: false, included: false}
-
-                    // html2js preprocessor takes this file and converts it
-                    // to a string in our JS when the tests run.
-                    //'test/index.html'
-                ],
-                exclude: ['test/coverage/**/*']
-
+            coverage: {
+                preprocessors: {
+                    'test/**/*.js': ['browserify'],
+                    'src/client/**/*.js': ['coverage']
+                },
+                coverageReporter: {
+                    dir : 'test/coverage/'
+                },
+                reporters: ['progress', 'coverage'],
+                autoWatch: false,
+                singleRun: true,
+                browsers: ['PhantomJS'],
+                browserify: {
+                    debug: true,
+                    transform: [
+                        [
+                            istanbul({
+                                ignore: ["node_modules/**", "**/*.spec.js"],
+                                includeUntested: false,
+                                defaultIgnore: true
+                            }),
+                            { global: true }
+                        ]
+                    ]
+                }
             },
 
             dev: {
-                // On our local environment we want to test all the things!
-                browsers: ['Chrome', 'Firefox', 'PhantomJS']
+                //browsers: ['Chrome', 'Firefox', 'PhantomJS']
+                browsers: ['PhantomJS']
             },
 
-            // For production, that is to say, our CI environment, we'll
-            // run tests once in PhantomJS browser.
             prod: {
                 singleRun: true,
                 browsers: ['PhantomJS']
@@ -59,6 +52,6 @@ module.exports = function(grunt) {
 
     });
 
-    grunt.registerTask('default', ['blanket_mocha']);
+    grunt.registerTask('default');
 
 };
