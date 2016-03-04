@@ -1,5 +1,5 @@
 "use strict";
-var Lesson = require("../../../src/client/js/Lesson.js");
+var Lesson = require("./Lesson.js");
 
 // TODO move audioContext setup / teardown into LessonPlayer Begin / End
 // TODO make sure that curSet, curNote, curMap, etc are always at top level for speed

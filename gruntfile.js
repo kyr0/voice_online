@@ -73,7 +73,7 @@ module.exports = function(grunt) {
                 watch: true, // use webpacks watcher
                 // You need to keep the grunt process alive
 
-                keepalive: true, // don't finish the grunt task
+                keepalive: true // don't finish the grunt task
                 // Use this in combination with the watch option
 
                 //inline: true,  // embed the webpack-dev-server runtime into the bundle
