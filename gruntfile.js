@@ -1,7 +1,7 @@
 var istanbul = require("browserify-istanbul");
 
 module.exports = function(grunt) {
-    "use strict";
+    'use strict';
 
     grunt.loadNpmTasks('grunt-webpack');
     require('load-grunt-tasks')(grunt);
@@ -59,7 +59,9 @@ module.exports = function(grunt) {
                     path: "./src/client/build/",
                     filename: "[name].bundle.js"
                 },
-
+                resolve: {
+                    modulesDirectories: ['node_modules']
+                },
                 stats: {
                     modules: false,
                     reasons: false,
@@ -67,7 +69,7 @@ module.exports = function(grunt) {
                     hash: false
                 },
                 progress: true,
-                failOnError: true, // don't report error to grunt if webpack find errors
+                failOnError: false, // don't report error to grunt if webpack find errors
                 // Use this if webpack errors are tolerable and grunt should continue
 
                 watch: true, // use webpacks watcher
@@ -81,7 +83,28 @@ module.exports = function(grunt) {
 
                 //hot: true // adds the HotModuleReplacementPlugin and switch the server to hot mode
                 // Use this in combination with the inline option
+            },
+            spike: {
+                entry: "./spikes/bacon/js/main.js",
+                output: {
+                    path: "./spikes/bacon/build/",
+                    filename: "[name].bundle.js"
+                },
+                resolve: {
+                    modulesDirectories: ['node_modules']
+                },
+                stats: {
+                    modules: false,
+                    reasons: false,
+                    version: false,
+                    hash: false
+                },
+                progress: true,
+                failOnError: false, // don't report error to grunt if webpack find errors
+                watch: true, // use webpacks watcher
+                keepalive: true // don't finish the grunt task
             }
+
         },
 
         concurrent: {
@@ -97,5 +120,6 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', ['concurrent:dev']);
     grunt.registerTask('coverage', ['karma:coverage']);
+    grunt.registerTask('spike', ['webpack:spike']);
 
 };

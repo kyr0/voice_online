@@ -15,9 +15,9 @@ module.exports = function(config) {
             // each individual karma target are added to these.
 
             // TODO refactor out the complex require in tests
-            'node_modules/chai/chai.js',
-            'node_modules/sinon-chai/lib/sinon-chai.js',
-            'node_modules/sinon/pkg/sinon.js',
+            { pattern: 'node_modules/chai/chai.js', watched: false },
+            { pattern: 'node_modules/sinon-chai/lib/sinon-chai.js', watched: false },
+            { pattern: 'node_modules/sinon/pkg/sinon.js', watched: false },
 
             // Test files
             'test/**/spec.*.js',
@@ -27,10 +27,10 @@ module.exports = function(config) {
 
             // html2js preprocessor takes this file and converts it
             // to a string in our JS when the tests run.
-            'test/integration/fixtures/index.html'
+            {pattern: 'test/integration/fixtures/index.html',  watched: true, served: false}
         ],
 
-        exclude: ['test/coverage/**/*'],
+        exclude: ['test/coverage/**/*', '*bundle*', '*browserify'],
 
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
@@ -62,7 +62,7 @@ module.exports = function(config) {
 
         // level of logging
         // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-        logLevel: config.LOG_INFO,
+        logLevel: config.LOG_DEBUG,
 
         browserify: {
             debug: true
@@ -74,7 +74,7 @@ module.exports = function(config) {
 
         // Concurrency level
         // how many browser should be started simultaneous
-        concurrency: Infinity
+        concurrency: 1
 
     });
 };

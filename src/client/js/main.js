@@ -1,3 +1,5 @@
+"use strict";
+
 var MPM = require("./MPM.js");
 var NoteMaps = require("./NoteMaps.js");
 var Lesson = require("./Lesson.js");
