@@ -4,7 +4,6 @@ var util = require("util");
 var EventEmitter = require("events").EventEmitter;
 
 function LessonTimer(lesson) {
-
     EventEmitter.call(this);
 
     var measureCount = lesson.getLessonLength();
@@ -22,27 +21,17 @@ function LessonTimer(lesson) {
     this.elapsedFragments = 0;
     var lastNoteElapsedFragments = 0;
 
-    this.on("startEvent", function () {
-    //
-    });
-
     this.on("fragmentEvent", function(){
         var elapsedInCurrentNote = (this.elapsedFragments - lastNoteElapsedFragments) * this.fragmentLength;
-        if (curNoteLength <= elapsedInCurrentNote){
+        if (curNoteLength <= elapsedInCurrentNote) {
             this.emit("noteEvent");
             lastNoteElapsedFragments = this.elapsedFragments;
             curNoteIdx++;
             curNote = lesson.notes[curNoteIdx];
-            curNoteLength = curNote.relativeLength * (this.timerLength / measureCount);
+            if (curNote) { // solves race condition with endEvent
+                curNoteLength = curNote.relativeLength * (this.timerLength / measureCount);
+            }
         }
-    });
-
-    this.on("noteEvent", function () {
-    //
-    });
-
-    this.on("endEvent", function () {
-    //
     });
 }
 
