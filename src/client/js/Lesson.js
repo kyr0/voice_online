@@ -33,7 +33,7 @@ function Lesson (noteList) {
         var currentDenom;
         for (var i = 0; i < arrayOfNotes.length; i++) {
             currentDenom = Number(_getDenominator(arrayOfNotes[i].noteLength));
-            if (currentDenom > highestDenom) highestDenom = currentDenom;
+            if (currentDenom > highestDenom) {highestDenom = currentDenom;}
         }
         return highestDenom;
     }

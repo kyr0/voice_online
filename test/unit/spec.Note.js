@@ -4,10 +4,6 @@
 "use strict";
 
 var Note = require("../../src/client/js/Note.js");
-var helpers = require("../resources/testHelpers.js");
-for (var key in helpers) {
-    global[key] = helpers[key];
-}
 
 describe('Note Object', function() {
 
@@ -93,7 +89,7 @@ describe('should throw an error when', function() {
     });
 
     it('attempting to create a note with invalid length (invalid numerator)', function () {
-        var noteLength = "random/4";
+        var noteLength = "dummy/4";
         var errMsg = "Note(): the supplied note length is invalid: " + noteLength;
         expect(catchError(this.createNote, [this.noteName, noteLength])).to.equal(errMsg);
     });
@@ -105,13 +101,13 @@ describe('should throw an error when', function() {
     });
 
     it('attempting to create a note with invalid length (string)', function () {
-        var noteLength = "random";
+        var noteLength = "dummy";
         var errMsg = "Note(): the supplied note length is invalid: " + noteLength;
         expect(catchError(this.createNote, [this.noteName, noteLength])).to.equal(errMsg);
     });
 
     it('attempting to create a note with invalid length (array)', function () {
-        var noteLength = ["random", 4];
+        var noteLength = ["dummy", 4];
         var errMsg = "Note(): the supplied note length is invalid: " + noteLength;
         expect(catchError(this.createNote, [this.noteName, noteLength])).to.equal(errMsg);
     });

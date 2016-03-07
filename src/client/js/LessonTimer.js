@@ -3,8 +3,8 @@
 var util = require("util");
 var EventEmitter = require("events").EventEmitter;
 
-function LessonTimer(lessonObj) {
-    var lesson = lessonObj ;
+function LessonTimer(lesson) {
+
     EventEmitter.call(this);
 
     var measureCount = lesson.getLessonLength();
@@ -27,15 +27,13 @@ function LessonTimer(lessonObj) {
     });
 
     this.on("fragmentEvent", function(){
-        if (curNote) {
-            var elapsedInCurrentNote = (this.elapsedFragments - lastNoteElapsedFragments) * this.fragmentLength;
-            if (curNoteLength <= elapsedInCurrentNote) {
-                this.emit("noteEvent");
-                lastNoteElapsedFragments = this.elapsedFragments;
-                curNoteIdx++;
-                curNote = lesson.notes[curNoteIdx];
-                curNoteLength = curNote.relativeLength * (this.timerLength / measureCount);
-            }
+        var elapsedInCurrentNote = (this.elapsedFragments - lastNoteElapsedFragments) * this.fragmentLength;
+        if (curNoteLength <= elapsedInCurrentNote){
+            this.emit("noteEvent");
+            lastNoteElapsedFragments = this.elapsedFragments;
+            curNoteIdx++;
+            curNote = lesson.notes[curNoteIdx];
+            curNoteLength = curNote.relativeLength * (this.timerLength / measureCount);
         }
     });
 
