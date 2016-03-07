@@ -6,7 +6,7 @@ var LessonTimer = require('../../src/client/js/LessonTimer.js');
 describe('LessonTimer Object', function() {
 
     beforeEach(function() {
-        this.lesson = new Lesson([["A2", "1/64"], ["B2", "1/32"]]);
+        this.lesson = new Lesson([["A2", "1/1024"], ["B2", "1/512"]]);
         this.timer = new LessonTimer(this.lesson);
         this.startEvents = 0;
         this.noteEvents = 0;

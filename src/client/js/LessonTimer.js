@@ -24,11 +24,11 @@ function LessonTimer(lesson) {
     this.on("fragmentEvent", function(){
         var elapsedInCurrentNote = (this.elapsedFragments - lastNoteElapsedFragments) * this.fragmentLength;
         if (curNoteLength <= elapsedInCurrentNote) {
-            this.emit("noteEvent");
             lastNoteElapsedFragments = this.elapsedFragments;
             curNoteIdx++;
             curNote = lesson.notes[curNoteIdx];
             if (curNote) { // solves race condition with endEvent
+                this.emit("noteEvent");
                 curNoteLength = curNote.relativeLength * (this.timerLength / measureCount);
             }
         }
