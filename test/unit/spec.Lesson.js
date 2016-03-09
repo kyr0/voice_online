@@ -94,7 +94,8 @@ describe('Lesson', function() {
             // 3/8 *4 = 12/32, 1/2 *16 = 16/32, 1/4 *8 = 8/32, 2 = 64/32, 1/16 = 2/32, 1/32
             // 12 + 16 + 8 + 64 + 2 + 1 = 103
             // 103 / 32 (highest denominator) = 3.21875
-            expect(this.lesson.getLessonLength()).to.equal(3.21875);
+            var expectedLength = (3/8) + (1/2) + (1/4) + 2 + (1/16) + (1/32);
+            expect(this.lesson.getLessonLength()).to.equal(expectedLength);
         });
 
         it('should always have the intervals of all the notes it contains', function () {

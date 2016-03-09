@@ -13,8 +13,8 @@ function LessonTimer(lesson) {
     var beatLength = this.timerLength / beatCount;
     this.fragmentLength = beatLength / (lesson.smallestNoteSize / lesson.tempo);
     var curNoteIdx = 0;
-    var curNote = lesson.notes[curNoteIdx];
-    var curNoteLength = curNote.relativeLength * (this.timerLength / measureCount);
+    this.curNote = lesson.notes[curNoteIdx];
+    var curNoteLength = this.curNote.relativeLength * (this.timerLength / measureCount);
 
 
     this.startTime = null;
@@ -26,10 +26,10 @@ function LessonTimer(lesson) {
         if (curNoteLength <= elapsedInCurrentNote) {
             lastNoteElapsedFragments = this.elapsedFragments;
             curNoteIdx++;
-            curNote = lesson.notes[curNoteIdx];
-            if (curNote) { // solves race condition with endEvent
-                this.emit("noteEvent");
-                curNoteLength = curNote.relativeLength * (this.timerLength / measureCount);
+            this.curNote = lesson.notes[curNoteIdx];
+            if (this.curNote) { // solves race condition with endEvent
+                this.emitNoteEvent();
+                curNoteLength = this.curNote.relativeLength * (this.timerLength / measureCount);
             }
         }
     });
@@ -37,28 +37,42 @@ function LessonTimer(lesson) {
 
 util.inherits(LessonTimer, EventEmitter);
 
+LessonTimer.prototype.emitNoteEvent = function(){
+    var curPct = this.getPctComplete();
+    var args = {
+        curPct: curPct,
+        curNote: this.curNote
+    };
+    this.emit("noteEvent", args);
+};
+
 LessonTimer.prototype.startTimer = function(){
-    this.emit("startEvent");
-    this.emit("noteEvent");
     this.startTime = new Date().getTime();
+    this.emit("startEvent");
+    this.emitNoteEvent();
     setTimeout(this.timerInstance.bind(this), this.fragmentLength);
 };
 
 LessonTimer.prototype.timerInstance = function(){
     this.elapsedFragments++;
-    if (this.getCurSetPctComplete() >= 1) {
+    var curPct = this.getPctComplete();
+    if (curPct >= 1) {
         this.emit("endEvent");
     }
     else {
         this.emit("fragmentEvent");
         // the diff resets latency which occurs during timer to keep it on track
         var diff = (new Date().getTime() - this.startTime) - (this.elapsedFragments * this.fragmentLength);
-        setTimeout(this.timerInstance.bind(this), this.fragmentLength - diff);
+        if (diff > 0){  // just in case we get a negative value (which happens a lot)
+            setTimeout(this.timerInstance.bind(this), this.fragmentLength - diff);
+        }
+        else {
+            setTimeout(this.timerInstance.bind(this), this.fragmentLength);
+        }
     }
 };
 
-LessonTimer.prototype.getCurSetPctComplete = function(){
-    // the result of this function has 1 ms of latency
+LessonTimer.prototype.getPctComplete = function(){
     var elapsedTime = (new Date().getTime() - this.startTime);
     return elapsedTime / this.timerLength;
 };

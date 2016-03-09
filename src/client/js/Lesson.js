@@ -119,11 +119,11 @@ function Lesson (noteList) {
     var _getRelativeNoteLength = function (noteObj){
         /**
         Whenever notes are added the note is made aware of how long it
-        is compared to the length of a measure.
+        is as percent of Lesson length.
          */
         var num = _getNumerator(noteObj.noteLength);
         var den = _getDenominator(noteObj.noteLength);
-        return (num / den);
+        //return (num / den) / this.getLessonLength();
     };
 
     this.getLowestNote = function(){return lowestNote;};
