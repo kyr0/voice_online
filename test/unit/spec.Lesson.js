@@ -98,6 +98,21 @@ describe('Lesson', function() {
             expect(this.lesson.getLessonLength()).to.equal(expectedLength);
         });
 
+        it('should have notes which are aware of percentOnComplete ', function () {
+            var expectedLength = (3/8) / this.lesson.getLessonLength();
+            expect(this.lesson.notes[0].percentOnComplete).to.equal(expectedLength);
+            expectedLength = ((3/8) + (1/2)) / this.lesson.getLessonLength();
+            expect(this.lesson.notes[1].percentOnComplete).to.equal(expectedLength);
+            expectedLength = ((3/8) + (1/2) + (1/4)) / this.lesson.getLessonLength();
+            expect(this.lesson.notes[2].percentOnComplete).to.equal(expectedLength);
+            expectedLength = ((3/8) + (1/2) + (1/4) + 2) / this.lesson.getLessonLength();
+            expect(this.lesson.notes[3].percentOnComplete).to.equal(expectedLength);
+            expectedLength = ((3/8) + (1/2) + (1/4) + 2 + (1/16)) / this.lesson.getLessonLength();
+            expect(this.lesson.notes[4].percentOnComplete).to.equal(expectedLength);
+            expectedLength = ((3/8) + (1/2) + (1/4) + 2 + (1/16) + (1/32)) / this.lesson.getLessonLength();
+            expect(this.lesson.notes[5].percentOnComplete).to.equal(expectedLength);
+        });
+
         it('should always have the intervals of all the notes it contains', function () {
             expect(this.lesson.intervals.length).to.equal(5);
         });
@@ -155,8 +170,9 @@ describe('Lesson', function() {
             expect(this.lesson.intervals.length).to.equal(3);
         });
 
-        it("getSmallestNoteSize() should return the largest denominator", function () {
-            expect(this.lesson.smallestNoteSize).to.equal(32);
+        it("getSmallestNoteSize() should return measure size of the smallest note", function () {
+            this.lesson.addNotes([{name: "B2", noteLength: "1/64"}]);
+            expect(this.lesson.smallestNoteSize).to.equal(0.015625);
         });
 
 

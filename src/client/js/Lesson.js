@@ -4,6 +4,7 @@ var Interval = require("./Interval.js");
 
 function Lesson (noteList) {
 
+    var that = this;
     this.notes = [];
     this.intervals = [];
     this.bpm = 120;
@@ -119,12 +120,33 @@ function Lesson (noteList) {
     var _getRelativeNoteLength = function (noteObj){
         /**
         Whenever notes are added the note is made aware of how long it
-        is as percent of Lesson length.
+         is compared to the length of a measure.
          */
         var num = _getNumerator(noteObj.noteLength);
         var den = _getDenominator(noteObj.noteLength);
-        //return (num / den) / this.getLessonLength();
+        return (num / den);
     };
+
+
+    this._updatePercentCompleteWhenNotesEnd = function(){
+        var lessonLength = that.getLessonLength();
+        var priorCombinedLength = 0;
+        for (var i = 0; i < that.notes.length; i++){
+            var combinedLengthAtNotesEnd = that.notes[i].relativeLength + priorCombinedLength;
+            that.notes[i].percentOnComplete = combinedLengthAtNotesEnd / lessonLength;
+            priorCombinedLength += that.notes[i].relativeLength;
+        }
+    };
+
+    function _updateSmallestNoteSize(){
+        that.smallestNoteSize = that.getLessonLength();
+        for (var i = 0; i < that.notes.length; i++) {
+            if (that.notes[i].relativeLength < that.smallestNoteSize) {
+                that.smallestNoteSize = that.notes[i].relativeLength;
+            }
+        }
+    }
+
 
     this.getLowestNote = function(){return lowestNote;};
     this.getHighestNote = function(){return highestNote;};
@@ -134,17 +156,19 @@ function Lesson (noteList) {
         this.notes = this.notes.concat(noteObjArr);
         this.intervals = _updateIntervals(this.notes);
         this._updateRelativeIntervals();
-        this.smallestNoteSize = _getHighestDenominator(this.notes);
+        this._updatePercentCompleteWhenNotesEnd();
+        _updateSmallestNoteSize();
     };
 
 
+    // TODO make this method more efficient - perhaps as a precomputed variable
     this.getLessonLength = function (){
         /**
          * Returns a float, # of measures
          */
 
         var arrayOfNotes = this.notes;
-        var highestDenom = this.smallestNoteSize;
+        var highestDenom = _getHighestDenominator(arrayOfNotes);
         var numerator = 0;
         for (var i = 0; i < arrayOfNotes.length; i++) {
             var noteLength = arrayOfNotes[i].noteLength;
@@ -155,7 +179,7 @@ function Lesson (noteList) {
     };
 
     this.getSmallestNoteSize = function() {
-        return smallestNoteSize;
+        return this.smallestNoteSize;
     };
 
     this.getLessonRange = function() {
