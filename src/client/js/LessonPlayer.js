@@ -22,7 +22,7 @@ function LessonPlayer(aUser, aLesson){
     var minute = 60000;
     var bpm = aLesson.bpm;
     var isPlaying = false;
-    var measureCount = aLesson.getLessonLength();
+    var measureCount = aLesson.getLengthInMeasures();
     var numBeats = measureCount * aLesson.tempo;
     var baseDistance = aLesson.getLowestNote().getDistanceToNote(aUser.bottomNote.name);
 

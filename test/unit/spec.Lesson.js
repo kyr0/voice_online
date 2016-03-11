@@ -10,7 +10,7 @@ describe('Lesson constructor given note list', function() {
     });
 
     it('should get correct length', function () {
-        expect(this.lesson.getLessonLength()).to.equal(0.90625);
+        expect(this.lesson.getLengthInMeasures()).to.equal(0.90625);
     });
     it('should get correct range', function () {
         expect(this.lesson.getLessonRange()).to.equal(2);
@@ -95,21 +95,21 @@ describe('Lesson', function() {
             // 12 + 16 + 8 + 64 + 2 + 1 = 103
             // 103 / 32 (highest denominator) = 3.21875
             var expectedLength = (3/8) + (1/2) + (1/4) + 2 + (1/16) + (1/32);
-            expect(this.lesson.getLessonLength()).to.equal(expectedLength);
+            expect(this.lesson.getLengthInMeasures()).to.equal(expectedLength);
         });
 
         it('should have notes which are aware of percentOnComplete ', function () {
-            var expectedLength = (3/8) / this.lesson.getLessonLength();
+            var expectedLength = (3/8) / this.lesson.getLengthInMeasures();
             expect(this.lesson.notes[0].percentOnComplete).to.equal(expectedLength);
-            expectedLength = ((3/8) + (1/2)) / this.lesson.getLessonLength();
+            expectedLength = ((3/8) + (1/2)) / this.lesson.getLengthInMeasures();
             expect(this.lesson.notes[1].percentOnComplete).to.equal(expectedLength);
-            expectedLength = ((3/8) + (1/2) + (1/4)) / this.lesson.getLessonLength();
+            expectedLength = ((3/8) + (1/2) + (1/4)) / this.lesson.getLengthInMeasures();
             expect(this.lesson.notes[2].percentOnComplete).to.equal(expectedLength);
-            expectedLength = ((3/8) + (1/2) + (1/4) + 2) / this.lesson.getLessonLength();
+            expectedLength = ((3/8) + (1/2) + (1/4) + 2) / this.lesson.getLengthInMeasures();
             expect(this.lesson.notes[3].percentOnComplete).to.equal(expectedLength);
-            expectedLength = ((3/8) + (1/2) + (1/4) + 2 + (1/16)) / this.lesson.getLessonLength();
+            expectedLength = ((3/8) + (1/2) + (1/4) + 2 + (1/16)) / this.lesson.getLengthInMeasures();
             expect(this.lesson.notes[4].percentOnComplete).to.equal(expectedLength);
-            expectedLength = ((3/8) + (1/2) + (1/4) + 2 + (1/16) + (1/32)) / this.lesson.getLessonLength();
+            expectedLength = ((3/8) + (1/2) + (1/4) + 2 + (1/16) + (1/32)) / this.lesson.getLengthInMeasures();
             expect(this.lesson.notes[5].percentOnComplete).to.equal(expectedLength);
         });
 
@@ -174,9 +174,6 @@ describe('Lesson', function() {
             this.lesson.addNotes([{name: "B2", noteLength: "1/64"}]);
             expect(this.lesson.smallestNoteSize).to.equal(0.015625);
         });
-
-
-
 
     });
 

@@ -129,7 +129,7 @@ function Lesson (noteList) {
 
 
     this._updatePercentCompleteWhenNotesEnd = function(){
-        var lessonLength = that.getLessonLength();
+        var lessonLength = that.getLengthInMeasures();
         var priorCombinedLength = 0;
         for (var i = 0; i < that.notes.length; i++){
             var combinedLengthAtNotesEnd = that.notes[i].relativeLength + priorCombinedLength;
@@ -139,7 +139,7 @@ function Lesson (noteList) {
     };
 
     function _updateSmallestNoteSize(){
-        that.smallestNoteSize = that.getLessonLength();
+        that.smallestNoteSize = that.getLengthInMeasures();
         for (var i = 0; i < that.notes.length; i++) {
             if (that.notes[i].relativeLength < that.smallestNoteSize) {
                 that.smallestNoteSize = that.notes[i].relativeLength;
@@ -162,7 +162,7 @@ function Lesson (noteList) {
 
 
     // TODO make this method more efficient - perhaps as a precomputed variable
-    this.getLessonLength = function (){
+    this.getLengthInMeasures = function (){
         /**
          * Returns a float, # of measures
          */
