@@ -6,70 +6,47 @@ var EventEmitter = require("events").EventEmitter;
 function LessonTimer(lesson) {
     EventEmitter.call(this);
 
-    var measureCount = lesson.getLessonLength();
-    var beatCount = measureCount * lesson.tempo;
+    this.measureCount = lesson.getLengthInMeasures();
+    // TODO refactor the following into Lesson, as getLengthInMilliseconds
+    // TODO then refactor both into variables, not methods
+    var beatCount = this.measureCount * lesson.tempo;
     var minute = 60000;
     this.timerLength = beatCount * (minute / lesson.bpm);
-    var beatLength = this.timerLength / beatCount;
-    this.fragmentLength = beatLength / (lesson.smallestNoteSize / lesson.tempo);
-    var curNoteIdx = 0;
-    this.curNote = lesson.notes[curNoteIdx];
-    var curNoteLength = this.curNote.relativeLength * (this.timerLength / measureCount);
+
+    this.curNoteIdx = 0;
+    this.notes = lesson.notes;
+    this.curNote = this.notes[this.curNoteIdx];
+    // TODO factor this into Note Object
+    this.curNoteLengthInMilli = this.curNote.relativeLength * (this.timerLength / this.measureCount);
 
 
     this.startTime = null;
-    this.elapsedFragments = 0;
-    var lastNoteElapsedFragments = 0;
-
-    this.on("fragmentEvent", function(){
-        var elapsedInCurrentNote = (this.elapsedFragments - lastNoteElapsedFragments) * this.fragmentLength;
-        if (curNoteLength <= elapsedInCurrentNote) {
-            lastNoteElapsedFragments = this.elapsedFragments;
-            curNoteIdx++;
-            this.curNote = lesson.notes[curNoteIdx];
-            if (this.curNote) { // solves race condition with endEvent
-                this.emitNoteEvent();
-                curNoteLength = this.curNote.relativeLength * (this.timerLength / measureCount);
-            }
-        }
-    });
 }
 
 util.inherits(LessonTimer, EventEmitter);
 
-LessonTimer.prototype.emitNoteEvent = function(){
-    var curPct = this.getPctComplete();
-    var args = {
-        curPct: curPct,
-        curNote: this.curNote
-    };
-    this.emit("noteEvent", args);
-};
-
 LessonTimer.prototype.startTimer = function(){
     this.startTime = new Date().getTime();
     this.emit("startEvent");
-    this.emitNoteEvent();
-    setTimeout(this.timerInstance.bind(this), this.fragmentLength);
+    this.emit("noteEvent", this.curNote);
+    setTimeout(this.timerInstance.bind(this), this.curNoteLengthInMilli);
 };
 
 LessonTimer.prototype.timerInstance = function(){
-    this.elapsedFragments++;
-    var curPct = this.getPctComplete();
-    if (curPct >= 1) {
-        this.emit("endEvent");
+    var expectedNoteEnd = this.curNote.percentOnComplete;
+    this.curNoteIdx++;
+    this.curNote = this.notes[this.curNoteIdx];
+    if (this.curNote) { // solves race condition with endEvent
+        this.curNoteLengthInMilli = this.curNote.relativeLength * (this.timerLength / this.measureCount);
+        this.emit("noteEvent", this.curNote);
     }
     else {
-        this.emit("fragmentEvent");
-        // the diff resets latency which occurs during timer to keep it on track
-        var diff = (new Date().getTime() - this.startTime) - (this.elapsedFragments * this.fragmentLength);
-        if (diff > 0){  // just in case we get a negative value (which happens a lot)
-            setTimeout(this.timerInstance.bind(this), this.fragmentLength - diff);
-        }
-        else {
-            setTimeout(this.timerInstance.bind(this), this.fragmentLength);
-        }
+        this.emit("endEvent");
+        return;
     }
+    // the diff resets latency which occurs during timer to keep it on track
+    var diff = (new Date().getTime() - this.startTime) - (expectedNoteEnd * this.timerLength);
+    setTimeout(this.timerInstance.bind(this), this.curNoteLengthInMilli - diff);
 };
 
 LessonTimer.prototype.getPctComplete = function(){

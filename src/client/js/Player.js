@@ -16,6 +16,7 @@ function Player(aUser, aLesson) {
 
     this.sets = new Exercise(aUser, aLesson).sets;
     this.timer = new LessonTimer(aLesson);
+    // TODO fix below in a method, is a bug atm, will only update once
     this.currentSet = this.sets[this.curSetIdx];
 
     this.timer.on("startEvent", function(){
