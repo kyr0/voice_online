@@ -15,7 +15,7 @@ function LessonTimer(lessonObj) {
     this.fragmentLength = beatLength / (lesson.smallestNoteSize / lesson.tempo);
     var curNoteIdx = 0;
     var curNote = lesson.notes[curNoteIdx];
-    var curNoteLength = curNote.relativeLength * (this.timerLength / measureCount);
+    var curNoteLength = curNote.lengthInMeasures * (this.timerLength / measureCount);
 
 
     this.startTime = null;
@@ -34,7 +34,7 @@ function LessonTimer(lessonObj) {
                 lastNoteElapsedFragments = this.elapsedFragments;
                 curNoteIdx++;
                 curNote = lesson.notes[curNoteIdx];
-                curNoteLength = curNote.relativeLength * (this.timerLength / measureCount);
+                curNoteLength = curNote.lengthInMeasures * (this.timerLength / measureCount);
             }
         }
     });

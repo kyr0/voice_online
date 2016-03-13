@@ -73,7 +73,7 @@ function Lesson (noteList) {
                 noteLength = newNotes[i].noteLength;
             }
             newNoteObj = new Note(name, noteLength);
-            newNoteObj.relativeLength = _getRelativeNoteLength(newNoteObj);
+            newNoteObj.lengthInMeasures = _getNoteLengthInMeasures(newNoteObj);
             noteObjArr.push(newNoteObj);
             _setRangeDelimiters(newNoteObj);
         }
@@ -90,7 +90,7 @@ function Lesson (noteList) {
         return itvlObjArr;
     };
 
-    this._updateRelativeIntervals = function (){
+    this._updateNotesWithRelativeInterval = function (){
         /**
         Whenever notes are added the Note is made aware of how far away it
         is from the highest note in the lesson.
@@ -101,32 +101,38 @@ function Lesson (noteList) {
         }
     };
 
-    var _getRelativeNoteLength = function (noteObj){
+    var _getNoteLengthInMeasures = function (noteObj){
         /**
         Whenever notes are added the note is made aware of how long it
-         is compared to the length of a measure.
+         is relative to the length of a measure. eg 2 is == 2 measures
          */
         var num = _getNumerator(noteObj.noteLength);
         var den = _getDenominator(noteObj.noteLength);
         return (num / den);
     };
 
+    this._updateNotesWithLengthInMilliseconds = function(){
+        for (var i = 0; i < that.notes.length; i++) {
+            var lMs = that.notes[i].lengthInMeasures * (that.lengthInMilliseconds / that.lengthInMeasures);
+            that.notes[i].lengthInMilliseconds = lMs;
+        }
+    };
 
-    this._updatePercentCompleteWhenNotesEnd = function(){
+    this._updateNotesWithPctCompleteAtNotesEnd = function (){
         var lessonLength = that.lengthInMeasures;
         var priorCombinedLength = 0;
         for (var i = 0; i < that.notes.length; i++){
-            var combinedLengthAtNotesEnd = that.notes[i].relativeLength + priorCombinedLength;
+            var combinedLengthAtNotesEnd = that.notes[i].lengthInMeasures + priorCombinedLength;
             that.notes[i].percentOnComplete = combinedLengthAtNotesEnd / lessonLength;
-            priorCombinedLength += that.notes[i].relativeLength;
+            priorCombinedLength += that.notes[i].lengthInMeasures;
         }
     };
 
     function _updateSmallestNoteSize(){
         that.smallestNoteSize = that.lengthInMeasures;
         for (var i = 0; i < that.notes.length; i++) {
-            if (that.notes[i].relativeLength < that.smallestNoteSize) {
-                that.smallestNoteSize = that.notes[i].relativeLength;
+            if (that.notes[i].lengthInMeasures < that.smallestNoteSize) {
+                that.smallestNoteSize = that.notes[i].lengthInMeasures;
             }
         }
     }
@@ -134,14 +140,15 @@ function Lesson (noteList) {
     this.addNotes = function(newNotes) {
         var noteObjArr = this._createListOfNoteObjects(newNotes);
         this.notes = this.notes.concat(noteObjArr);
-        _updateLength();
+        _updateLessonLength();
         this.intervals = _updateIntervals(this.notes);
-        this._updateRelativeIntervals();
-        this._updatePercentCompleteWhenNotesEnd();
+        this._updateNotesWithRelativeInterval();
+        this._updateNotesWithPctCompleteAtNotesEnd();
+        this._updateNotesWithLengthInMilliseconds();
         _updateSmallestNoteSize();
     };
 
-    var _updateLength = function() {
+    var _updateLessonLength = function () {
         var arrayOfNotes = that.notes;
         var highestDenom = that._getHighestDenominator(arrayOfNotes);
         var numerator = 0;

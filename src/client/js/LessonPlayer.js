@@ -45,7 +45,7 @@ function LessonPlayer(aUser, aLesson){
         var beatLength = timerLength / beatCount;
         fragmentLength = beatLength / (curSet.smallestNoteSize / curSet.tempo);
         curNote = curSet.notes[curNoteIdx];
-        curNoteLength = curNote.relativeLength * (timerLength / measureCount);
+        curNoteLength = curNote.lengthInMeasures * (timerLength / measureCount);
         startTime = new Date().getTime();
         setTimeout(_instance, fragmentLength);
     }
@@ -58,7 +58,7 @@ function LessonPlayer(aUser, aLesson){
             if (curSetIdx < sets.length) {
                 curNoteIdx = 0;
                 curNote = sets[curSetIdx].notes[curNoteIdx];
-                curNoteLength = curNote.relativeLength * (timerLength / measureCount);
+                curNoteLength = curNote.lengthInMeasures * (timerLength / measureCount);
                 //console.log("New Note: " + curNote.name + " " + curNote.frequency);
                 // TODO find a better way to use this as a test harness, custom event emission?
                 window.oscillator.frequency.value = curNote.frequency;
@@ -88,7 +88,7 @@ function LessonPlayer(aUser, aLesson){
             lastNoteElapsedFragments = elapsedFragments;
             curNoteIdx++;
             curNote = sets[curSetIdx].notes[curNoteIdx];
-            curNoteLength = curNote.relativeLength * (timerLength / measureCount);
+            curNoteLength = curNote.lengthInMeasures * (timerLength / measureCount);
             //console.log("New Note: " + curNote.name + " " + curNote.frequency);
             window.oscillator.frequency.value = curNote.frequency;
         }

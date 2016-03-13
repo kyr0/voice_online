@@ -87,7 +87,7 @@ describe('Lesson', function() {
 
             it('should set the relative length to a percent of a measure', function () {
                 var expectedRelLen = 3 / 8;
-                expect(this.lesson.notes[0].relativeLength).to.equal(expectedRelLen);
+                expect(this.lesson.notes[0].lengthInMeasures).to.equal(expectedRelLen);
             });
 
         });
