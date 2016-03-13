@@ -29,7 +29,7 @@ var drawLesson = function(lPlayer) {
     project.activeLayer.removeChildren();  // clear any potential previous lessons off
     curSet = lPlayer.getCurrentSet();
     range = curSet.getLessonRange() + 2;  // pad top and bottom
-    lessonLength = curSet.getLengthInMeasures();
+    lessonLength = curSet.lengthInMeasures;
     measureCount = Math.floor(lessonLength);
     unitHeight = height / range;
     unitWidth = width / lessonLength;

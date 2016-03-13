@@ -9,15 +9,25 @@ describe('Lesson constructor given note list', function() {
         this.lesson = new Lesson(arrayList);
     });
 
-    it('should get correct length', function () {
-        expect(this.lesson.getLengthInMeasures()).to.equal(0.90625);
+    it('should get correct length in measures', function () {
+        expect(this.lesson.lengthInMeasures).to.equal(0.90625);
     });
+
+    it('should get correct length in milliseconds', function () {
+        var beatCount = this.lesson.lengthInMeasures * this.lesson.tempo;
+        var minute = 60000;
+        var expectedMs = beatCount * (minute / this.lesson.bpm);
+        expect(this.lesson.lengthInMilliseconds).to.equal(expectedMs);
+    });
+
     it('should get correct range', function () {
         expect(this.lesson.getLessonRange()).to.equal(2);
     });
+
     it('should have the right number of notes', function () {
         expect(this.lesson.notes.length).to.equal(4);
     });
+
     it('should have the right number of intervals', function () {
         expect(this.lesson.intervals.length).to.equal(3);
     });
@@ -37,19 +47,11 @@ describe('Lesson', function() {
         expect(this.lesson.bpm).to.equal(130);
     });
 
-    it("_getDenominator() should retrieve the length denominator of a single note", function () {
-        expect(this.lesson.__testonly__.getDenominator("11/16")).to.equal("16");
-    });
-
-    it("_getNumerator() should retrieve the length numerator of a single note", function () {
-        expect(this.lesson.__testonly__.getNumerator("11/16")).to.equal("11");
-    });
-
     it("_sumNumeratorToHighestDenominator() should retrieve the converted numerator", function () {
-        expect(this.lesson.__testonly__.sumNumeratorToHighestDenominator("1/4", 32)).to.equal(8);
+        expect(this.lesson._sumNumeratorToHighestDenominator("1/4", 32)).to.equal(8);
     });
 
-    it("getSmallestNoteSize() should return null with no notes in lesson", function () {
+    it("smallestNoteSize should return null with no notes in lesson", function () {
         expect(this.lesson.smallestNoteSize).to.be.null;
     });
 
@@ -95,21 +97,21 @@ describe('Lesson', function() {
             // 12 + 16 + 8 + 64 + 2 + 1 = 103
             // 103 / 32 (highest denominator) = 3.21875
             var expectedLength = (3/8) + (1/2) + (1/4) + 2 + (1/16) + (1/32);
-            expect(this.lesson.getLengthInMeasures()).to.equal(expectedLength);
+            expect(this.lesson.lengthInMeasures).to.equal(expectedLength);
         });
 
         it('should have notes which are aware of percentOnComplete ', function () {
-            var expectedLength = (3/8) / this.lesson.getLengthInMeasures();
+            var expectedLength = (3/8) / this.lesson.lengthInMeasures;
             expect(this.lesson.notes[0].percentOnComplete).to.equal(expectedLength);
-            expectedLength = ((3/8) + (1/2)) / this.lesson.getLengthInMeasures();
+            expectedLength = ((3/8) + (1/2)) / this.lesson.lengthInMeasures;
             expect(this.lesson.notes[1].percentOnComplete).to.equal(expectedLength);
-            expectedLength = ((3/8) + (1/2) + (1/4)) / this.lesson.getLengthInMeasures();
+            expectedLength = ((3/8) + (1/2) + (1/4)) / this.lesson.lengthInMeasures;
             expect(this.lesson.notes[2].percentOnComplete).to.equal(expectedLength);
-            expectedLength = ((3/8) + (1/2) + (1/4) + 2) / this.lesson.getLengthInMeasures();
+            expectedLength = ((3/8) + (1/2) + (1/4) + 2) / this.lesson.lengthInMeasures;
             expect(this.lesson.notes[3].percentOnComplete).to.equal(expectedLength);
-            expectedLength = ((3/8) + (1/2) + (1/4) + 2 + (1/16)) / this.lesson.getLengthInMeasures();
+            expectedLength = ((3/8) + (1/2) + (1/4) + 2 + (1/16)) / this.lesson.lengthInMeasures;
             expect(this.lesson.notes[4].percentOnComplete).to.equal(expectedLength);
-            expectedLength = ((3/8) + (1/2) + (1/4) + 2 + (1/16) + (1/32)) / this.lesson.getLengthInMeasures();
+            expectedLength = ((3/8) + (1/2) + (1/4) + 2 + (1/16) + (1/32)) / this.lesson.lengthInMeasures;
             expect(this.lesson.notes[5].percentOnComplete).to.equal(expectedLength);
         });
 
@@ -118,15 +120,15 @@ describe('Lesson', function() {
         });
 
         it('should always know the lowest note it contains', function () {
-            expect(this.lesson.getLowestNote().name).to.equal("A1");
+            expect(this.lesson.lowestNote.name).to.equal("A1");
             this.lesson.addNotes([["C0","1/16"],["Ab1","1/32"]]);
-            expect(this.lesson.getLowestNote().name).to.equal("C0");
+            expect(this.lesson.lowestNote.name).to.equal("C0");
         });
 
         it('should always know the highest note it contains', function () {
-            expect(this.lesson.getHighestNote().name).to.equal("C4");
+            expect(this.lesson.highestNote.name).to.equal("C4");
             this.lesson.addNotes([["C5","1/16"],["B4","1/32"]]);
-            expect(this.lesson.getHighestNote().name).to.equal("C5");
+            expect(this.lesson.highestNote.name).to.equal("C5");
         });
 
         it('should always know the full range of the notes it contains', function () {
@@ -149,7 +151,7 @@ describe('Lesson', function() {
                 {name: "Db3", noteLength: "1/4"},
                 {name: "B2", noteLength: "1/32"}
             ];
-            this.actualList = this.lesson.addNotes(this.createTheseNotes);
+            this.lesson.addNotes(this.createTheseNotes);
         });
 
         it('can be created at once with object literal notation', function () {
@@ -158,19 +160,19 @@ describe('Lesson', function() {
 
         it('can be created at once with nested arrays', function () {
             var arrayList = [["B2","1/8"],["A1","1/2"],["Db3","1/4"],["B2","1/32"]];
-            var fromArray = this.lesson.__testonly__._createListOfNoteObjects(arrayList);
+            var fromArray = this.lesson._createListOfNoteObjects(arrayList);
             compareNoteLists(fromArray, this.expectedList);
         });
 
         it("passed to _getHighestDenominator() should return the highest denominator", function () {
-            expect(this.lesson.__testonly__.getHighestDenominator(this.lesson.notes)).to.equal(32);
+            expect(this.lesson._getHighestDenominator(this.lesson.notes)).to.equal(32);
         });
 
         it("createListOfIntervalsFromNotes() should return an accurate list", function () {
             expect(this.lesson.intervals.length).to.equal(3);
         });
 
-        it("getSmallestNoteSize() should return measure size of the smallest note", function () {
+        it("smallestNoteSize should return measure size of the smallest note", function () {
             this.lesson.addNotes([{name: "B2", noteLength: "1/64"}]);
             expect(this.lesson.smallestNoteSize).to.equal(0.015625);
         });

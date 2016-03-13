@@ -9,27 +9,21 @@ function Lesson (noteList) {
     this.intervals = [];
     this.bpm = 120;
     this.tempo = 4; // beats per measure
+    this.lengthInMeasures = 0;
+    this.lengthInMilliseconds = 0;
     this.smallestNoteSize = null;
-    var lowestNote = null;
-    var highestNote = null;
+    this.lowestNote = null;
+    this.highestNote = null;
 
     function _getDenominator(noteLength){
         return noteLength.split('/')[1];
     }
-    /* start-test-code */
-    this.__testonly__ = {};
-    this.__testonly__.getDenominator = _getDenominator;
-    /* end-test-code */
-
 
     function _getNumerator(noteLength){
         return noteLength.split('/')[0];
     }
-    /* start-test-code */
-    this.__testonly__.getNumerator = _getNumerator;
-    /* end-test-code */
 
-    function _getHighestDenominator(arrayOfNotes){
+    this._getHighestDenominator = function(arrayOfNotes) {
         var highestDenom = 0;
         var currentDenom;
         for (var i = 0; i < arrayOfNotes.length; i++) {
@@ -37,12 +31,9 @@ function Lesson (noteList) {
             if (currentDenom > highestDenom) {highestDenom = currentDenom;}
         }
         return highestDenom;
-    }
-    /* start-test-code */
-    this.__testonly__.getHighestDenominator = _getHighestDenominator;
-    /* end-test-code */
+    };
 
-    function _sumNumeratorToHighestDenominator(noteLength, highestDenom){
+    this._sumNumeratorToHighestDenominator = function(noteLength, highestDenom) {
         var numerator = _getNumerator(noteLength);
         var denominator = _getDenominator(noteLength);
         while (denominator < highestDenom) {
@@ -50,27 +41,24 @@ function Lesson (noteList) {
             denominator *= 2;
         }
         return Number(numerator);
-    }
-    /* start-test-code */
-    this.__testonly__.sumNumeratorToHighestDenominator = _sumNumeratorToHighestDenominator;
-    /* end-test-code */
+    };
 
     function _setRangeDelimiters(note) {
-        if (lowestNote === null) {
-            lowestNote = note;
+        if (that.lowestNote === null) {
+            that.lowestNote = note;
         }
-        if (highestNote === null) {
-            highestNote = note;
+        if (that.highestNote === null) {
+            that.highestNote = note;
         }
-        if (note.frequency < lowestNote.frequency) {
-            lowestNote = note;
+        if (note.frequency < that.lowestNote.frequency) {
+            that.lowestNote = note;
         }
-        else if (note.frequency > highestNote.frequency) {
-            highestNote = note;
+        else if (note.frequency > that.highestNote.frequency) {
+            that.highestNote = note;
         }
     }
 
-    function _createListOfNoteObjects(newNotes) {
+    this._createListOfNoteObjects = function (newNotes) {
         var noteObjArr = [];
         var name;
         var newNoteObj;
@@ -90,11 +78,7 @@ function Lesson (noteList) {
             _setRangeDelimiters(newNoteObj);
         }
         return noteObjArr;
-    }
-    /* start-test-code */
-    this.__testonly__._createListOfNoteObjects = _createListOfNoteObjects;
-    /* end-test-code */
-
+    };
 
     var _updateIntervals = function (noteArr){
         var itvlObjArr = [];
@@ -112,7 +96,7 @@ function Lesson (noteList) {
         is from the highest note in the lesson.
          */
         for (var i = 0; i < this.notes.length; i++) {
-            var intervalSteps = new Interval(this.notes[i].name, highestNote.name).halfsteps;
+            var intervalSteps = new Interval(this.notes[i].name, this.highestNote.name).halfsteps;
             this.notes[i].relativeInterval = intervalSteps;
         }
     };
@@ -129,7 +113,7 @@ function Lesson (noteList) {
 
 
     this._updatePercentCompleteWhenNotesEnd = function(){
-        var lessonLength = that.getLengthInMeasures();
+        var lessonLength = that.lengthInMeasures;
         var priorCombinedLength = 0;
         for (var i = 0; i < that.notes.length; i++){
             var combinedLengthAtNotesEnd = that.notes[i].relativeLength + priorCombinedLength;
@@ -139,7 +123,7 @@ function Lesson (noteList) {
     };
 
     function _updateSmallestNoteSize(){
-        that.smallestNoteSize = that.getLengthInMeasures();
+        that.smallestNoteSize = that.lengthInMeasures;
         for (var i = 0; i < that.notes.length; i++) {
             if (that.notes[i].relativeLength < that.smallestNoteSize) {
                 that.smallestNoteSize = that.notes[i].relativeLength;
@@ -147,43 +131,33 @@ function Lesson (noteList) {
         }
     }
 
-
-    this.getLowestNote = function(){return lowestNote;};
-    this.getHighestNote = function(){return highestNote;};
-
     this.addNotes = function(newNotes) {
-        var noteObjArr = _createListOfNoteObjects(newNotes);
+        var noteObjArr = this._createListOfNoteObjects(newNotes);
         this.notes = this.notes.concat(noteObjArr);
+        _updateLength();
         this.intervals = _updateIntervals(this.notes);
         this._updateRelativeIntervals();
         this._updatePercentCompleteWhenNotesEnd();
         _updateSmallestNoteSize();
     };
 
-
-    // TODO make this method more efficient - perhaps as a precomputed variable
-    this.getLengthInMeasures = function (){
-        /**
-         * Returns a float, # of measures
-         */
-
-        var arrayOfNotes = this.notes;
-        var highestDenom = _getHighestDenominator(arrayOfNotes);
+    var _updateLength = function() {
+        var arrayOfNotes = that.notes;
+        var highestDenom = that._getHighestDenominator(arrayOfNotes);
         var numerator = 0;
         for (var i = 0; i < arrayOfNotes.length; i++) {
             var noteLength = arrayOfNotes[i].noteLength;
             // TODO handle odd time signatures eg. 5/7 and find common denominator
-            numerator += _sumNumeratorToHighestDenominator(noteLength, highestDenom);
+            numerator += that._sumNumeratorToHighestDenominator(noteLength, highestDenom);
         }
-        return numerator / highestDenom;
-    };
-
-    this.getSmallestNoteSize = function() {
-        return this.smallestNoteSize;
+        that.lengthInMeasures =  numerator / highestDenom;
+        var beatCount = that.lengthInMeasures * that.tempo;
+        var minute = 60000;
+        that.lengthInMilliseconds = beatCount * (minute / that.bpm);
     };
 
     this.getLessonRange = function() {
-        var range = new Interval(lowestNote.name, highestNote.name);
+        var range = new Interval(this.lowestNote.name, this.highestNote.name);
         return range.halfsteps;
     };
 

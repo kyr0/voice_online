@@ -7,7 +7,7 @@ function LessonTimer(lessonObj) {
     var lesson = lessonObj ;
     EventEmitter.call(this);
 
-    var measureCount = lesson.getLengthInMeasures();
+    var measureCount = lesson.lengthInMeasures;
     var beatCount = measureCount * lesson.tempo;
     var minute = 60000;
     this.timerLength = beatCount * (minute / lesson.bpm);

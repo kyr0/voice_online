@@ -21,14 +21,14 @@ describe('Exercise', function() {
         var aUser = new User("A2", "A4");
         var aLesson = new Lesson([["B2", "1"], ["F3", "1"]]);
         var exercise = new Exercise(aUser, aLesson);
-        expect(exercise.sets[0].getLowestNote().name).to.equal("A2");
+        expect(exercise.sets[0].lowestNote.name).to.equal("A2");
     });
 
     it("should have sets as Lesson objects relative to users lowest note", function () {
         var aUser = new User("B1", "B3");
         var aLesson = new Lesson([["C2", "1"], ["C3", "1"]]);
         var exercise = new Exercise(aUser, aLesson);
-        expect(exercise.sets[12].getLowestNote().name).to.equal("B2");
+        expect(exercise.sets[12].lowestNote.name).to.equal("B2");
     });
 
     it("should transpose all notes in Lesson correctly (base set)", function () {

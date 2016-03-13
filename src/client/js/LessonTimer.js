@@ -6,7 +6,7 @@ var EventEmitter = require("events").EventEmitter;
 function LessonTimer(lesson) {
     EventEmitter.call(this);
 
-    this.measureCount = lesson.getLengthInMeasures();
+    this.measureCount = lesson.lengthInMeasures;
     // TODO refactor the following into Lesson, as getLengthInMilliseconds
     // TODO then refactor both into variables, not methods
     var beatCount = this.measureCount * lesson.tempo;

@@ -15,7 +15,7 @@ function Exercise(aUser, aLesson){
     }
 
     var baseSet = null;
-    var baseDistance = aLesson.getLowestNote().getDistanceToNote(aUser.bottomNote.name);
+    var baseDistance = aLesson.lowestNote.getDistanceToNote(aUser.bottomNote.name);
 
     function transposeLesson(distance, baseLesson){
         var newNotes = [];
@@ -30,7 +30,7 @@ function Exercise(aUser, aLesson){
     function generateSets(){
         var sets = [];
         sets.push(baseSet);
-        var setCount = baseSet.getHighestNote().getDistanceToNote(aUser.topNote.name) + 1;
+        var setCount = baseSet.highestNote.getDistanceToNote(aUser.topNote.name) + 1;
         for (var set = 1; set < setCount; set++){
             sets.push(transposeLesson(set, baseSet));
         }

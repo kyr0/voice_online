@@ -36,7 +36,7 @@ describe('LessonsPlayer', function() {
         var aUser = new User("A2", "A4");
         var aLesson = new Lesson([["B2", "1"], ["F3", "1"]]);
         var lPlayer = new LessonPlayer(aUser, aLesson);
-        expect(lPlayer.getCurrentSet().getLowestNote().name).to.equal("A2");
+        expect(lPlayer.getCurrentSet().lowestNote.name).to.equal("A2");
     });
 
     it("should start with a new Lesson object at the bottom of user's range", function () {
@@ -44,7 +44,7 @@ describe('LessonsPlayer', function() {
         var aLesson = new Lesson([["C2", "1"], ["C3", "1"]]);
         var lPlayer = new LessonPlayer(aUser, aLesson);
         lPlayer._setCurSetIndex(12);
-        expect(lPlayer.getCurrentSet().getLowestNote().name).to.equal("B2");
+        expect(lPlayer.getCurrentSet().lowestNote.name).to.equal("B2");
     });
 
     it("should transpose all notes in Lesson correctly (first set)", function () {

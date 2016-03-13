@@ -22,9 +22,9 @@ function LessonPlayer(aUser, aLesson){
     var minute = 60000;
     var bpm = aLesson.bpm;
     var isPlaying = false;
-    var measureCount = aLesson.getLengthInMeasures();
+    var measureCount = aLesson.lengthInMeasures;
     var numBeats = measureCount * aLesson.tempo;
-    var baseDistance = aLesson.getLowestNote().getDistanceToNote(aUser.bottomNote.name);
+    var baseDistance = aLesson.lowestNote.getDistanceToNote(aUser.bottomNote.name);
 
     function _transposeLesson(distance, baseLesson){
         var newNotes = [];
@@ -97,7 +97,7 @@ function LessonPlayer(aUser, aLesson){
     function _generateSets(){
         var sets = [];
         sets.push(baseSet);
-        var setCount = baseSet.getHighestNote().getDistanceToNote(aUser.topNote.name) + 1;
+        var setCount = baseSet.highestNote.getDistanceToNote(aUser.topNote.name) + 1;
         for (var set = 1; set < setCount; set++){
             sets.push(_transposeLesson(set, baseSet));
         }
