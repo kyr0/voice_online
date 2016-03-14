@@ -10,7 +10,6 @@ var LessonTimer = require("./LessonTimer.js");
 function Player(aUser, aLesson) {
     EventEmitter.call(this);
 
-    var that = this;
     this.curSetIdx = 0;
     this.isPlaying = false;
 
@@ -42,6 +41,13 @@ Player.prototype.resetListeners = function(curSet){
         that.emit("note", curNote);
     });
 
+    this.timer.on("stop", function(){
+        that.isPlaying = false;
+        that.curSetIdx = 0;
+        that.resetListeners(that.sets[that.curSetIdx]);
+        that.emit("stop");
+    });
+
     this.timer.on("endSet", function(){
         that.curSetIdx++;
         if (that.sets[that.curSetIdx]){
@@ -58,7 +64,14 @@ Player.prototype.resetListeners = function(curSet){
 };
 
 Player.prototype.start = function(){
+    if (this.isPlaying){
+        this.timer.stopTimer();
+    }
     this.timer.startTimer();
+};
+
+Player.prototype.stop = function(){
+    this.timer.stopTimer();
 };
 
 Player.prototype.getPctComplete = function(){

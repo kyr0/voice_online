@@ -46,10 +46,22 @@ describe('Player Object', function() {
             expect(that.player.isPlaying).to.equal(false);
             done();
         };
-        this.player.on("endExercise", function () {
+        this.player.on("endExercise", function() {
             finish();
         });
         this.player.start();
+    });
+
+    it("should correctly set index and isPlaying when it's stopped", function (done) {
+        var that = this;
+        this.player.isPlaying = true;
+        this.player.curSetIdx = 3;
+        this.player.on("stop", function() {
+            expect(that.player.isPlaying).to.equal(false);
+            expect(that.player.curSetIdx).to.equal(0);
+            done();
+        });
+        this.player.stop();
     });
 
     it("should set isPlaying to true on startExercise", function (done) {
@@ -61,6 +73,14 @@ describe('Player Object', function() {
         this.player.on("startExercise", function () {
             finish();
         });
+        this.player.start();
+    });
+
+    it("should fire a stop event if restarting during play", function (done) {
+        this.player.on("stop", function() {
+            done();  // will timeout if unsuccessful
+        });
+        this.player.start();
         this.player.start();
     });
 

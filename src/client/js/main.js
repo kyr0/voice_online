@@ -13,7 +13,6 @@ window.pitchFreq = -1;
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
-var drawLesson = null;
 var audioContext = null;
 var bufferLength = 1024;
 var scriptNode = null;
@@ -37,7 +36,6 @@ window.lPlayer = null;
 function resetPlayerListeners(){
     window.lPlayer.on("note", function(curNote){
         window.oscillator.frequency.value = curNote.frequency;  // osc start frequency
-
     });
 }
 

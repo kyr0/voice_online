@@ -11,6 +11,7 @@ function LessonTimer(lesson) {
     this.notes = lesson.notes;
     this.curNote = this.notes[this.curNoteIdx];
     this.startTime = null;
+    this.curID = null;
 }
 
 util.inherits(LessonTimer, EventEmitter);
@@ -19,7 +20,13 @@ LessonTimer.prototype.startTimer = function(){
     this.startTime = new Date().getTime();
     this.emit("startSet");
     this.emit("note", this.curNote);
-    setTimeout(this.timerInstance.bind(this), this.curNote.lengthInMilliseconds);
+    this.curID = setTimeout(this.timerInstance.bind(this), this.curNote.lengthInMilliseconds);
+};
+
+LessonTimer.prototype.stopTimer = function(){
+    clearTimeout(this.curID);
+    this.startTime = null;
+    this.emit("stop");
 };
 
 LessonTimer.prototype.timerInstance = function(){
@@ -35,12 +42,17 @@ LessonTimer.prototype.timerInstance = function(){
     }
     // the diff resets latency which occurs during timer to keep it on track
     var diff = (new Date().getTime() - this.startTime) - (expectedNoteEnd * this.lengthInMilliseconds);
-    setTimeout(this.timerInstance.bind(this), this.curNote.lengthInMilliseconds - diff);
+    this.curID = setTimeout(this.timerInstance.bind(this), this.curNote.lengthInMilliseconds - diff);
 };
 
 LessonTimer.prototype.getPctComplete = function(){
-    var elapsedTime = (new Date().getTime() - this.startTime);
-    return elapsedTime / this.lengthInMilliseconds;
+    if (this.startTime){
+        var elapsedTime = (new Date().getTime() - this.startTime);
+        return elapsedTime / this.lengthInMilliseconds;
+    }
+    else {
+        return 0;
+    }
 };
 
 module.exports = LessonTimer;

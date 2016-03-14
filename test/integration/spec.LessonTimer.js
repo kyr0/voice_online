@@ -39,13 +39,42 @@ describe('LessonTimer Object', function() {
 
     });
 
-    describe('note event', function() {
-        beforeEach(function () {
+    describe('stop event', function() {
 
+        it("should fire properly when the stop method is called", function(done) {
+            var lesson = new Lesson([["A2", "1/32"]]);
+            var timer = new LessonTimer(lesson);
+            timer.on("stop", function () {
+                done();  // this test will timeout if stop is not firing
+            });
+            timer.startTimer();
+            timer.stopTimer();
         });
 
+    });
+
+    describe('getPctComplete function', function() {
+
+        beforeEach(function () {
+            this.lesson = new Lesson([["A2", "1/32"]]);
+            this.timer = new LessonTimer(this.lesson);
+        });
+
+        it("should return zero if not playing (not yet started)", function() {
+            this.timer.getPctComplete();
+        });
+
+        it("should return zero if not playing (stopped after play)", function() {
+            this.timer.getPctComplete();
+            this.timer.startTimer();
+            this.timer.stopTimer();
+        });
+
+    });
+
+    describe('note event', function() {
+
         it("should should fire at correct time when note of different lengths present", function (done) {
-            // bundling the assertions since test takes a long time to run
             var lesson = new Lesson([["A2", "1/32"], ["B2", "1/16"], ["B2", "1/32"], ["B2", "1/8"]]);
             var timer = new LessonTimer(lesson);
             var noteInfo = [];
