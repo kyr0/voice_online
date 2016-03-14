@@ -4,7 +4,7 @@ var MPM = require("./MPM.js");
 var NoteMaps = require("./NoteMaps.js");
 var Lesson = require("./Lesson.js");
 var User = require("./User.js");
-var LessonPlayer = require("./LessonPlayer.js");
+var Player = require("./Player.js");
 
 // these window assignments must be done outside of onLoad
 // for sharing with paper.js in case they are accessed before load
@@ -34,29 +34,36 @@ users.push(new User("A1", "E2"));  // anything lower than A1 will == -1 pitch
 
 window.lPlayer = null;
 
+function resetPlayerListeners(){
+    window.lPlayer.on("note", function(curNote){
+        window.oscillator.frequency.value = curNote.frequency;  // osc start frequency
+
+    });
+}
+
 // Canvas onClick, start the lesson
 jQuery('#lesson').click(function(){
     if (hasDrawnLesson){
         window.oscillator = audioContext.createOscillator();
         window.oscillator.connect(scriptNode); // Connect output of Oscillator to our scriptNode
-        window.oscillator.frequency.value = window.lPlayer.getCurrentSet().notes[0].frequency;  // osc start frequency
+        resetPlayerListeners();
         window.oscillator.start();
         window.startLesson();
     }
 });
 
 jQuery('#lesson-0').click(function(){
-    window.lPlayer = new LessonPlayer(users[0], lessons[0]);
+    window.lPlayer = new Player(users[0], lessons[0]);
     window.drawLesson(window.lPlayer);
     hasDrawnLesson = true;
 });
 jQuery('#lesson-1').click(function(){
-    window.lPlayer = new LessonPlayer(users[0], lessons[1]);
+    window.lPlayer = new Player(users[0], lessons[1]);
     window.drawLesson(window.lPlayer);
     hasDrawnLesson = true;
 });
 jQuery('#lesson-2').click(function(){
-    window.lPlayer = new LessonPlayer(users[0], lessons[2]);
+    window.lPlayer = new Player(users[0], lessons[2]);
     window.drawLesson(window.lPlayer);
     hasDrawnLesson = true;
 });
@@ -88,7 +95,7 @@ window.onload = function() {
         console.log("OnAudioProcess");
         var inputBuffer = audioProcessingEvent.inputBuffer;
         var inputData = inputBuffer.getChannelData(0);
-        if (window.lPlayer.isPlaying()){
+        if (window.lPlayer.isPlaying){
             updatePitch(inputData);
         }
         else{

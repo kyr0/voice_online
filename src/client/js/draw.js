@@ -136,7 +136,7 @@ function updateSet(){
 function onFrame(event) {
     if (hasStarted) {
         var lPlayer = window.lPlayer;
-        var pctComplete = lPlayer.getCurSetPctComplete();
+        var pctComplete = lPlayer.getPctComplete();
         timeGroup.position.x = consumedX * pctComplete;
 
         if (pctComplete < lastPctComplete) {

@@ -61,4 +61,18 @@ Player.prototype.start = function(){
     this.timer.startTimer();
 };
 
+Player.prototype.getPctComplete = function(){
+    return this.timer.getPctComplete();
+};
+
+Player.prototype.getCurrentSet= function(){
+    return this.sets[this.curSetIdx];
+};
+
+// I think that chart is a dict of note names and their relation
+//    to the lowest note, but not 100% sure, needs refactor anyway.
+Player.prototype.getCurrentChart = function(){
+    return this.sets[this.curSetIdx].chart;
+};
+
 module.exports = Player;
