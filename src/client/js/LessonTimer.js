@@ -17,8 +17,8 @@ util.inherits(LessonTimer, EventEmitter);
 
 LessonTimer.prototype.startTimer = function(){
     this.startTime = new Date().getTime();
-    this.emit("startEvent");
-    this.emit("noteEvent", this.curNote);
+    this.emit("startSet");
+    this.emit("note", this.curNote);
     setTimeout(this.timerInstance.bind(this), this.curNote.lengthInMilliseconds);
 };
 
@@ -27,10 +27,10 @@ LessonTimer.prototype.timerInstance = function(){
     this.curNoteIdx++;
     this.curNote = this.notes[this.curNoteIdx];
     if (this.curNote) { // solves race condition with endEvent
-        this.emit("noteEvent", this.curNote);
+        this.emit("note", this.curNote);
     }
     else {
-        this.emit("endEvent");
+        this.emit("endSet");
         return;
     }
     // the diff resets latency which occurs during timer to keep it on track

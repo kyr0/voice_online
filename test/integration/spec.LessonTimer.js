@@ -12,20 +12,16 @@ describe('LessonTimer Object', function() {
             this.timer = new LessonTimer(this.lesson);
             this.startEvents = 0;
             this.noteEvents = 0;
-            this.fragEvents = 0;
             var that = this;
 
-            this.timer.on("startEvent", function () {
+            this.timer.on("startSet", function () {
                 that.startEvents++;
             });
 
-            this.timer.on("noteEvent", function () {
+            this.timer.on("note", function () {
                 that.noteEvents++;
             });
 
-            this.timer.on("fragmentEvent", function () {
-                that.fragEvents++;
-            });
         });
 
         it("should have the right number of start and note events", function (done) {
@@ -35,7 +31,7 @@ describe('LessonTimer Object', function() {
                 expect(that.noteEvents).to.equal(2);
                 done();
             };
-            this.timer.on("endEvent", function () {
+            this.timer.on("endSet", function () {
                 finish();
             });
             this.timer.startTimer();
@@ -43,7 +39,7 @@ describe('LessonTimer Object', function() {
 
     });
 
-    describe('noteEvent', function() {
+    describe('note event', function() {
         beforeEach(function () {
 
         });
@@ -57,11 +53,11 @@ describe('LessonTimer Object', function() {
                 expect(noteInfo[3] * 100).to.be.closeTo(50, 2);
                 done();
             };
-            timer.on("noteEvent", function () {
+            timer.on("note", function () {
                 var curPct = timer.getPctComplete();
                 noteInfo.push(curPct);
             });
-            timer.on("endEvent", function () {
+            timer.on("endSet", function () {
                 finish();
             });
             timer.startTimer();
@@ -82,11 +78,11 @@ describe('LessonTimer Object', function() {
                 }
                 done();
             };
-            timer.on("noteEvent", function () {
+            timer.on("note", function () {
                 var curPct = timer.getPctComplete();
                 noteInfo.push(curPct);
             });
-            timer.on("endEvent", function () {
+            timer.on("endSet", function () {
                 finish();
             });
             timer.startTimer();
