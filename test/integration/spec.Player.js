@@ -37,11 +37,9 @@ describe('Player Object', function() {
     it("should have fired the right events by the time endExercise is fired", function (done) {
         var that = this;
         var finish = function(){
-            var outOfBoundsIdx = 7;
-            expect(that.player.curSetIdx).to.equal(outOfBoundsIdx);
             expect(that.startExerciseEvents).to.equal(1);
             expect(that.startSetEvents).to.equal(7);
-            expect(that.endSetEvents).to.equal(7);
+            expect(that.endSetEvents).to.equal(6);
             expect(that.noteEvents).to.equal(14);
             expect(that.player.isPlaying).to.equal(false);
             done();
@@ -56,7 +54,7 @@ describe('Player Object', function() {
         var that = this;
         this.player.isPlaying = true;
         this.player.curSetIdx = 3;
-        this.player.on("stop", function() {
+        this.player.on("stopExercise", function() {
             expect(that.player.isPlaying).to.equal(false);
             expect(that.player.curSetIdx).to.equal(0);
             done();
@@ -76,8 +74,8 @@ describe('Player Object', function() {
         this.player.start();
     });
 
-    it("should fire a stop event if restarting during play", function (done) {
-        this.player.on("stop", function() {
+    it("should fire a stopExercise event if restarting during play", function (done) {
+        this.player.on("stopExercise", function() {
             done();  // will timeout if unsuccessful
         });
         this.player.start();

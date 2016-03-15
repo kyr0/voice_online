@@ -10,44 +10,37 @@ var LessonTimer = require("./LessonTimer.js");
 function Player(aUser, aLesson) {
     EventEmitter.call(this);
 
-    this.curSetIdx = 0;
-    this.isPlaying = false;
-
     this.sets = new Exercise(aUser, aLesson).sets;
     this.timer = null;
-    this.resetListeners(this.sets[this.curSetIdx]);
+    this.resetExercise();
 }
 
 
 util.inherits(Player, EventEmitter);
 
 
+Player.prototype.resetExercise = function() {
+    if (this.timer){
+        this.timer.stopTimer();
+    }
+    this.isPlaying = false;
+    this.curSetIdx = 0;
+    this.resetListeners(this.sets[this.curSetIdx]);
+};
+
 Player.prototype.resetListeners = function(curSet){
     var that = this;
     this.timer = new LessonTimer(curSet);
 
     this.timer.on("startSet", function(){
-        if (!(that.isPlaying)){
-            that.isPlaying = true;
-            that.emit("startExercise");
-            that.emit("startSet");
-        }
-        else {
-            that.emit("startSet");
-        }
+        that.emit("startSet");
     });
 
     this.timer.on("note", function(curNote){
         that.emit("note", curNote);
     });
 
-    this.timer.on("stop", function(){
-        that.isPlaying = false;
-        that.curSetIdx = 0;
-        that.resetListeners(that.sets[that.curSetIdx]);
-        that.emit("stop");
-    });
-
+    // not to be confused with "stop"
     this.timer.on("endSet", function(){
         that.curSetIdx++;
         if (that.sets[that.curSetIdx]){
@@ -56,8 +49,7 @@ Player.prototype.resetListeners = function(curSet){
             that.timer.startTimer();
         }
         else {
-            that.emit("endSet");
-            that.isPlaying = false;
+            that.resetExercise();
             that.emit("endExercise");
         }
     });
@@ -65,13 +57,16 @@ Player.prototype.resetListeners = function(curSet){
 
 Player.prototype.start = function(){
     if (this.isPlaying){
-        this.timer.stopTimer();
+        this.stop();
     }
+    this.isPlaying = true;
+    this.emit("startExercise");
     this.timer.startTimer();
 };
 
 Player.prototype.stop = function(){
-    this.timer.stopTimer();
+    this.resetExercise();
+    this.emit("stopExercise");
 };
 
 Player.prototype.getPctComplete = function(){

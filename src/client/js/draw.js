@@ -1,4 +1,5 @@
 // This is PaperScript
+'use strict';
 
 // TODO optimize by planning the whole lesson, all information is calculated at creation and
 // TODO    not during execution.
@@ -25,9 +26,13 @@ var dot = null;
 var timeGroup = null;
 
 
-var drawLesson = function(lPlayer) {
+var initLessonCanvas = function() {
+    window.lPlayer.on("note", function(curNote){
+    //
+    });
+
     project.activeLayer.removeChildren();  // clear any potential previous lessons off
-    curSet = lPlayer.getCurrentSet();
+    curSet = window.lPlayer.getCurrentSet();
     range = curSet.getLessonRange() + 2;  // pad top and bottom
     lessonLength = curSet.lengthInMeasures;
     measureCount = Math.floor(lessonLength);
@@ -48,12 +53,12 @@ var drawLesson = function(lPlayer) {
     timeGroup = null;
     initWidget();
 };
-window.drawLesson = drawLesson;
+
+window.initLessonCanvas = initLessonCanvas;
 
 
 var startLesson = function() {
     hasStarted = true;
-    window.lPlayer.start();
 };
 window.startLesson = startLesson;
 
@@ -70,7 +75,7 @@ function initWidget() {
     var symbolVert = new Symbol(vert);
     gridX.push(symbolVert);
     for (var msr = 0; msr < measureCount; msr++) {
-        x = unitWidth * (msr + 1);
+        var x = unitWidth * (msr + 1);
         gridX.push(symbolVert.place(new Point(x, height / 2)));
     }
 
@@ -79,7 +84,7 @@ function initWidget() {
     var symbolHorz = new Symbol(horz);
     gridY.push(symbolHorz);
     for (var semi = 1; semi < range; semi++) {
-        y = unitHeight * semi;
+        var y = unitHeight * semi;
         gridY.push(symbolHorz.place(new Point(width / 2, y)));
     }
 
@@ -165,12 +170,12 @@ jQuery(window).on('resize', function(){
 
     gridX[0].definition.segments = [[0, 0], [0, height]];
     for (var msr = 1; msr < gridX.length; msr++) {
-        x = unitWidth * msr;
+        var x = unitWidth * msr;
         gridX[msr].position = new Point(x, height / 2);
     }
     gridY[0].definition.segments = [[0, 0], [width, 0]];
     for (var semi = 1; semi < gridY.length; semi++) {
-        y = unitHeight * semi;
+        var y = unitHeight * semi;
         gridY[semi].position = new Point(width / 2, y);
     }
 
