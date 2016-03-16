@@ -28,6 +28,8 @@ Player.prototype.resetExercise = function() {
     this.resetListeners(this.sets[this.curSetIdx]);
 };
 
+// resetListeners is necessary here since it is possible to
+//    have different Lessons comprising the set list of an Exercise.
 Player.prototype.resetListeners = function(curSet){
     var that = this;
     this.timer = new LessonTimer(curSet);

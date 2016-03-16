@@ -13,9 +13,6 @@ var lessonLength = null;
 var measureCount = null;
 var unitHeight = null;
 var unitWidth = null;
-var consumedX = 0;
-var lastPctComplete = 0;
-var hasStarted = false;
 var border = null;
 var gridX = [];
 var gridY = [];
@@ -27,22 +24,45 @@ var timeGroup = null;
 
 
 var initLessonCanvas = function() {
-    window.lPlayer.on("note", function(curNote){
-    //
-    });
-
-    project.activeLayer.removeChildren();  // clear any potential previous lessons off
     curSet = window.lPlayer.getCurrentSet();
     range = curSet.getLessonRange() + 2;  // pad top and bottom
     lessonLength = curSet.lengthInMeasures;
     measureCount = Math.floor(lessonLength);
     unitHeight = height / range;
     unitWidth = width / lessonLength;
+    resetDrawables();
+    resetPlayerListenersInDraw();
+    initWidget();
+};
+window.initLessonCanvas = initLessonCanvas;
 
-    consumedX = 0;
-    lastPctComplete = 0;
-    hasStarted = false;
 
+function resetPlayerListenersInDraw(){
+
+    window.lPlayer.on("stopExercise", function(){
+        console.log("stopEx");
+        timeGroup.visible = false;
+    });
+
+    window.lPlayer.on("endSet", function(){
+        console.log("endSet");
+        updateSet();
+    });
+
+    window.lPlayer.on("endExercise", function(){
+        console.log("endEx");
+        timeGroup.visible = false;
+    });
+
+    window.lPlayer.on("startExercise", function(){
+        console.log("startEx");
+        timeGroup.visible = true;
+    });
+}
+
+
+function resetDrawables() {
+    project.clear();  // clear any potential previous lessons off
     border = null;
     gridX = [];
     gridY = [];
@@ -51,16 +71,7 @@ var initLessonCanvas = function() {
     timeline = null;
     dot = null;
     timeGroup = null;
-    initWidget();
-};
-
-window.initLessonCanvas = initLessonCanvas;
-
-
-var startLesson = function() {
-    hasStarted = true;
-};
-window.startLesson = startLesson;
+}
 
 
 function initWidget() {
@@ -88,7 +99,7 @@ function initWidget() {
         gridY.push(symbolHorz.place(new Point(width / 2, y)));
     }
 
-    consumedX = 0;
+    var consumedX = 0;
     var tmpNtNames = [];  // used to filter out duplicate note labels
     for (var nt = 0; nt < curSet.notes.length; nt++) {
         var curNote = curSet.notes[nt];
@@ -115,18 +126,18 @@ function initWidget() {
         }
     }
 
-    timeline = new Path();
-    timeline.strokeColor = 'CadetBlue';
+    timeline = new Path({
+        strokeColor: 'CadetBlue'
+    });
     timeline.add(new Point(0, 0), new Point(0, height));
 
     dot = new Path.Circle({
         center: [0, unitHeight],
         radius: unitHeight / 2,
-        fillColor: 'coral',
-        visible: false
+        fillColor: 'coral'
     });
-
     timeGroup = new Group([timeline, dot]);
+    timeGroup.visible = false;
 }
 
 function updateSet(){
@@ -139,26 +150,22 @@ function updateSet(){
 
 
 function onFrame(event) {
-    if (hasStarted) {
-        var lPlayer = window.lPlayer;
-        var pctComplete = lPlayer.getPctComplete();
-        timeGroup.position.x = consumedX * pctComplete;
-
-        if (pctComplete < lastPctComplete) {
-            updateSet();
-        }
-        lastPctComplete = pctComplete;
-
-        var yRatio = window.pitchYAxisRatio;
-        if (yRatio) {
-            dot.position.y = unitHeight * yRatio;
-            dot.visible = true;
-        }
-        else {
-            dot.visible = false;
+    if (window.lPlayer) {
+        if (window.lPlayer.isPlaying) {
+            var pctComplete = window.lPlayer.getPctComplete();
+            timeGroup.position.x = width * pctComplete;
+            var yRatio = window.pitchYAxisRatio;
+            if (yRatio) {
+                dot.position.y = unitHeight * yRatio;
+                dot.visible = true;
+            }
+            else {
+                dot.visible = false;
+            }
         }
     }
 }
+
 
 jQuery(window).on('resize', function(){
     height = view.size.height;
@@ -179,7 +186,7 @@ jQuery(window).on('resize', function(){
         gridY[semi].position = new Point(width / 2, y);
     }
 
-    consumedX = 0;
+    var consumedX = 0;
     for (var nt = 0; nt < curSet.notes.length; nt++) {
         var curNote = curSet.notes[nt];
         var curNoteY = unitHeight * curNote.relativeInterval + (unitHeight / 2);
@@ -214,12 +221,4 @@ jQuery(window).on('resize', function(){
     timeGroup.remove();
     timeGroup = new Group([timeline, dot]);
 
-});
-
-jQuery(document).ready(function() {
-    border = new Path.Rectangle({
-        rectangle: view.bounds,
-        strokeWidth: 0,
-        fillColor: '#282828'
-    });
 });

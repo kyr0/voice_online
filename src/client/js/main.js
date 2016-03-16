@@ -32,23 +32,20 @@ users.push(new User("A1", "E2"));  // anything lower than A1 will == -1 pitch
 
 window.lPlayer = null;
 
-function resetPlayerListeners(){
+function resetPlayerListenersInMain(){
     window.lPlayer.on("note", function(curNote){
         window.oscillator.frequency.value = curNote.frequency;  // osc start frequency
     });
 
     window.lPlayer.on("stopExercise", function(){
-        console.log("Hit a stop");
         stopAudio();
     });
 
     window.lPlayer.on("endExercise", function(){
-        console.log("Got an END");
         stopAudio();
     });
 
     window.lPlayer.on("startExercise", function(){
-        console.log("Got a startex");
         startAudio();
     });
 }
@@ -64,10 +61,9 @@ function startAudio(){
     window.oscillator = audioContext.createOscillator();
     window.oscillator.connect(scriptNode); // Connect output of Oscillator to our scriptNode
     window.oscillator.start();
-    window.startLesson();
 }
 
-function loadNewLesson(aUser, aLesson){
+function initLesson(aUser, aLesson){
     if (window.lPlayer) {  // for the case where we load a new lesson during play
         if (window.lPlayer.isPlaying) {
             window.lPlayer.stop();
@@ -77,34 +73,38 @@ function loadNewLesson(aUser, aLesson){
     window.initLessonCanvas();
 }
 
-window.curLesson = null;
+var curLesson = null;
 // Canvas onClick, start the lesson
 jQuery('#lesson').click(function(){
-    loadNewLesson(users[0], window.curLesson);
+    initLesson(users[0], curLesson);
     if (window.lPlayer) {
-        console.log("Got a player");
-        resetPlayerListeners();
+        resetPlayerListenersInMain();
         window.lPlayer.start();
     }
 });
 
 jQuery('#lesson-0').click(function(){
-    window.curLesson = lessons[0];
-    loadNewLesson(users[0], window.curLesson);
+    curLesson = lessons[0];
+    initLesson(users[0], curLesson);
 });
 
 jQuery('#lesson-1').click(function(){
-    window.curLesson = lessons[1];
-    loadNewLesson(users[0], window.curLesson);
+    curLesson = lessons[1];
+    initLesson(users[0], curLesson);
 });
 
 jQuery('#lesson-2').click(function(){
-    window.curLesson = lessons[1];
-    loadNewLesson(users[0], window.curLesson);
+    curLesson = lessons[2];
+    initLesson(users[0], curLesson);
 });
 
+jQuery(window).load(function() {
+    // make it looks pretty, refactor later
+    curLesson = lessons[2];
+    initLesson(users[0], curLesson);
+});
 
-window.onload = function() {
+jQuery(document).ready(function() {
     audioContext = new AudioContext();
     mpm = new MPM(audioContext.sampleRate, bufferLength);
     scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
@@ -132,7 +132,9 @@ window.onload = function() {
         var inputData = inputBuffer.getChannelData(0);
         updatePitch(inputData);
     };
-};
+
+});
+
 
 function error() {
     alert('Stream generation failed.');
