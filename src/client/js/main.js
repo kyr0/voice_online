@@ -5,6 +5,10 @@ var NoteMaps = require("./NoteMaps.js");
 var Lesson = require("./Lesson.js");
 var User = require("./User.js");
 var Player = require("./Player.js");
+var Soundfont = require('soundfont-player');
+Soundfont.nameToUrl = function(instName) {
+    return '../../../midi-js-soundfonts/FluidR3_GM/' + instName + '-mp3.js';
+};
 
 // these window assignments must be done outside of onLoad
 // for sharing with paper.js in case they are accessed before load
@@ -14,6 +18,11 @@ window.pitchFreq = -1;
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 var audioContext = null;
+var soundfont = null;
+var instrument = null;
+var instNote = null;
+var vca = null;
+
 var bufferLength = 1024;
 var scriptNode = null;
 window.oscillator = null;
@@ -28,13 +37,18 @@ lessons.push(new Lesson([["A2", "2"], ["B2", "1/2"], ["G2", "3/8"], ["A2", "2/4"
 lessons.push(new Lesson([["A2", "1"], ["B2", "3"], ["G2", "1/4"]]));
 
 var users = [];
-users.push(new User("A1", "E2"));  // anything lower than A1 will == -1 pitch
+users.push(new User("A4", "E5"));  // anything lower than A1 will == -1 pitch
 
 window.lPlayer = null;
 
 function resetPlayerListenersInMain(){
     window.lPlayer.on("note", function(curNote){
+        if (instNote) {
+            instNote.stop(0);
+        }
+        var now = audioContext.currentTime;
         window.oscillator.frequency.value = curNote.frequency;  // osc start frequency
+        instNote = instrument.play(curNote.name, now, -1);
     });
 
     window.lPlayer.on("stopExercise", function(){
@@ -51,6 +65,9 @@ function resetPlayerListenersInMain(){
 }
 
 function stopAudio(){
+    if (instNote) {
+        instNote.stop(0);
+    }
     // TODO use dep injection with these, callback that returns the object as param
     window.oscillator.disconnect();
     window.oscillator.stop();
@@ -105,7 +122,12 @@ jQuery(window).load(function() {
 });
 
 jQuery(document).ready(function() {
-    audioContext = new AudioContext();
+    audioContext = new window.AudioContext();
+    vca = audioContext.createGain();
+    vca.gain.value = 8;
+    vca.connect(audioContext.destination);
+    soundfont = new Soundfont(audioContext);
+    instrument = soundfont.instrument('acoustic_grand_piano');
     mpm = new MPM(audioContext.sampleRate, bufferLength);
     scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
 
