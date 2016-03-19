@@ -91,13 +91,24 @@ function Note (name, noteLength){
         return centsOff;
     };
 
-    this.name = nMaps.validateNoteName(name);
-    this.noteLength = this.setNoteLength(noteLength);
-    var _noteObj = nMaps.pitchMap[this.name];
-    this.previousNote = _noteObj.previousNote;
-    this.nextNote = _noteObj.nextNote;
-    this.frequency = _noteObj.frequency;
-
+    if (name === '-'){
+        this.name = name;
+        this.noteLength = this.setNoteLength(noteLength);
+        this.previousNote = null;
+        this.nextNote = null;
+        this.frequency = -1;
+        this.transpose = function() { return name; };
+        this.getCentsDiff = function() { return null; };
+        this.getDistanceToNote = function() { return null; };
+    }
+    else {
+        this.name = nMaps.validateNoteName(name);
+        this.noteLength = this.setNoteLength(noteLength);
+        var _noteObj = nMaps.pitchMap[this.name];
+        this.previousNote = _noteObj.previousNote;
+        this.nextNote = _noteObj.nextNote;
+        this.frequency = _noteObj.frequency;
+    }
 }
 
 module.exports = Note;
