@@ -3,7 +3,7 @@
 var util = require("util");
 var EventEmitter = require("events").EventEmitter;
 
-var Exercise = require("./Exercise.js").Exercise;
+var Exercise = require("./Exercise.js");
 var LessonTimer = require("./LessonTimer.js");
 
 

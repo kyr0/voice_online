@@ -1,7 +1,6 @@
 "use strict";
 
-var Exercise = require("../../src/client/js/Exercise.js").Exercise;
-var InvalidRangeError = require("../../src/client/js/Exercise.js").InvalidRangeError;
+var Exercise = require("../../src/client/js/Exercise.js");
 var User = require("../../src/client/js/User.js");
 var Lesson = require("../../src/client/js/Lesson.js");
 
@@ -14,7 +13,7 @@ describe('Exercise', function() {
         var fn = function(){
             var dum = new Exercise(aUser, aLesson);
         };
-        expect(fn).to.throw(InvalidRangeError);
+        expect(fn).to.throw(Exercise.InvalidRangeError);
     });
 
     it("should start with a new Lesson object at the bottom of user's range", function () {

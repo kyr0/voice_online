@@ -2,16 +2,15 @@
 var Lesson = require("./Lesson.js");
 
 
-function InvalidRangeError(message) {
-    this.message = message;
-}
-InvalidRangeError.prototype = new Error();
-
-
 function Exercise(aUser, aLesson){
 
+    this.InvalidRangeError = function(message) {
+        this.message = message;
+    };
+    this.InvalidRangeError.prototype = new Error();
+
     if (aUser.range < aLesson.getLessonRange()){
-        throw new InvalidRangeError('Exercise(): User range must be same or smaller than Lesson range.');
+        throw new this.InvalidRangeError('Exercise(): User range must be same or smaller than Lesson range.');
     }
 
     var baseSet = null;
@@ -48,7 +47,4 @@ function Exercise(aUser, aLesson){
     this.sets = generateSets();
 }
 
-module.exports = {
-    Exercise: Exercise,
-    InvalidRangeError: InvalidRangeError
-};
+module.exports = Exercise;
