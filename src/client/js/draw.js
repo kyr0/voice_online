@@ -115,14 +115,14 @@ function initWidget() {
         consumedX += curNoteWidth;
 
         // Note label related
-        if (tmpNtNames.indexOf(curNote.name) === -1) {
-            tmpNtNames.push(curNote.name);
+        if (!tmpNtNames[curNote.name]) {
+            tmpNtNames[curNote.name] = 1;
             var noteName = new PointText([20, curNoteY + (unitHeight / 2)]);
             noteName.content = curNote.name;
             noteName.strokeColor = 'coral';
-            noteLbls.push(noteName);
-            noteLbls[nt].ntObj = curNote;
-            noteLbls[nt].relativeInterval = curNote.relativeInterval;
+            var idx = noteLbls.push(noteName);
+            noteLbls[idx - 1].ntObj = curNote;
+            noteLbls[idx - 1].relativeInterval = curNote.relativeInterval;
         }
     }
 

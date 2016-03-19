@@ -6,9 +6,6 @@ var Lesson = require("./Lesson.js");
 var User = require("./User.js");
 var Player = require("./Player.js");
 var Soundfont = require('soundfont-player');
-Soundfont.nameToUrl = function(instName) {
-    return '../../../midi-js-soundfonts/FluidR3_GM/' + instName + '-mp3.js';
-};
 
 // these window assignments must be done outside of onLoad
 // for sharing with paper.js in case they are accessed before load
@@ -127,7 +124,7 @@ jQuery(document).ready(function() {
     vca.gain.value = 8;
     vca.connect(audioContext.destination);
     soundfont = new Soundfont(audioContext);
-    instrument = soundfont.instrument('acoustic_grand_piano');
+    instrument = soundfont.instrument(null);
     mpm = new MPM(audioContext.sampleRate, bufferLength);
     scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
 
@@ -185,7 +182,7 @@ function updatePitch(buf) {
     var resultObj = mpm.detectPitch(buf);
     var pitchFreq = resultObj.getPitchFrequency();
     var probability = resultObj.getProbability();
-    if (pitchFreq === -1 || probability < .95) {
+    if (pitchFreq === -1 || probability < 0.95) {
         lastResult = -1;
     }
     else {
