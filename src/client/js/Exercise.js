@@ -1,16 +1,11 @@
 "use strict";
 var Lesson = require("./Lesson.js");
-
+var InvalidRangeError = require("./CustomErrors").InvalidRangeError;
 
 function Exercise(aUser, aLesson){
 
-    this.InvalidRangeError = function(message) {
-        this.message = message;
-    };
-    this.InvalidRangeError.prototype = new Error();
-
     if (aUser.range < aLesson.getLessonRange()){
-        throw new this.InvalidRangeError('Exercise(): User range must be same or smaller than Lesson range.');
+        throw new InvalidRangeError('Exercise(): User range must be same or smaller than Lesson range.');
     }
 
     var baseSet = null;
