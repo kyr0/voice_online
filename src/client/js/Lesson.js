@@ -44,6 +44,10 @@ function Lesson (noteList) {
     };
 
     function _setRangeDelimiters(note) {
+        if (note.name === '-') {
+            return;
+        }
+
         if (that.lowestNote === null) {
             that.lowestNote = note;
         }
@@ -80,12 +84,28 @@ function Lesson (noteList) {
         return noteObjArr;
     };
 
-    var _updateIntervals = function (noteArr){
+    var _makeInterval = function(startNote, endNote) {
+        var itvl = null;
+        try {
+            itvl = new Interval(startNote, endNote);
+        }
+        catch (e) {
+            if (e.name === 'SilentIntervalError') {
+                return null;
+            }
+            else {
+                throw e; // let other errors bubble up
+            }
+        }
+        return itvl;
+    };
+
+    var _updateIntervals = function(noteArr){
         var itvlObjArr = [];
         for (var i = 0; i < noteArr.length - 1; i++) {
             var startNote = noteArr[i].name;
             var endNote = noteArr[i + 1].name;
-            itvlObjArr.push(new Interval(startNote, endNote));
+            itvlObjArr.push(_makeInterval(startNote, endNote));
         }
         return itvlObjArr;
     };
@@ -96,7 +116,11 @@ function Lesson (noteList) {
         is from the highest note in the lesson.
          */
         for (var i = 0; i < this.notes.length; i++) {
-            var intervalSteps = new Interval(this.notes[i].name, this.highestNote.name).halfsteps;
+            var itvl = _makeInterval(this.notes[i].name, this.highestNote.name);
+            var intervalSteps = null;
+            if (itvl) {
+                intervalSteps =_makeInterval(this.notes[i].name, this.highestNote.name).halfsteps;
+            }
             this.notes[i].relativeInterval = intervalSteps;
         }
     };

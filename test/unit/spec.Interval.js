@@ -4,7 +4,7 @@
 'use strict';
 
 var Interval = require('../../src/client/js/Interval.js');
-var InvalidIntervalError = require('../../src/client/js/customErrors.js').InvalidIntervalError;
+var SilentIntervalError = require('../../src/client/js/customErrors.js').SilentIntervalError;
 var helpers = require('../resources/testHelpers.js');
 for (var key in helpers) {
     global[key] = helpers[key];
@@ -43,14 +43,14 @@ describe('Interval Object', function() {
         var fn = function(){
             var dum = new Interval('-', this.dummy);
         };
-        expect(fn).to.throw(InvalidIntervalError);
+        expect(fn).to.throw(SilentIntervalError);
     });
 
     it('should throw Error when endNote is a silentNote', function () {
         var fn = function(){
             var dum = new Interval(this.dummy, '-');
         };
-        expect(fn).to.throw(InvalidIntervalError);
+        expect(fn).to.throw(SilentIntervalError);
     });
 
 });

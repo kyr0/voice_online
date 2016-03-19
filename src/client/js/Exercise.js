@@ -5,7 +5,7 @@ var InvalidRangeError = require("./customErrors").InvalidRangeError;
 function Exercise(aUser, aLesson){
 
     if (aUser.range < aLesson.getLessonRange()){
-        throw new InvalidRangeError('Exercise(): User range must be same or smaller than Lesson range.');
+        throw new InvalidRangeError(InvalidRangeError.name + 'User range must be same or smaller than Lesson range.');
     }
 
     var baseSet = null;

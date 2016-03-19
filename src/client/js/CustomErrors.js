@@ -7,14 +7,14 @@ function InvalidRangeError(message) {
 InvalidRangeError.prototype = Error.prototype;
 
 
-function InvalidIntervalError(message) {
-    this.name = 'InvalidIntervalError';
+function SilentIntervalError(message) {
+    this.name = 'SilentIntervalError';
     this.message = (message || '');
 }
-InvalidIntervalError.prototype = Error.prototype;
+SilentIntervalError.prototype = Error.prototype;
 
 
 module.exports = {
     InvalidRangeError: InvalidRangeError,
-    InvalidIntervalError: InvalidIntervalError
+    SilentIntervalError: SilentIntervalError
 };

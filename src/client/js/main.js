@@ -113,7 +113,7 @@ jQuery('#lesson-2').click(function(){
 });
 
 jQuery(window).load(function() {
-    // make it looks pretty, refactor later
+    // load a lesson when page comes up
     curLesson = lessons[2];
     initLesson(users[0], curLesson);
 });
