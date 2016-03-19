@@ -1,6 +1,6 @@
 "use strict";
 var Lesson = require("./Lesson.js");
-var InvalidRangeError = require("./CustomErrors").InvalidRangeError;
+var InvalidRangeError = require("./customErrors").InvalidRangeError;
 
 function Exercise(aUser, aLesson){
 

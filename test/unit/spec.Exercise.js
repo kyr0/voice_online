@@ -1,7 +1,7 @@
 'use strict';
 
 var Exercise = require('../../src/client/js/Exercise.js');
-var InvalidRangeError = require('../../src/client/js/CustomErrors.js').InvalidRangeError;
+var InvalidRangeError = require('../../src/client/js/customErrors.js').InvalidRangeError;
 var User = require('../../src/client/js/User.js');
 var Lesson = require('../../src/client/js/Lesson.js');
 

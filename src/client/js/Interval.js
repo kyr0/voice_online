@@ -1,7 +1,7 @@
 'use strict';
 
 var Note = require('./Note.js');
-var InvalidIntervalError = require('./CustomErrors').InvalidIntervalError;
+var InvalidIntervalError = require('./customErrors').InvalidIntervalError;
 
 function Interval (startNote, endNote) {
 

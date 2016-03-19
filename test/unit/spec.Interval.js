@@ -4,7 +4,7 @@
 'use strict';
 
 var Interval = require('../../src/client/js/Interval.js');
-var InvalidIntervalError = require('../../src/client/js/CustomErrors.js').InvalidIntervalError;
+var InvalidIntervalError = require('../../src/client/js/customErrors.js').InvalidIntervalError;
 var helpers = require('../resources/testHelpers.js');
 for (var key in helpers) {
     global[key] = helpers[key];
