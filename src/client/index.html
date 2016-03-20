@@ -18,10 +18,11 @@
         }
 
         /* Scale canvas with resize attribute (can be % if needed) */
-        canvas[resize] {
+        canvas#lesson[resize] {
             width: 800px;
             height: 400px;
         }
+
     </style>
 
     <script type="text/javascript" src="../dependencies/jquery-1.12.0.min.js"></script>
@@ -42,7 +43,7 @@
 
     <script src="build/main.bundle.js"></script>
     <!-- Load custom PaperScript and associate it with canvas -->
-    <script type="text/paperscript" src="js/draw.js" canvas="lesson"></script>
+    <script type="text/paperscript" src="js/drawLesson.js" canvas="lesson"></script>
 
 </body>
 </html>

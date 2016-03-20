@@ -6,7 +6,7 @@ var Interval = require('../../src/client/js/Interval.js');
 describe('Lesson constructor given note list', function() {
     beforeEach(function () {
         var arrayList = [['B2', '1/8'], ['A2', '1/2'], ['B2', '1/4'], ['B2', '1/32']];
-        this.lesson = new Lesson(arrayList);
+        this.lesson = new Lesson({ noteList: arrayList });
     });
 
     it('should get correct length in measures', function () {
@@ -183,7 +183,7 @@ describe('Lesson', function() {
 describe('Lesson constructor with silentNotes', function() {
     beforeEach(function () {
         var arrayList = [["-", "1/8"], ["A2", "1/2"], ["-", "1/4"], ["B2", "1/32"], ["A2", "1/2"]];
-        this.lesson = new Lesson(arrayList);
+        this.lesson = new Lesson({ noteList: arrayList });
     });
 
     it('should get correct length in measures', function () {

@@ -7,7 +7,7 @@ var Player = require('../../src/client/js/Player.js');
 describe('Player Object', function() {
 
     beforeEach(function() {
-        this.lesson = new Lesson([["A2", "1/2048"], ["A2", "1/2048"]]);
+        this.lesson = new Lesson({ noteList: [["A2", "1/2048"], ["A2", "1/2048"]] });
         this.user = new User("A2", "Eb3");
         this.player = new Player(this.user, this.lesson);
 

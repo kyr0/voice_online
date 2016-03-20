@@ -18,7 +18,7 @@ function Exercise(aUser, aLesson){
             var noteLength = baseLesson.notes[note].noteLength;
             newNotes.push([newNoteName, noteLength]);
         }
-        return new Lesson(newNotes);
+        return new Lesson({ noteList: newNotes });
     }
 
     function generateSets(){

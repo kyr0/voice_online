@@ -8,7 +8,7 @@ describe('LessonTimer Object', function() {
     describe(' ', function() {
 
         beforeEach(function () {
-            this.lesson = new Lesson([["A2", "1/1024"], ["B2", "1/512"]]);
+            this.lesson = new Lesson({ noteList: [["A2", "1/1024"], ["B2", "1/512"]] });
             this.timer = new LessonTimer(this.lesson);
             this.startEvents = 0;
             this.noteEvents = 0;
@@ -42,7 +42,7 @@ describe('LessonTimer Object', function() {
     describe('stop event', function() {
 
         it("should fire properly when the stop method is called", function(done) {
-            var lesson = new Lesson([["A2", "1/32"]]);
+            var lesson = new Lesson({ noteList: [["A2", "1/32"]] });
             var timer = new LessonTimer(lesson);
             timer.on("stop", function () {
                 done();  // this test will timeout if stop is not firing
@@ -56,7 +56,7 @@ describe('LessonTimer Object', function() {
     describe('getPctComplete function', function() {
 
         beforeEach(function () {
-            this.lesson = new Lesson([["A2", "1/32"]]);
+            this.lesson = new Lesson({ noteList: [["A2", "1/32"]] });
             this.timer = new LessonTimer(this.lesson);
         });
 
@@ -75,7 +75,7 @@ describe('LessonTimer Object', function() {
     describe('note event', function() {
 
         it("should should fire at correct time when note of different lengths present", function (done) {
-            var lesson = new Lesson([["A2", "1/32"], ["B2", "1/16"], ["B2", "1/32"], ["B2", "1/8"]]);
+            var lesson = new Lesson({ noteList: [["A2", "1/32"], ["B2", "1/16"], ["B2", "1/32"], ["B2", "1/8"]] });
             var timer = new LessonTimer(lesson);
             var noteInfo = [];
             var finish = function () {
@@ -98,7 +98,7 @@ describe('LessonTimer Object', function() {
             for (var nt = 0; nt < 100; nt++){
                 noteArr.push(["A2", "1/256"]);
             }
-            var lesson = new Lesson(noteArr);
+            var lesson = new Lesson({ noteList: noteArr });
             var timer = new LessonTimer(lesson);
             var noteInfo = [];
             var finish = function () {

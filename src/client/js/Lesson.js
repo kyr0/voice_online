@@ -1,8 +1,11 @@
-"use strict";
-var Note = require("./Note.js");
-var Interval = require("./Interval.js");
+'use strict';
+var _ = require('lodash');
+var Note = require('./Note.js');
+var Interval = require('./Interval.js');
 
-function Lesson (noteList) {
+function Lesson (options_param) {
+
+    var options = _.defaults(options_param || {}, {});
 
     var that = this;
     this.notes = [];
@@ -192,8 +195,8 @@ function Lesson (noteList) {
         return range.halfsteps;
     };
 
-    if (typeof noteList !== 'undefined') {
-        this.addNotes(noteList);
+    if (typeof options.noteList !== 'undefined') {
+        this.addNotes(options.noteList);
     }
 
 }
