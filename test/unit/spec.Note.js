@@ -25,7 +25,7 @@ describe('Silent note Object', function() {
     });
 
     it('should set length when passed in to constructor', function () {
-        expect(this.silentNote.noteLength).to.equal('1/4');
+        expect(this.silentNote.length).to.equal('1/4');
     });
 
 });
@@ -43,21 +43,21 @@ describe('Note Object', function() {
         var expectFrequency = 123.47;
         var noteObj = this.note;
         expect(noteObj.name).to.equal(this.noteName);
-        expect(noteObj.noteLength).to.equal(expectNoteLength);
+        expect(noteObj.length).to.equal(expectNoteLength);
         expect(noteObj.frequency).to.equal(expectFrequency);
     });
 
     it('should set length when passed in to constructor', function () {
         var noteLength = '1/8';
         var noteObj = new Note(this.noteName, noteLength);
-        expect(noteObj.noteLength).to.equal(noteLength);
+        expect(noteObj.length).to.equal(noteLength);
     });
 
     it('should convert length of "1" to a note using a length of "1/1"', function () {
         var noteLength = '1';
-        var expectedNoteObj = { name : this.noteName, noteLength : '1/1' };
+        var expectedNoteObj = { name : this.noteName, length : '1/1' };
         var noteObj = new Note(this.noteName, noteLength);
-        expect(noteObj.noteLength).to.equal(expectedNoteObj.noteLength  );
+        expect(noteObj.length).to.equal(expectedNoteObj.length);
     });
 
     it('should transpose the note accurately (up)', function () {
@@ -89,19 +89,19 @@ describe('Note Object', function() {
         it('should accept a note length longer than a full measure', function () {
             var expectLength = '2/1';
             var noteObj = new Note('A2', '2');
-            expect(noteObj.noteLength).to.equal(expectLength);
+            expect(noteObj.length).to.equal(expectLength);
         });
 
         it('should accept any multiple of a full measure', function () {
             var expectLength = '200/1';
             var noteObj = new Note('A2', '200');
-            expect(noteObj.noteLength).to.equal(expectLength);
+            expect(noteObj.length).to.equal(expectLength);
         });
 
         it('should accept a note length where numerator > 1 ', function () {
             var expectLength = '3/32';
             var noteObj = new Note('A2', '3/32');
-            expect(noteObj.noteLength).to.equal(expectLength);
+            expect(noteObj.length).to.equal(expectLength);
         });
 
     });

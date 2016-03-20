@@ -1,7 +1,7 @@
 
-"use strict";
+'use strict';
 
-var NoteMaps = require("./NoteMaps.js");
+var NoteMaps = require('./NoteMaps.js');
 
 function Note (name, noteLength){
 
@@ -22,7 +22,7 @@ function Note (name, noteLength){
         if (!isNaN(noteLength)) newNoteLength = noteLength + '/1';
         else if (typeof noteLength === 'undefined') newNoteLength = '1/1';
 
-        if ((newNoteLength.indexOf("/") === -1) ||
+        if ((newNoteLength.indexOf('/') === -1) ||
             (isNaN(_getDenominator(newNoteLength))) ||
             (isNaN(_getNumerator(newNoteLength))))
         {
@@ -42,13 +42,13 @@ function Note (name, noteLength){
         var endFreq = nMaps.pitchMap[otherNtName].frequency;
 
         if (startFreq === endFreq){
-            direction = "none";
+            direction = 'none';
         }
         else if (startFreq < endFreq) {
-            direction = "up";
+            direction = 'up';
         }
         else {
-            direction = "down";
+            direction = 'down';
         }
 
         var halfSteps = 0;
@@ -56,20 +56,20 @@ function Note (name, noteLength){
         var reverseSteps = 1;
         var traversalNote = _noteObj;
 
-        if (direction === "none") {
+        if (direction === 'none') {
             return halfSteps;
         }
-        else if (direction === "down") {
-            stepTo = "previousNote";
+        else if (direction === 'down') {
+            stepTo = 'previousNote';
             reverseSteps = -1;
         }
         else {
-            stepTo = "nextNote";
+            stepTo = 'nextNote';
         }
         while (traversalNote.name !== otherNtName){
             halfSteps += 1;
             if (traversalNote[stepTo] === null) {
-                throw new Error ("getDistanceToNote() did not encounter the end point of the interval. End Point: " +
+                throw new Error ('getDistanceToNote() did not encounter the end point of the interval. End Point: ' +
                     otherNtName);
             }
             else traversalNote = traversalNote[stepTo];
@@ -81,7 +81,7 @@ function Note (name, noteLength){
     this.getCentsDiff = function(incomingPitch){
 
         // Math.round instead of Math.floor allows pitch within .5 cent of
-        //  intended note to be counted as "perfect"
+        //  intended note to be counted as 'perfect'
         var centsOff =  Math.round(1200 * Math.log(incomingPitch / this.frequency)/Math.log(2));
 
         // Don't return a value if more than .5 semitone off target
@@ -93,7 +93,7 @@ function Note (name, noteLength){
 
     if (name === '-'){
         this.name = name;
-        this.noteLength = this.setNoteLength(noteLength);
+        this.length = this.setNoteLength(noteLength);
         this.previousNote = null;
         this.nextNote = null;
         this.frequency = -1;
@@ -103,7 +103,7 @@ function Note (name, noteLength){
     }
     else {
         this.name = nMaps.validateNoteName(name);
-        this.noteLength = this.setNoteLength(noteLength);
+        this.length = this.setNoteLength(noteLength);
         var _noteObj = nMaps.pitchMap[this.name];
         this.previousNote = _noteObj.previousNote;
         this.nextNote = _noteObj.nextNote;

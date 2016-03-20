@@ -18,19 +18,19 @@ function Lesson (options_param) {
     this.lowestNote = null;
     this.highestNote = null;
 
-    function _getDenominator(noteLength){
-        return noteLength.split('/')[1];
+    function _getDenominator(length){
+        return length.split('/')[1];
     }
 
-    function _getNumerator(noteLength){
-        return noteLength.split('/')[0];
+    function _getNumerator(length){
+        return length.split('/')[0];
     }
 
     this._getHighestDenominator = function(arrayOfNotes) {
         var highestDenom = 0;
         var currentDenom;
         for (var i = 0; i < arrayOfNotes.length; i++) {
-            currentDenom = Number(_getDenominator(arrayOfNotes[i].noteLength));
+            currentDenom = Number(_getDenominator(arrayOfNotes[i].length));
             if (currentDenom > highestDenom) {highestDenom = currentDenom;}
         }
         return highestDenom;
@@ -77,7 +77,7 @@ function Lesson (options_param) {
             }
             else if (typeof newNotes[i].name !== 'undefined'){
                 name = newNotes[i].name;
-                noteLength = newNotes[i].noteLength;
+                noteLength = newNotes[i].length;
             }
             newNoteObj = new Note(name, noteLength);
             newNoteObj.lengthInMeasures = _getNoteLengthInMeasures(newNoteObj);
@@ -133,8 +133,8 @@ function Lesson (options_param) {
         Whenever notes are added the note is made aware of how long it
          is relative to the length of a measure. eg 2 is == 2 measures
          */
-        var num = _getNumerator(noteObj.noteLength);
-        var den = _getDenominator(noteObj.noteLength);
+        var num = _getNumerator(noteObj.length);
+        var den = _getDenominator(noteObj.length);
         return (num / den);
     };
 
@@ -180,7 +180,7 @@ function Lesson (options_param) {
         var highestDenom = that._getHighestDenominator(arrayOfNotes);
         var numerator = 0;
         for (var i = 0; i < arrayOfNotes.length; i++) {
-            var noteLength = arrayOfNotes[i].noteLength;
+            var noteLength = arrayOfNotes[i].length;
             // TODO handle odd time signatures eg. 5/7 and find common denominator
             numerator += that._sumNumeratorToHighestDenominator(noteLength, highestDenom);
         }

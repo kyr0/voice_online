@@ -36,10 +36,10 @@ describe('Exercise', function() {
         var aLesson = new Lesson({ noteList: [['B2','1/8'],['A1','1/2'],['Db3','1/4'],['B2','1/32']] });
         var exercise = new Exercise(aUser, aLesson);
         var expectedList = [
-            {name: 'B3', noteLength: '1/8'},
-            {name: 'A2', noteLength: '1/2'},
-            {name: 'Db4', noteLength: '1/4'},
-            {name: 'B3', noteLength: '1/32'}
+            {name: 'B3', length: '1/8'},
+            {name: 'A2', length: '1/2'},
+            {name: 'Db4', length: '1/4'},
+            {name: 'B3', length: '1/32'}
         ];
         compareNoteLists(exercise.sets[0].notes, expectedList);
     });
@@ -49,10 +49,10 @@ describe('Exercise', function() {
         var aLesson = new Lesson({ noteList: [['B2','1/8'],['-','1/2'],['Db3','1/4'],['B2','1/32']] });
         var exercise = new Exercise(aUser, aLesson);
         var expectedList = [
-            {name: 'G4', noteLength: '1/8'},
-            {name: '-', noteLength: '1/2'},
-            {name: 'A4', noteLength: '1/4'},
-            {name: 'G4', noteLength: '1/32'}
+            {name: 'G4', length: '1/8'},
+            {name: '-', length: '1/2'},
+            {name: 'A4', length: '1/4'},
+            {name: 'G4', length: '1/32'}
         ];
         compareNoteLists(exercise.sets.pop().notes, expectedList);
     });
@@ -70,6 +70,6 @@ describe('Exercise', function() {
 function compareNoteLists(noteList, expectedList) {
     for (var i = 0; i < noteList.length; i++) {
         expect(noteList[i].name).to.equal(expectedList[i].name);
-        expect(noteList[i].noteLength).to.equal(expectedList[i].noteLength);
+        expect(noteList[i].length).to.equal(expectedList[i].length);
     }
 }

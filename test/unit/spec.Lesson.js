@@ -58,10 +58,10 @@ describe('Lesson', function() {
     describe('with multiple notes', function () {
         beforeEach(function () {
             this.newNotes = [
-                {name: 'B2', noteLength: '3/8'},
-                {name: 'A1', noteLength: '1/2'},
-                {name: 'Db3', noteLength: '1/4'},
-                {name: 'B2', noteLength: '2'}
+                {name: 'B2', length: '3/8'},
+                {name: 'A1', length: '1/2'},
+                {name: 'Db3', length: '1/4'},
+                {name: 'B2', length: '2'}
             ];
             this.lesson.addNotes(this.newNotes);
             this.lesson.addNotes([['B3', '1/16'], ['C4', '1/32']]);
@@ -140,16 +140,16 @@ describe('Lesson', function() {
     describe('with multiple notes', function () {
         beforeEach(function () {
             this.createTheseNotes = [
-                {name: 'B2', noteLength: '1/8'},
-                {name: 'A1', noteLength: '1/2'},
-                {name: 'Db3', noteLength: '1/4'},
-                {name: 'B2', noteLength: '1/32'}
+                {name: 'B2', length: '1/8'},
+                {name: 'A1', length: '1/2'},
+                {name: 'Db3', length: '1/4'},
+                {name: 'B2', length: '1/32'}
             ];
             this.expectedList = [
-                {name: 'B2', noteLength: '1/8'},
-                {name: 'A1', noteLength: '1/2'},
-                {name: 'Db3', noteLength: '1/4'},
-                {name: 'B2', noteLength: '1/32'}
+                {name: 'B2', length: '1/8'},
+                {name: 'A1', length: '1/2'},
+                {name: 'Db3', length: '1/4'},
+                {name: 'B2', length: '1/32'}
             ];
             this.lesson.addNotes(this.createTheseNotes);
         });
@@ -173,7 +173,7 @@ describe('Lesson', function() {
         });
 
         it('smallestNoteSize should return measure size of the smallest note', function () {
-            this.lesson.addNotes([{name: 'B2', noteLength: '1/64'}]);
+            this.lesson.addNotes([{name: 'B2', length: '1/64'}]);
             expect(this.lesson.smallestNoteSize).to.equal(0.015625);
         });
 
@@ -222,6 +222,6 @@ describe('Lesson constructor with silentNotes', function() {
 function compareNoteLists(noteList, expectedList) {
     for (var i = 0; i < noteList.length; i++) {
         expect(noteList[i].name).to.equal(expectedList[i].name);
-        expect(noteList[i].noteLength).to.equal(expectedList[i].noteLength);
+        expect(noteList[i].length).to.equal(expectedList[i].length);
     }
 }

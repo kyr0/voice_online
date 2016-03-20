@@ -15,7 +15,7 @@ function Exercise(aUser, aLesson){
         var newNotes = [];
         for(var note = 0; note < baseLesson.notes.length; note++){
             var newNoteName = baseLesson.notes[note].transpose(distance);
-            var noteLength = baseLesson.notes[note].noteLength;
+            var noteLength = baseLesson.notes[note].length;
             newNotes.push([newNoteName, noteLength]);
         }
         return new Lesson({ noteList: newNotes });

@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
-var MPM = require("./MPM.js");
-var NoteMaps = require("./NoteMaps.js");
-var Lesson = require("./Lesson.js");
-var User = require("./User.js");
-var Player = require("./Player.js");
+var MPM = require('./MPM.js');
+var NoteMaps = require('./NoteMaps.js');
+var Lesson = require('./Lesson.js');
+var User = require('./User.js');
+var Player = require('./Player.js');
 var Soundfont = require('soundfont-player');
 
 // these window assignments must be done outside of onLoad
@@ -29,22 +29,31 @@ var ntMaps = new NoteMaps();
 var lastResult = null;
 
 var lessons = [];
-lessons.push(new Lesson([["A2", "1/32"], ["-", "1/32"], ["G2", "1/32"], ["A2", "1/32"]]));
-lessons.push(new Lesson([["A2", "1"], ["B2", "3"], ["G2", "1/4"]]));
-lessons.push(new Lesson([
-    ['-', 1],
-    ["A3", "1/4"], ["E4", "1/4"], ["A4", "1/4"], ["E4", "1/4"],
-    ["A3", "1/4"], ["E4", "1/4"], ["A4", "1/4"], ["E4", "1/4"],
-    ["A3", "1/4"], ["E4", "1/4"], ["A4", "1/4"], ["E4", "1/4"],["A3", "3/4"],
-    ['-', '1/4']]));
+lessons.push(new Lesson({
+    title: 'Fast as hell',
+    noteList: [['A2', '1/32'], ['-', '1/32'], ['G2', '1/32'], ['A2', '1/32']]
+}));
+lessons.push(new Lesson({
+    title: 'Plain Jane',
+    noteList: [['A2', '1'], ['B2', '3'], ['G2', '1/4']]
+}));
+lessons.push(new Lesson({
+    title: 'Jumping Yaw',
+    noteList:
+        [['-', '1'], ['A3', '1/4'], ['E4', '1/4'], ['A4', '1/4'], ['E4', '1/4'],
+        ['A3', '1/4'], ['E4', '1/4'], ['A4', '1/4'], ['E4', '1/4'],
+        ['A3', '1/4'], ['E4', '1/4'], ['A4', '1/4'], ['E4', '1/4'],['A3', '3/4'],
+        ['-', '1/4']],
+    captionList: [['', '1'],['Yaw', '15/4'], ['', '1/4']]
+}));
 
 var users = [];
-users.push(new User("A4", "B5"));  // anything lower than A1 will == -1 pitch
+users.push(new User('A4', 'B5'));  // anything lower than A1 will == -1 pitch
 
 window.lPlayer = null;
 
 function resetPlayerListenersInMain(){
-    window.lPlayer.on("note", function(curNote){
+    window.lPlayer.on('note', function(curNote){
         if (instNote) {
             instNote.stop(0);
         }
@@ -53,15 +62,15 @@ function resetPlayerListenersInMain(){
         instNote = instrument.play(curNote.name, now, -1);
     });
 
-    window.lPlayer.on("stopExercise", function(){
+    window.lPlayer.on('stopExercise', function(){
         stopAudio();
     });
 
-    window.lPlayer.on("endExercise", function(){
+    window.lPlayer.on('endExercise', function(){
         stopAudio();
     });
 
-    window.lPlayer.on("startExercise", function(){
+    window.lPlayer.on('startExercise', function(){
         startAudio();
     });
 }
@@ -136,14 +145,14 @@ jQuery(document).ready(function() {
     // get the mic
     //getUserMedia(
     //    {
-    //        "audio": {
-    //            "mandatory": {
-    //                "googEchoCancellation": "false",
-    //                "googAutoGainControl": "false",
-    //                "googNoiseSuppression": "false",
-    //                "googHighpassFilter": "false"
+    //        'audio': {
+    //            'mandatory': {
+    //                'googEchoCancellation': 'false',
+    //                'googAutoGainControl': 'false',
+    //                'googNoiseSuppression': 'false',
+    //                'googHighpassFilter': 'false'
     //            },
-    //            "optional": []
+    //            'optional': []
     //        }
     //    }, gotStream
     //);
@@ -151,7 +160,7 @@ jQuery(document).ready(function() {
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function(audioProcessingEvent) {
         // TODO fix the transition detection errors by averaging frames
-        console.log("OnAudioProcess");
+        console.log('OnAudioProcess');
         var inputBuffer = audioProcessingEvent.inputBuffer;
         var inputData = inputBuffer.getChannelData(0);
         updatePitch(inputData);
