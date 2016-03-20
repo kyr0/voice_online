@@ -29,12 +29,17 @@ var ntMaps = new NoteMaps();
 var lastResult = null;
 
 var lessons = [];
-lessons.push(new Lesson([["A2", "1/32"], ["B2", "1/32"], ["G2", "1/32"], ["A2", "1/32"]]));
-lessons.push(new Lesson([["A2", "2"], ["B2", "1/2"], ["G2", "3/8"], ["A2", "2/4"],["Ab2", "1/4"]]));
+lessons.push(new Lesson([["A2", "1/32"], ["-", "1/32"], ["G2", "1/32"], ["A2", "1/32"]]));
 lessons.push(new Lesson([["A2", "1"], ["B2", "3"], ["G2", "1/4"]]));
+lessons.push(new Lesson([
+    ['-', 1],
+    ["A3", "1/4"], ["E4", "1/4"], ["A4", "1/4"], ["E4", "1/4"],
+    ["A3", "1/4"], ["E4", "1/4"], ["A4", "1/4"], ["E4", "1/4"],
+    ["A3", "1/4"], ["E4", "1/4"], ["A4", "1/4"], ["E4", "1/4"],["A3", "3/4"],
+    ['-', '1/4']]));
 
 var users = [];
-users.push(new User("A4", "E5"));  // anything lower than A1 will == -1 pitch
+users.push(new User("A4", "B5"));  // anything lower than A1 will == -1 pitch
 
 window.lPlayer = null;
 
@@ -184,6 +189,7 @@ function updatePitch(buf) {
     var probability = resultObj.getProbability();
     if (pitchFreq === -1 || probability < 0.95) {
         lastResult = -1;
+        window.pitchYAxisRatio = null;
     }
     else {
         var noteObj =  ntMaps.getClosestNoteFromPitch(pitchFreq);

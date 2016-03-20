@@ -111,11 +111,14 @@ function initWidget() {
         var cornerSize = new Size((unitWidth / 6),(unitHeight / 2));
         var bubble = new Path.RoundRectangle(bubRect, cornerSize);
         bubble.fillColor = 'AntiqueWhite';
+        if (curNote.name === '-') {
+            bubble.visible = false;
+        }
         bubbles.push(bubble);
         consumedX += curNoteWidth;
 
         // Note label related
-        if (!tmpNtNames[curNote.name]) {
+        if (!tmpNtNames[curNote.name] && curNote.name !== '-') {
             tmpNtNames[curNote.name] = 1;
             var noteName = new PointText([20, curNoteY + (unitHeight / 2)]);
             noteName.content = curNote.name;
