@@ -2,6 +2,8 @@
 
 var Lesson = require('../../src/client/js/Lesson.js');
 var Interval = require('../../src/client/js/Interval.js');
+var CaptionLengthError = require('../../src/client/js/customErrors').CaptionsTooLongError;
+
 
 describe('Lesson constructor given note list', function() {
     beforeEach(function () {
@@ -30,6 +32,37 @@ describe('Lesson constructor given note list', function() {
 
     it('should have the right number of intervals', function () {
         expect(this.lesson.intervals.length).to.equal(3);
+    });
+});
+
+
+describe('Lesson constructor given note list and captions', function() {
+    beforeEach(function () {
+        var noteList = [['B2', '1/4'], ['A2', '1/4'], ['B2', '1/4'], ['B2', '1/4']];
+        var captionList = [['', '1/4'],['Yaw', '1/2']];
+
+        this.lesson = new Lesson({
+            noteList: noteList,
+            captionList: captionList
+        });
+    });
+
+    it('should have captions with correct length in measures', function () {
+        expect(this.lesson.captions[0].lengthInMeasures).to.equal(0.25);
+        expect(this.lesson.captions[1].lengthInMeasures).to.equal(0.5);
+    });
+
+    it('should be able to add new captions after initialization', function () {
+        this.lesson.addCaptions([['', '1/4']]);
+        expect(this.lesson.captions[2].lengthInMeasures).to.equal(0.25);
+    });
+
+    it('should throw an error if length of captions exceeds Lesson length', function () {
+        var that = this;
+        var fn = function(){
+            that.lesson.addCaptions([['', '1/3']]);
+        };
+        expect(fn).to.throw(CaptionLengthError);
     });
 });
 

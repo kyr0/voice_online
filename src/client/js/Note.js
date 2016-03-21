@@ -1,7 +1,8 @@
-
 'use strict';
 
 var NoteMaps = require('./NoteMaps.js');
+var InvalidLengthError = require('./customErrors.js').InvalidLengthError;
+
 
 function Note (name, noteLength){
 
@@ -26,7 +27,7 @@ function Note (name, noteLength){
             (isNaN(_getDenominator(newNoteLength))) ||
             (isNaN(_getNumerator(newNoteLength))))
         {
-            throw new Error('Note(): the supplied note length is invalid: ' + noteLength);
+            throw new InvalidLengthError('The supplied length is invalid: ' + noteLength);
         }
         return newNoteLength;
     };

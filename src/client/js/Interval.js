@@ -6,7 +6,7 @@ var SilentIntervalError = require('./customErrors').SilentIntervalError;
 function Interval (startNote, endNote) {
 
     if (startNote === '-' || endNote === '-') {
-        throw new SilentIntervalError(SilentIntervalError.name + ': Silent notes not allowed in Interval.');
+        throw new SilentIntervalError('Silent notes not allowed in Interval.');
     }
     this.startNote = new Note(startNote);
     this.endNote = new Note(endNote);

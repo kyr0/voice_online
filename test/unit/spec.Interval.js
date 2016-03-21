@@ -1,14 +1,7 @@
-///**
-// * Created by jaboing on 2015-07-31.
-// */
 'use strict';
 
 var Interval = require('../../src/client/js/Interval.js');
 var SilentIntervalError = require('../../src/client/js/customErrors.js').SilentIntervalError;
-var helpers = require('../resources/testHelpers.js');
-for (var key in helpers) {
-    global[key] = helpers[key];
-}
 
 describe('Interval Object', function() {
 

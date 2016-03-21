@@ -1,6 +1,8 @@
 'use strict';
 
 var Note = require('../../src/client/js/Note.js');
+var InvalidLengthError = require('../../src/client/js/customErrors.js').InvalidLengthError;
+
 
 describe('Silent note Object', function() {
 
@@ -108,34 +110,36 @@ describe('Note Object', function() {
 
     describe('should throw an error when', function() {
 
-        beforeEach(function() {
-            this.createNote = function (name, noteLength) {
-                return new Note(name, noteLength);
-            };
-        });
-
         it('attempting to create a note with invalid length (invalid numerator)', function () {
             var noteLength = 'dummy/4';
-            var errMsg = 'Note(): the supplied note length is invalid: ' + noteLength;
-            expect(catchError(this.createNote, [this.noteName, noteLength])).to.equal(errMsg);
+            var fn = function(){
+                var dum = new Note('-', noteLength);
+            };
+            expect(fn).to.throw(InvalidLengthError);
         });
 
         it('attempting to create a note with invalid length (invalid denominator)', function () {
             var noteLength = '1/stuff';
-            var errMsg = 'Note(): the supplied note length is invalid: ' + noteLength;
-            expect(catchError(this.createNote, [this.noteName, noteLength])).to.equal(errMsg);
+            var fn = function(){
+                var dum = new Note('-', noteLength);
+            };
+            expect(fn).to.throw(InvalidLengthError);
         });
 
         it('attempting to create a note with invalid length (string)', function () {
             var noteLength = 'dummy';
-            var errMsg = 'Note(): the supplied note length is invalid: ' + noteLength;
-            expect(catchError(this.createNote, [this.noteName, noteLength])).to.equal(errMsg);
+            var fn = function(){
+                var dum = new Note('-', noteLength);
+            };
+            expect(fn).to.throw(InvalidLengthError);
         });
 
         it('attempting to create a note with invalid length (array)', function () {
             var noteLength = ['dummy', 4];
-            var errMsg = 'Note(): the supplied note length is invalid: ' + noteLength;
-            expect(catchError(this.createNote, [this.noteName, noteLength])).to.equal(errMsg);
+            var fn = function(){
+                var dum = new Note('-', noteLength);
+            };
+            expect(fn).to.throw(InvalidLengthError);
         });
 
     });
