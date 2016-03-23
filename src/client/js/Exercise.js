@@ -18,7 +18,13 @@ function Exercise(aUser, aLesson){
             var noteLength = baseLesson.notes[note].length;
             newNotes.push([newNoteName, noteLength]);
         }
-        return new Lesson({ noteList: newNotes });
+        var newCaps = [];
+        for(var cap = 0; cap < baseLesson.captions.length; cap++) {
+            var newCapText = baseLesson.captions[cap].text;
+            var newCapLength = baseLesson.captions[cap].length;
+            newCaps.push([newCapText, newCapLength]);
+        }
+        return new Lesson({ noteList: newNotes, captionList: newCaps });
     }
 
     function generateSets(){

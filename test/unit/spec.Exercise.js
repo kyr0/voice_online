@@ -33,28 +33,50 @@ describe('Exercise', function() {
 
     it('should transpose all notes in Lesson correctly (base set)', function () {
         var aUser = new User('A2', 'A4');
-        var aLesson = new Lesson({ noteList: [['B2','1/8'],['A1','1/2'],['Db3','1/4'],['B2','1/32']] });
+        var aLesson = new Lesson({
+            noteList: [['B2','1/8'],['A1','1/2'],['Db3','1/4'],['B2','1/32']],
+            captionList: [['One','1/8'],['-','1/2'],['Two','1/4'],['Three','1/32']]
+        });
         var exercise = new Exercise(aUser, aLesson);
-        var expectedList = [
-            {name: 'B3', length: '1/8'},
-            {name: 'A2', length: '1/2'},
-            {name: 'Db4', length: '1/4'},
-            {name: 'B3', length: '1/32'}
-        ];
-        compareNoteLists(exercise.sets[0].notes, expectedList);
+        var expected = {
+            notes: [
+                {name: 'B3', length: '1/8'},
+                {name: 'A2', length: '1/2'},
+                {name: 'Db4', length: '1/4'},
+                {name: 'B3', length: '1/32'}
+            ],
+            captions: [
+                {text: 'One', length: '1/8'},
+                {text: '-', length: '1/2'},
+                {text: 'Two', length: '1/4'},
+                {text: 'Three', length: '1/32'}
+            ]
+        };
+        compareLessonLists(exercise.sets[0], expected);
     });
 
     it('should transpose all notes in Lesson correctly (final set)', function () {
         var aUser = new User('A2', 'A4');
-        var aLesson = new Lesson({ noteList: [['B2','1/8'],['-','1/2'],['Db3','1/4'],['B2','1/32']] });
+        var aLesson = new Lesson({
+            noteList: [['B2','1/8'],['-','1/2'],['Db3','1/4'],['B2','1/32']],
+            captionList: [['','1/8'],['One','1/2'],['Two','1/4'],['Three','1/32']]
+        });
         var exercise = new Exercise(aUser, aLesson);
-        var expectedList = [
-            {name: 'G4', length: '1/8'},
-            {name: '-', length: '1/2'},
-            {name: 'A4', length: '1/4'},
-            {name: 'G4', length: '1/32'}
-        ];
-        compareNoteLists(exercise.sets.pop().notes, expectedList);
+        var expected = {
+            notes: [
+                {name: 'G4', length: '1/8'},
+                {name: '-', length: '1/2'},
+                {name: 'A4', length: '1/4'},
+                {name: 'G4', length: '1/32'}
+            ],
+            captions: [
+                {text: '', length: '1/8'},
+                {text: 'One', length: '1/2'},
+                {text: 'Two', length: '1/4'},
+                {text: 'Three', length: '1/32'}
+            ]
+        };
+        compareLessonLists(exercise.sets.pop(), expected);
     });
 
     it('should have the right number of sets based on Lesson / User ranges (final set)', function () {
@@ -67,9 +89,13 @@ describe('Exercise', function() {
 });
 
 
-function compareNoteLists(noteList, expectedList) {
-    for (var i = 0; i < noteList.length; i++) {
-        expect(noteList[i].name).to.equal(expectedList[i].name);
-        expect(noteList[i].length).to.equal(expectedList[i].length);
+function compareLessonLists(aSet, expected) {
+    for (var i = 0; i < aSet.notes.length; i++) {
+        expect(aSet.notes[i].name).to.equal(expected.notes[i].name);
+        expect(aSet.notes[i].length).to.equal(expected.notes[i].length);
+    }
+    for (var j = 0; j < aSet.captions.length; j++) {
+        expect(aSet.captions[j].text).to.equal(expected.captions[j].text);
+        expect(aSet.captions[j].length).to.equal(expected.captions[j].length);
     }
 }

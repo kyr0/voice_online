@@ -188,7 +188,8 @@ function Lesson (options_param) {
             newCaptionObj.lengthInMeasures = _getObjLengthInMeasures(newCaptionObj);
             totalCaptionLengthInMeasures += newCaptionObj.lengthInMeasures;
             if (totalCaptionLengthInMeasures > this.lengthInMeasures) {
-                throw new CaptionLengthError('Combined length of captions cannot exceed the lesson length.');
+                throw new CaptionLengthError('Combined length of captions "' + totalCaptionLengthInMeasures +
+                    '" cannot exceed the lesson length "' + this.lengthInMeasures + '".');
             }
             this.captions.push(newCaptionObj);
         }
