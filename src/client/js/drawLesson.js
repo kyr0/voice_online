@@ -20,6 +20,7 @@ var captionBg = null;
 var gridX = [];
 var gridY = [];
 var bubbles = [];
+var captions = [];
 var noteLbls = [];
 var timeline = null;
 var dot = null;
@@ -76,6 +77,7 @@ function resetDrawables() {
     gridX = [];
     gridY = [];
     bubbles = [];
+    captions = [];
     noteLbls = [];
     timeline = null;
     dot = null;
@@ -122,6 +124,7 @@ function initWidget() {
         gridY.push(symbolHorz.place(new Point(width / 2, y)));
     }
 
+    // Begin epic bubble drawing
     var consumedX = 0;
     var tmpNtNames = [];  // used to filter out duplicate note labels
     for (var nt = 0; nt < curSet.notes.length; nt++) {
@@ -150,6 +153,19 @@ function initWidget() {
             noteLbls[idx - 1].ntObj = curNote;
             noteLbls[idx - 1].relativeInterval = curNote.relativeInterval;
         }
+    }
+
+    // Begin caption drawing
+    var consumedCaptionX = 0;
+    for (var cap = 0; cap < curSet.captions.length; cap++) {
+        var curCap = curSet.captions[cap];
+        var curCapWidth = unitWidth * curCap.lengthInMeasures;
+        var capY = lessonHeight + (captionHeight / 2);
+        var captionText = new PointText([consumedCaptionX, capY]);
+        captionText.content = curCap.text;
+        captionText.strokeColor = 'coral';
+        captions.push(captionText);
+        consumedCaptionX += curCapWidth;
     }
 
     markerLayer.activate();
