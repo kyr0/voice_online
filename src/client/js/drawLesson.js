@@ -47,22 +47,18 @@ window.initLessonCanvas = initLessonCanvas;
 function resetPlayerListenersInDraw(){
 
     window.lPlayer.on("stopExercise", function(){
-        console.log("stopEx");
         timeGroup.visible = false;
     });
 
     window.lPlayer.on("endSet", function(){
-        console.log("endSet");
         updateSet();
     });
 
     window.lPlayer.on("endExercise", function(){
-        console.log("endEx");
         timeGroup.visible = false;
     });
 
     window.lPlayer.on("startExercise", function(){
-        console.log("startEx");
         timeGroup.visible = true;
     });
 }

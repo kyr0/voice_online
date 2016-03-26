@@ -26,9 +26,13 @@ window.oscillator = null;
 var mediaStreamSource = null;
 var mpm = null;
 var ntMaps = new NoteMaps();
-var lastResult = null;
+
+var noteScores = [];
+var setScores = [];
+var lessonScores = [];
 
 var lessons = [];
+
 lessons.push(new Lesson({
     title: 'Fast as hell',
     noteList: [['A2', '1/32'], ['-', '1/32'], ['G2', '1/32'], ['A2', '1/32']]
@@ -50,7 +54,7 @@ lessons.push(new Lesson({
 }));
 
 var users = [];
-users.push(new User('A4', 'B5'));  // anything lower than A1 will == -1 pitch
+users.push(new User('A4', 'B5'));
 
 window.lPlayer = null;
 
@@ -59,9 +63,18 @@ function resetPlayerListenersInMain(){
         if (instNote) {
             instNote.stop(0);
         }
+        if (noteScores.length) {
+            setScores.push(noteScores);
+            noteScores = [];
+        }
         var now = audioContext.currentTime;
         window.oscillator.frequency.value = curNote.frequency;  // osc start frequency
         instNote = instrument.play(curNote.name, now, -1);
+    });
+
+    window.lPlayer.on('endSet', function(){
+        lessonScores.push(setScores);
+        setScores = [];
     });
 
     window.lPlayer.on('stopExercise', function(){
@@ -70,9 +83,16 @@ function resetPlayerListenersInMain(){
 
     window.lPlayer.on('endExercise', function(){
         stopAudio();
+        console.log("1: " + lessonScores[0][0]);
+        console.log("2: " + lessonScores[0][1]);
+        console.log("3: " + lessonScores[0][2]);
+        console.log("4: " + lessonScores[0][3]);
     });
 
     window.lPlayer.on('startExercise', function(){
+        noteScores = [];
+        setScores = [];
+        lessonScores = [];
         startAudio();
     });
 }
@@ -162,7 +182,7 @@ jQuery(document).ready(function() {
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function(audioProcessingEvent) {
         // TODO fix the transition detection errors by averaging frames
-        console.log('OnAudioProcess');
+        //console.log('OnAudioProcess');
         var inputBuffer = audioProcessingEvent.inputBuffer;
         var inputData = inputBuffer.getChannelData(0);
         updatePitch(inputData);
@@ -199,8 +219,8 @@ function updatePitch(buf) {
     var pitchFreq = resultObj.getPitchFrequency();
     var probability = resultObj.getProbability();
     if (pitchFreq === -1 || probability < 0.95) {
-        lastResult = -1;
         window.pitchYAxisRatio = null;
+        pushScore(null);
     }
     else {
         var noteObj =  ntMaps.getClosestNoteFromPitch(pitchFreq);
@@ -208,12 +228,17 @@ function updatePitch(buf) {
         var curChart = window.lPlayer.getCurrentChart();
         var relativeItvl = curChart[noteName] + 1;
         if (relativeItvl){
-            var detuneAmt = noteObj.getCentsDiff(pitchFreq);
-            window.pitchYAxisRatio = relativeItvl + (detuneAmt / 100);
+            var offPitchAmt = noteObj.getCentsDiff(pitchFreq);
+            window.pitchYAxisRatio = relativeItvl + (offPitchAmt / 100);
+            pushScore(offPitchAmt);
         }
         else {
             window.pitchYAxisRatio = null;
+            pushScore(null);
         }
-        lastResult = 1;
     }
+}
+
+function pushScore(score) {
+    noteScores.push(score);
 }
