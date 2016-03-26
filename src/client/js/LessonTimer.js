@@ -30,6 +30,7 @@ LessonTimer.prototype.stopTimer = function(){
 };
 
 LessonTimer.prototype.timerInstance = function(){
+    this.emit('endNote', this.curNote);
     var expectedNoteEnd = this.curNote.percentOnComplete;
     this.curNoteIdx++;
     this.curNote = this.notes[this.curNoteIdx];

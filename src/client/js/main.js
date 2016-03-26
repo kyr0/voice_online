@@ -63,13 +63,14 @@ function resetPlayerListenersInMain(){
         if (instNote) {
             instNote.stop(0);
         }
-        if (noteScores.length) {
-            setScores.push(noteScores);
-            noteScores = [];
-        }
         var now = audioContext.currentTime;
         window.oscillator.frequency.value = curNote.frequency;  // osc start frequency
         instNote = instrument.play(curNote.name, now, -1);
+    });
+
+    window.lPlayer.on('endNote', function(curNote){
+        setScores.push(noteScores);
+        noteScores = [];
     });
 
     window.lPlayer.on('endSet', function(){

@@ -42,6 +42,10 @@ Player.prototype.resetListeners = function(curSet){
         that.emit('startNote', curNote);
     });
 
+    this.timer.on('endNote', function(curNote){
+        that.emit('endNote', curNote);
+    });
+
     // not to be confused with 'stop'
     this.timer.on('endSet', function(){
         that.curSetIdx++;
@@ -51,6 +55,7 @@ Player.prototype.resetListeners = function(curSet){
             that.timer.startTimer();
         }
         else {
+            that.emit('endSet');
             that.resetExercise();
             that.emit('endExercise');
         }

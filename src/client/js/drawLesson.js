@@ -51,7 +51,9 @@ function resetPlayerListenersInDraw(){
     });
 
     window.lPlayer.on("endSet", function(){
-        updateSet();
+        if (window.lPlayer.curSetIdx < window.lPlayer.sets.length) {
+            updateSet();
+        }
     });
 
     window.lPlayer.on("endExercise", function(){
