@@ -59,7 +59,7 @@ users.push(new User('A4', 'B5'));
 window.lPlayer = null;
 
 function resetPlayerListenersInMain(){
-    window.lPlayer.on('note', function(curNote){
+    window.lPlayer.on('startNote', function(curNote){
         if (instNote) {
             instNote.stop(0);
         }
@@ -83,10 +83,12 @@ function resetPlayerListenersInMain(){
 
     window.lPlayer.on('endExercise', function(){
         stopAudio();
-        console.log("1: " + lessonScores[0][0]);
-        console.log("2: " + lessonScores[0][1]);
-        console.log("3: " + lessonScores[0][2]);
-        console.log("4: " + lessonScores[0][3]);
+        for (var i = 0; i < lessonScores.length; i++) {
+            console.log("Set #" + i + ": ");
+            for (var j = 0; j < lessonScores[i].length; j++) {
+                console.log("Note #" + j + " scores: " + lessonScores[i][j]);
+            }
+        }
     });
 
     window.lPlayer.on('startExercise', function(){
@@ -220,7 +222,7 @@ function updatePitch(buf) {
     var probability = resultObj.getProbability();
     if (pitchFreq === -1 || probability < 0.95) {
         window.pitchYAxisRatio = null;
-        pushScore(null);
+        pushScore([null, null]);
     }
     else {
         var noteObj =  ntMaps.getClosestNoteFromPitch(pitchFreq);
@@ -230,11 +232,11 @@ function updatePitch(buf) {
         if (relativeItvl){
             var offPitchAmt = noteObj.getCentsDiff(pitchFreq);
             window.pitchYAxisRatio = relativeItvl + (offPitchAmt / 100);
-            pushScore(offPitchAmt);
+            pushScore([offPitchAmt, noteName]);
         }
         else {
             window.pitchYAxisRatio = null;
-            pushScore(null);
+            pushScore([null, noteName]);
         }
     }
 }

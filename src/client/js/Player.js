@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
-var util = require("util");
-var EventEmitter = require("events").EventEmitter;
+var util = require('util');
+var EventEmitter = require('events').EventEmitter;
 
-var Exercise = require("./Exercise.js");
-var LessonTimer = require("./LessonTimer.js");
+var Exercise = require('./Exercise.js');
+var LessonTimer = require('./LessonTimer.js');
 
 
 function Player(aUser, aLesson) {
@@ -34,25 +34,25 @@ Player.prototype.resetListeners = function(curSet){
     var that = this;
     this.timer = new LessonTimer(curSet);
 
-    this.timer.on("startSet", function(){
-        that.emit("startSet");
+    this.timer.on('startSet', function(){
+        that.emit('startSet');
     });
 
-    this.timer.on("note", function(curNote){
-        that.emit("note", curNote);
+    this.timer.on('startNote', function(curNote){
+        that.emit('startNote', curNote);
     });
 
-    // not to be confused with "stop"
-    this.timer.on("endSet", function(){
+    // not to be confused with 'stop'
+    this.timer.on('endSet', function(){
         that.curSetIdx++;
         if (that.sets[that.curSetIdx]){
             that.resetListeners(that.sets[that.curSetIdx]);
-            that.emit("endSet");
+            that.emit('endSet');
             that.timer.startTimer();
         }
         else {
             that.resetExercise();
-            that.emit("endExercise");
+            that.emit('endExercise');
         }
     });
 };
@@ -62,13 +62,13 @@ Player.prototype.start = function(){
         this.stop();
     }
     this.isPlaying = true;
-    this.emit("startExercise");
+    this.emit('startExercise');
     this.timer.startTimer();
 };
 
 Player.prototype.stop = function(){
     this.resetExercise();
-    this.emit("stopExercise");
+    this.emit('stopExercise');
 };
 
 Player.prototype.getPctComplete = function(){

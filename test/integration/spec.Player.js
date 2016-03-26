@@ -25,7 +25,7 @@ describe('Player Object', function() {
             that.startSetEvents++;
         });
 
-        this.player.on("note", function () {
+        this.player.on("startNote", function () {
             that.noteEvents++;
         });
 
