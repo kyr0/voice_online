@@ -76,6 +76,50 @@ Player.prototype.stop = function(){
     this.emit('stopExercise');
 };
 
+Player.prototype.scoreExercise = function(scores){
+
+    // TODO refactor this with lodash, looks for other loops
+    var setScores = [];
+    for (var aSet = 0; aSet < scores.length; aSet++) {
+        var noteScores = [];
+        for (var aNote = 0; aNote < scores[aSet].length; aNote++) {
+            var totalNoteScore = 0;
+            for (var aPoint = 0; aPoint < scores[aSet][aNote].length; aPoint++) {
+                var curScore = null;
+                if (scores[aSet][aNote][aPoint][0] === null) {
+                    curScore = 100;  // null means it was completely off key
+                }
+                else {
+                    // scores can be + or - 50 cents off key
+                    curScore = 2 * Math.abs(scores[aSet][aNote][aPoint][0]);
+                }
+                totalNoteScore += curScore;
+            }
+            console.log("TOTALNOTESCORE: " + totalNoteScore);
+            console.log("LENGTHOFPOINTS: " + scores[aSet][aNote].length);
+            var averageNoteDiff = totalNoteScore / scores[aSet][aNote].length;
+            console.log("AVGNOTEDIFF: " + averageNoteDiff);
+            totalNoteScore = 100 - Math.round(averageNoteDiff);
+            noteScores.push(totalNoteScore);
+        }
+        setScores.push(noteScores);
+    }
+
+    console.log("SET SCORES: " + setScores);
+
+    var aggregateNoteScores = [];
+    for (var aNote2 = 0; aNote2 < setScores[0].length; aNote2++) {
+        var anAggNoteScore = 0;
+        for (var aSet2 = 0; aSet2 < setScores.length; aSet2++) {
+            anAggNoteScore += scores[aSet2][aNote2];
+        }
+        anAggNoteScore = anAggNoteScore / setScores.length;
+        aggregateNoteScores.push(anAggNoteScore);
+    }
+    this.emit('exScore', aggregateNoteScores);
+
+};
+
 Player.prototype.getPctComplete = function(){
     return this.timer.getPctComplete();
 };

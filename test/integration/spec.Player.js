@@ -14,7 +14,8 @@ describe('Player Object', function() {
         this.endSetEvents = 0;
         this.startSetEvents = 0;
         this.startExerciseEvents = 0;
-        this.noteEvents = 0;
+        this.startNoteEvents = 0;
+        this.endNoteEvents = 0;
         var that = this;
 
         this.player.on("startExercise", function () {
@@ -26,7 +27,11 @@ describe('Player Object', function() {
         });
 
         this.player.on("startNote", function () {
-            that.noteEvents++;
+            that.startNoteEvents++;
+        });
+
+        this.player.on("endNote", function () {
+            that.endNoteEvents++;
         });
 
         this.player.on("endSet", function () {
@@ -40,7 +45,8 @@ describe('Player Object', function() {
             expect(that.startExerciseEvents).to.equal(1);
             expect(that.startSetEvents).to.equal(7);
             expect(that.endSetEvents).to.equal(7);
-            expect(that.noteEvents).to.equal(14);
+            expect(that.startNoteEvents).to.equal(14);
+            expect(that.endNoteEvents).to.equal(14);
             expect(that.player.isPlaying).to.equal(false);
             done();
         };

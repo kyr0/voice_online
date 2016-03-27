@@ -54,17 +54,18 @@ lessons.push(new Lesson({
 }));
 
 var users = [];
-users.push(new User('A4', 'B5'));
+users.push(new User('A4', 'A5'));
 
 window.lPlayer = null;
 
 function resetPlayerListenersInMain(){
+
     window.lPlayer.on('startNote', function(curNote){
+        window.oscillator.frequency.value = curNote.frequency;  // osc start frequency
         if (instNote) {
             instNote.stop(0);
         }
         var now = audioContext.currentTime;
-        window.oscillator.frequency.value = curNote.frequency;  // osc start frequency
         instNote = instrument.play(curNote.name, now, -1);
     });
 
@@ -76,6 +77,13 @@ function resetPlayerListenersInMain(){
     window.lPlayer.on('endSet', function(){
         lessonScores.push(setScores);
         setScores = [];
+    });
+
+    window.lPlayer.on('startExercise', function(){
+        noteScores = [];
+        setScores = [];
+        lessonScores = [];
+        startAudio();
     });
 
     window.lPlayer.on('stopExercise', function(){
@@ -90,13 +98,11 @@ function resetPlayerListenersInMain(){
                 console.log("Note #" + j + " scores: " + lessonScores[i][j]);
             }
         }
+        window.lPlayer.scoreExercise(lessonScores);
     });
 
-    window.lPlayer.on('startExercise', function(){
-        noteScores = [];
-        setScores = [];
-        lessonScores = [];
-        startAudio();
+    window.lPlayer.on('exScore', function(aggNoteScore){
+        console.log("SCORE: " + aggNoteScore);
     });
 }
 
@@ -228,6 +234,8 @@ function updatePitch(buf) {
     else {
         var noteObj =  ntMaps.getClosestNoteFromPitch(pitchFreq);
         var noteName = noteObj.name;
+        // The current chart is  used to show if the note is within
+        // the visible bounds of the set that is playing.
         var curChart = window.lPlayer.getCurrentChart();
         var relativeItvl = curChart[noteName] + 1;
         if (relativeItvl){
