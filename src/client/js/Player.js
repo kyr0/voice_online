@@ -84,7 +84,8 @@ Player.prototype.scoreExercise = function(scores){
         var noteScores = [];
         for (var aNote = 0; aNote < scores[aSet].length; aNote++) {
             var totalNoteScore = 0;
-            for (var aPoint = 0; aPoint < scores[aSet][aNote].length; aPoint++) {
+            var trim = 2;  // TODO the 1st two points are usually off, investigate MPM
+            for (var aPoint = trim; aPoint < scores[aSet][aNote].length; aPoint++) {
                 var curScore = null;
                 if (scores[aSet][aNote][aPoint][0] === null) {
                     curScore = 100;  // null means it was completely off key
@@ -95,10 +96,7 @@ Player.prototype.scoreExercise = function(scores){
                 }
                 totalNoteScore += curScore;
             }
-            console.log("TOTALNOTESCORE: " + totalNoteScore);
-            console.log("LENGTHOFPOINTS: " + scores[aSet][aNote].length);
-            var averageNoteDiff = totalNoteScore / scores[aSet][aNote].length;
-            console.log("AVGNOTEDIFF: " + averageNoteDiff);
+            var averageNoteDiff = totalNoteScore / (scores[aSet][aNote].length - trim);
             totalNoteScore = 100 - Math.round(averageNoteDiff);
             noteScores.push(totalNoteScore);
         }
@@ -111,7 +109,7 @@ Player.prototype.scoreExercise = function(scores){
     for (var aNote2 = 0; aNote2 < setScores[0].length; aNote2++) {
         var anAggNoteScore = 0;
         for (var aSet2 = 0; aSet2 < setScores.length; aSet2++) {
-            anAggNoteScore += scores[aSet2][aNote2];
+            anAggNoteScore += setScores[aSet2][aNote2];
         }
         anAggNoteScore = anAggNoteScore / setScores.length;
         aggregateNoteScores.push(anAggNoteScore);

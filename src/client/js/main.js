@@ -35,7 +35,7 @@ var lessons = [];
 
 lessons.push(new Lesson({
     title: 'Fast as hell',
-    noteList: [['A2', '1/32'], ['-', '1/32'], ['G2', '1/32'], ['A2', '1/32']]
+    noteList: [['A2', '1/16'], ['-', '1/16'], ['G2', '1/16'], ['A2', '1/16']]
 }));
 lessons.push(new Lesson({
     title: 'Plain Jane',
