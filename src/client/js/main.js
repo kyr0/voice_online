@@ -27,10 +27,6 @@ var mediaStreamSource = null;
 var mpm = null;
 var ntMaps = new NoteMaps();
 
-var noteScores = [];
-var setScores = [];
-var lessonScores = [];
-
 var lessons = [];
 
 lessons.push(new Lesson({
@@ -69,20 +65,7 @@ function resetPlayerListenersInMain(){
         instNote = instrument.play(curNote.name, now, -1);
     });
 
-    window.lPlayer.on('endNote', function(curNote){
-        setScores.push(noteScores);
-        noteScores = [];
-    });
-
-    window.lPlayer.on('endSet', function(){
-        lessonScores.push(setScores);
-        setScores = [];
-    });
-
     window.lPlayer.on('startExercise', function(){
-        noteScores = [];
-        setScores = [];
-        lessonScores = [];
         startAudio();
     });
 
@@ -92,13 +75,6 @@ function resetPlayerListenersInMain(){
 
     window.lPlayer.on('endExercise', function(){
         stopAudio();
-        for (var i = 0; i < lessonScores.length; i++) {
-            console.log("Set #" + i + ": ");
-            for (var j = 0; j < lessonScores[i].length; j++) {
-                console.log("Note #" + j + " scores: " + lessonScores[i][j]);
-            }
-        }
-        window.lPlayer.scoreExercise(lessonScores);
     });
 
     window.lPlayer.on('exScore', function(aggNoteScore){
@@ -251,5 +227,5 @@ function updatePitch(buf) {
 }
 
 function pushScore(score) {
-    noteScores.push(score);
+    window.lPlayer.pushScore(score);
 }
