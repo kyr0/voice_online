@@ -67,17 +67,4 @@ Score.prototype.getAggregateNoteScores = function() {
     return aggregateNoteScores;
 };
 
-Score.prototype.getAggregateIntervalScores = function() {
-    var aggregateIntervalScores = [];
-    for (var aNote = 0; aNote < this.scoredSets[0].length; aNote++) {
-        var anAggNoteScore = 0;
-        for (var aSet = 0; aSet < this.scoredSets.length; aSet++) {
-            anAggNoteScore += this.scoredSets[aSet][aNote];
-        }
-        anAggNoteScore = anAggNoteScore / this.scoredSets.length;
-        aggregateNoteScores.push(anAggNoteScore);
-    }
-    return aggregateNoteScores;
-};
-
 module.exports = Score;
