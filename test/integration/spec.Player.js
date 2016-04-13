@@ -1,5 +1,6 @@
 'use strict';
 
+var Score= require('../../src/client/js/Score.js');
 var Lesson = require('../../src/client/js/Lesson.js');
 var User = require('../../src/client/js/User.js');
 var Player = require('../../src/client/js/Player.js');
@@ -89,7 +90,10 @@ describe('Player Object', function() {
         this.player.start();
     });
 
-//    SHOULD RESET SCORES ON LESSON RESET
-//    SHOULD HAVE THE RIGHT AGGREGATE SCORES
+    it('should reset scores on resetExercise()', function () {
+        this.player.score = "dummy";
+        this.player.resetExercise();
+        expect(this.player.score).to.be.an.instanceof(Score);
+    });
 
 });

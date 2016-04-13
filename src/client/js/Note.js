@@ -38,6 +38,10 @@ function Note (name, noteLength){
     };
 
     this.getDistanceToNote = function(otherNtName) {
+        if (otherNtName === '-') {
+            return null;
+        }
+
         var direction = null;
         var startFreq = _noteObj.frequency;
         var endFreq = nMaps.pitchMap[otherNtName].frequency;

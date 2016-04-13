@@ -86,6 +86,10 @@ describe('Note Object', function() {
         expect(this.note.getDistanceToNote('B2')).to.equal(0);
     });
 
+    it('getDistanceToNote() should return null for silentNote', function() {
+        expect(this.note.getDistanceToNote('-')).to.be.null;
+    });
+
     describe('Note Object', function() {
 
         it('should accept a note length longer than a full measure', function () {

@@ -92,28 +92,12 @@ function Lesson (options_param) {
         return noteObjArr;
     };
 
-    var _makeInterval = function(startNote, endNote) {
-        var itvl = null;
-        try {
-            itvl = new Interval(startNote, endNote);
-        }
-        catch (e) {
-            if (e.name === 'SilentIntervalError') {
-                return null;
-            }
-            else {
-                throw e; // let other errors bubble up
-            }
-        }
-        return itvl;
-    };
-
     var _updateIntervals = function(noteArr){
         var itvlObjArr = [];
         for (var i = 0; i < noteArr.length - 1; i++) {
             var startNote = noteArr[i].name;
             var endNote = noteArr[i + 1].name;
-            itvlObjArr.push(_makeInterval(startNote, endNote));
+            itvlObjArr.push(new Interval(startNote, endNote));
         }
         return itvlObjArr;
     };
@@ -124,12 +108,8 @@ function Lesson (options_param) {
         is from the highest note in the lesson.
          */
         for (var i = 0; i < this.notes.length; i++) {
-            var itvl = _makeInterval(this.notes[i].name, this.highestNote.name);
-            var intervalSteps = null;
-            if (itvl) {
-                intervalSteps =_makeInterval(this.notes[i].name, this.highestNote.name).halfsteps;
-            }
-            this.notes[i].relativeInterval = intervalSteps;
+            var itvl = new Interval(this.notes[i].name, this.highestNote.name);
+            this.notes[i].relativeInterval = itvl.halfsteps;
         }
     };
 

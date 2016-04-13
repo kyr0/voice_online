@@ -242,11 +242,10 @@ describe('Lesson constructor with silentNotes', function() {
         expect(this.lesson.intervals.length).to.equal(4);
     });
 
-    it('should have three null intervals and one valid at the end', function () {
-        expect(this.lesson.intervals[0]).to.be.null;
-        expect(this.lesson.intervals[1]).to.be.null;
-        expect(this.lesson.intervals[2]).to.be.null;
-        expect(this.lesson.intervals[3]).to.be.instanceof(Interval);
+    it('should have three intervals with silent notes', function () {
+        expect(this.lesson.intervals[0].startNote.name).to.equal('-');
+        expect(this.lesson.intervals[1].endNote.name).to.equal('-');
+        expect(this.lesson.intervals[2].startNote.name).to.equal('-');
     });
 
 });

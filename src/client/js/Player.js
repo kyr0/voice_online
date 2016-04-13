@@ -11,8 +11,9 @@ var LessonTimer = require('./LessonTimer.js');
 
 function Player(aUser, aLesson) {
     EventEmitter.call(this);
-    this.score = new Score();
-    this.sets = new Exercise(aUser, aLesson).sets;
+    this._exercise = new Exercise(aUser, aLesson);
+    this.score = new Score(this._exercise);
+    this.sets = this._exercise.sets;
     this.timer = null;
     this.resetExercise();
 }
@@ -25,7 +26,7 @@ Player.prototype.resetExercise = function() {
     if (this.timer){
         this.timer.stopTimer();
     }
-    this.score = new Score();
+    this.score = new Score(this._exercise);
     this.isPlaying = false;
     this.curSetIdx = 0;
     this.resetListeners(this.sets[this.curSetIdx]);
@@ -46,7 +47,7 @@ Player.prototype.resetListeners = function(curSet){
     });
 
     this.timer.on('endNote', function(curNote){
-        that.score.storeNoteScores(curNote);
+        that.score.storeNoteScores();
         that.emit('endNote', curNote);
     });
 

@@ -205,7 +205,7 @@ function updatePitch(buf) {
     var probability = resultObj.getProbability();
     if (pitchFreq === -1 || probability < 0.95) {
         window.pitchYAxisRatio = null;
-        pushScore([null, null]);
+        pushScore(null);
     }
     else {
         var noteObj =  ntMaps.getClosestNoteFromPitch(pitchFreq);
@@ -217,11 +217,11 @@ function updatePitch(buf) {
         if (relativeItvl){
             var offPitchAmt = noteObj.getCentsDiff(pitchFreq);
             window.pitchYAxisRatio = relativeItvl + (offPitchAmt / 100);
-            pushScore([offPitchAmt, noteName]);
+            pushScore(offPitchAmt);
         }
         else {
             window.pitchYAxisRatio = null;
-            pushScore([null, noteName]);
+            pushScore(null);
         }
     }
 }
