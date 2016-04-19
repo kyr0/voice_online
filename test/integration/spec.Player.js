@@ -46,7 +46,7 @@ describe('Player Object', function() {
         var finish = function(){
             expect(that.startExerciseEvents).to.equal(1);
             expect(that.startSetEvents).to.equal(5);
-            expect(that.endSetEvents).to.equal(5);
+            expect(that.endSetEvents).to.equal(4);
             expect(that.startNoteEvents).to.equal(10);
             expect(that.endNoteEvents).to.equal(10);
             expect(that.player.isPlaying).to.equal(false);

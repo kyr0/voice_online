@@ -1,7 +1,6 @@
 'use strict';
 
 var util = require('util');
-var _ = require('lodash');
 var EventEmitter = require('events').EventEmitter;
 
 var Score = require('./Score.js');
@@ -62,12 +61,10 @@ Player.prototype.resetListeners = function(curSet){
             that.timer.startTimer();
         }
         else {
-            that.emit('endSet');
             that.score.evaluateExerciseScores();
             var aggregateNoteScores = that.score.getAggregateNoteScores();
-            that.emit('exScore', aggregateNoteScores);
             that.resetExercise();
-            that.emit('endExercise');
+            that.emit('endExercise', aggregateNoteScores);
         }
     });
 };

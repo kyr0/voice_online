@@ -1,8 +1,7 @@
 // This is PaperScript
 'use strict';
 
-// TODO optimize by planning the whole lesson, all information is calculated at creation and
-// TODO    not during execution.
+// TODO optimize by planning the whole lesson, all information is calculated at creation and not during execution.
 
 var height = view.size.height;
 var width = view.size.width;
@@ -21,10 +20,12 @@ var gridX = [];
 var gridY = [];
 var bubbles = [];
 var captions = [];
+var scoreBoard = [];
 var noteLbls = [];
 var timeline = null;
 var dot = null;
 var timeGroup = null;
+var templateSet = null;
 
 var lessonLayer = project.activeLayer;
 var markerLayer = new Layer();
@@ -32,6 +33,7 @@ var markerLayer = new Layer();
 
 var initLessonCanvas = function() {
     curSet = window.lPlayer.getCurrentSet();
+    templateSet = curSet;
     range = curSet.getLessonRange() + 2;  // pad top and bottom
     lessonLength = curSet.lengthInMeasures;
     measureCount = Math.floor(lessonLength);
@@ -51,13 +53,12 @@ function resetPlayerListenersInDraw(){
     });
 
     window.lPlayer.on("endSet", function(){
-        if (window.lPlayer.curSetIdx < window.lPlayer.sets.length) {
-            updateSet();
-        }
+        updateSet();
     });
 
-    window.lPlayer.on("endExercise", function(){
+    window.lPlayer.on("endExercise", function(aggNoteScores){
         timeGroup.visible = false;
+        drawScores(aggNoteScores);
     });
 
     window.lPlayer.on("startExercise", function(){
@@ -76,6 +77,7 @@ function resetDrawables() {
     gridY = [];
     bubbles = [];
     captions = [];
+    scoreBoard = [];
     noteLbls = [];
     timeline = null;
     dot = null;
@@ -180,6 +182,23 @@ function initWidget() {
     timeGroup = new Group([timeline, dot]);
     timeGroup.visible = false;
 }
+
+
+function drawScores(aggNoteScores) {
+    var consumedX = 0;
+    for (var scr = 0; scr < aggNoteScores.length; scr++) {
+        var curNote = templateSet.notes[scr];
+        var curNoteWidth = unitWidth * curNote.lengthInMeasures;
+        var curNoteY = unitHeight * curNote.relativeInterval + (unitHeight / 2);
+        var scoreText = new PointText([consumedX, curNoteY]);
+        scoreText.content = aggNoteScores[scr];
+        scoreText.strokeColor = 'black';
+        scoreBoard.push(scoreText);
+        consumedX += curNoteWidth;
+    }
+}
+
+
 
 function updateSet(){
     for (var lbl = 0; lbl < noteLbls.length; lbl++) {

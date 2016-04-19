@@ -1,32 +1,20 @@
 'use strict';
 
-var MPM = require('./MPM.js');
 var NoteMaps = require('./NoteMaps.js');
 var Lesson = require('./Lesson.js');
 var User = require('./User.js');
 var Player = require('./Player.js');
-var Soundfont = require('soundfont-player');
+var audio = require('./setupAudio');
 
 // these window assignments must be done outside of onLoad
 // for sharing with paper.js in case they are accessed before load
 window.percentComplete = 0;
 window.pitchFreq = -1;
 
-window.AudioContext = window.AudioContext || window.webkitAudioContext;
-
-var audioContext = null;
-var soundfont = null;
-var instrument = null;
-var instNote = null;
-var vca = null;
-
-var bufferLength = 1024;
-var scriptNode = null;
-window.oscillator = null;
-var mediaStreamSource = null;
 var mpm = null;
-var ntMaps = new NoteMaps();
+var scriptNode = null;
 
+var ntMaps = new NoteMaps();
 var lessons = [];
 
 lessons.push(new Lesson({
@@ -57,45 +45,22 @@ window.lPlayer = null;
 function resetPlayerListenersInMain(){
 
     window.lPlayer.on('startNote', function(curNote){
-        window.oscillator.frequency.value = curNote.frequency;  // osc start frequency
-        if (instNote) {
-            instNote.stop(0);
-        }
-        var now = audioContext.currentTime;
-        instNote = instrument.play(curNote.name, now, -1);
+        audio.startOscOnNewNote(curNote);
     });
 
     window.lPlayer.on('startExercise', function(){
-        startAudio();
+        audio.initOsc();
     });
 
     window.lPlayer.on('stopExercise', function(){
-        stopAudio();
+        audio.stopOsc();
     });
 
-    window.lPlayer.on('endExercise', function(){
-        stopAudio();
-    });
-
-    window.lPlayer.on('exScore', function(aggNoteScore){
+    window.lPlayer.on('endExercise', function(aggNoteScore){
+        audio.stopOsc(); // blinking timeDot means this was never run.
         console.log("SCORE: " + aggNoteScore);
     });
-}
 
-function stopAudio(){
-    if (instNote) {
-        instNote.stop(0);
-    }
-    // TODO use dep injection with these, callback that returns the object as param
-    window.oscillator.disconnect();
-    window.oscillator.stop();
-}
-
-function startAudio(){
-    // TODO use dep injection with these, callback that returns the object as param
-    window.oscillator = audioContext.createOscillator();
-    window.oscillator.connect(scriptNode); // Connect output of Oscillator to our scriptNode
-    window.oscillator.start();
 }
 
 function initLesson(aUser, aLesson){
@@ -139,30 +104,11 @@ jQuery(window).load(function() {
     initLesson(users[0], curLesson);
 });
 
-jQuery(document).ready(function() {
-    audioContext = new window.AudioContext();
-    vca = audioContext.createGain();
-    vca.gain.value = 8;
-    vca.connect(audioContext.destination);
-    soundfont = new Soundfont(audioContext);
-    instrument = soundfont.instrument(null);
-    mpm = new MPM(audioContext.sampleRate, bufferLength);
-    scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
 
-    // get the mic
-    //getUserMedia(
-    //    {
-    //        'audio': {
-    //            'mandatory': {
-    //                'googEchoCancellation': 'false',
-    //                'googAutoGainControl': 'false',
-    //                'googNoiseSuppression': 'false',
-    //                'googHighpassFilter': 'false'
-    //            },
-    //            'optional': []
-    //        }
-    //    }, gotStream
-    //);
+jQuery(document).ready(function() {
+    audio.initAudio();
+    scriptNode = audio.getScriptNode();
+    mpm = audio.getMPM();
 
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function(audioProcessingEvent) {
@@ -175,29 +121,6 @@ jQuery(document).ready(function() {
 
 });
 
-
-function error() {
-    alert('Stream generation failed.');
-}
-
-function getUserMedia(dictionary, callback) {
-    try {
-        navigator.getUserMedia =
-            navigator.getUserMedia ||
-            navigator.webkitGetUserMedia ||
-            navigator.mozGetUserMedia;
-        navigator.getUserMedia(dictionary, callback, error);
-    } catch (e) {
-        alert('getUserMedia threw exception :' + e);
-    }
-}
-
-function gotStream(stream) {
-    // Create an AudioNode from the stream.
-    mediaStreamSource = audioContext.createMediaStreamSource(stream);
-    // Connect stream to the destination.
-    mediaStreamSource.connect(scriptNode);
-}
 
 function updatePitch(buf) {
     var resultObj = mpm.detectPitch(buf);
