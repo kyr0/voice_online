@@ -38,7 +38,7 @@ lessons.push(new Lesson({
 }));
 
 var users = [];
-users.push(new User('A4', 'A5'));
+users.push(new User('G3', 'G4'));
 
 window.lPlayer = null;
 

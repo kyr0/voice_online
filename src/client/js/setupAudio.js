@@ -9,16 +9,19 @@ var audioContext = null;
 var soundfont = null;
 var instrument = null;
 var instNote = null;
-var vca = null;
 var mpm = null;
 
 var bufferLength = 1024;
 var scriptNode = null;
 window.oscillator = null;
 var mediaStreamSource = null;
+var test = true;
 
 function startOscOnNewNote(curNote) {  // formerly onStartNote event
-    window.oscillator.frequency.value = curNote.frequency;  // osc start frequency
+    // TODO use dep injection with Osc, callback that returns the object as param
+    if (test) {
+        window.oscillator.frequency.value = curNote.frequency;  // osc start frequency
+    }
     if (instNote) {
         instNote.stop(0);
     }
@@ -30,32 +33,35 @@ function stopOsc(){ // formerly stopAudio()
     if (instNote) {
         instNote.stop(0);
     }
-    // TODO use dep injection with these, callback that returns the object as param
-    window.oscillator.disconnect();
-    window.oscillator.stop();
+    // TODO use dep injection with Osc, callback that returns the object as param
+    if (test) {
+        window.oscillator.disconnect();
+        window.oscillator.stop();
+    }
 }
 
-function initOsc(){  // formerly startAudio()
-    // TODO use dep injection with these, callback that returns the object as param
-    window.oscillator = audioContext.createOscillator();
-    window.oscillator.connect(scriptNode); // Connect output of Oscillator to our scriptNode
-    window.oscillator.start();
+function initOsc() {  // formerly startAudio()
+    // TODO use dep injection with Osc, callback that returns the object as param
+    if (test) {
+        window.oscillator = audioContext.createOscillator();
+        window.oscillator.connect(scriptNode); // Connect output of Oscillator to our scriptNode
+        window.oscillator.start();
+    }
 }
 
-function initAudio(){  // formerly document ready
+function initAudio() {  // formerly document ready
     audioContext = new window.AudioContext();
-    vca = audioContext.createGain();
-    vca.gain.value = 8;
-    vca.connect(audioContext.destination);
     soundfont = new Soundfont(audioContext);
     instrument = soundfont.instrument(null);
     mpm = new MPM(audioContext.sampleRate, bufferLength);
     scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
-
-    //getUserMedia(); // this instead of oscillator
-
+    if (!test) {
+        getUserMedia();
+    }
 }
 
+// TODO update this to use the most recent with polyfill for older browser versions
+// - https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
 function getUserMedia() {
     var options = {
         'audio': {
@@ -69,7 +75,7 @@ function getUserMedia() {
         }
     };
 
-    function gotStream(stream) {
+    function initStream(stream) {
         // Create an AudioNode from the stream.
         mediaStreamSource = audioContext.createMediaStreamSource(stream);
         // Connect stream to the destination.
@@ -85,7 +91,7 @@ function getUserMedia() {
             navigator.getUserMedia ||
             navigator.webkitGetUserMedia ||
             navigator.mozGetUserMedia;
-        navigator.getUserMedia(options, gotStream, error);
+        navigator.getUserMedia(options, initStream, error);
     } catch (e) {
         alert('getUserMedia threw exception :' + e);
     }
