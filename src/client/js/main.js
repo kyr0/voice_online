@@ -1,5 +1,8 @@
 'use strict';
 
+var $ = require('jquery');
+var _ = require('lodash');
+
 var NoteMaps = require('./NoteMaps.js');
 var Lesson = require('./Lesson.js');
 var User = require('./User.js');
@@ -18,15 +21,52 @@ var ntMaps = new NoteMaps();
 var lessons = [];
 
 lessons.push(new Lesson({
-    title: 'Fast as hell',
-    noteList: [['A2', '1/16'], ['-', '1/16'], ['G2', '1/16'], ['A2', '1/16']]
+    title: '\'Ee\' Rapid Pattern Down',
+    noteList:
+        [['-', '1'],
+            ['Bb3', '1/4'], ['A3', '1/12'], ['G3', '1/6'],
+            ['A3', '1/4'], ['G3', '1/12'], ['F3', '1/6'],
+            ['G3', '1/4'], ['F3', '1/12'], ['Eb3', '1/6'],
+            ['F3', '1/4'], ['Eb3', '1/12'], ['D3', '1/6'],
+            ['Eb3', '1/4'], ['D3', '1/12'], ['C3', '1/6'],
+            ['D3', '1/4'], ['C3', '1/12'], ['Bb2', '1/6'],
+            ['C3', '1/4'], ['Bb2', '1/12'], ['A2', '1/6'],['Bb2', '1/3']],
+    captionList: [['', '1'],['Ee', '3'],['', '5/6']]
 }));
+
+// Should slow down to bpm
 lessons.push(new Lesson({
-    title: 'Plain Jane',
-    noteList: [['A2', '1'], ['B2', '3'], ['G2', '1/4']]
+    title: 'Warmup - Skipping Lip Trill',
+    noteList:
+        [['-', '1'], ['D3', '1/8'], ['Gb3', '1/8'], ['E3', '1/8'],
+        ['G3', '1/8'], ['Gb3', '1/8'], ['A3', '1/8'], ['G3', '1/8'], ['B3', '1/8'],
+        ['A3', '1/8'], ['G3', '1/8'], ['Gb3', '1/8'], ['E3', '1/8'], ['D3', '1/2']],
+    captionList: [['', '1'],['Brr', '2']],
+    bpm: 50
 }));
+
+// Should cut off at the very end, see if 2.5 is an allowed length, add tests for float maybe?
 lessons.push(new Lesson({
-    title: 'Jumping Yaw',
+    title: 'Warmup - Major & Minor Octave Yaw',
+    noteList:
+        [['-', '1'], ['A2', '1/3'], ['Db3', '1/3'], ['E3', '1/3'],
+        ['A3', '1/3'], ['E3', '1/3'], ['Db3', '1/3'], ['A2', '1/2']],
+    captionList: [['', '1'],['Yaw', '2.5']]
+}));
+
+// Should cut off at the very end
+lessons.push(new Lesson({
+    title: 'Agility w/ Rising Tones',
+    noteList:
+        [['-', '1'], ['B2', '1/6'], ['Db3', '1/6'], ['Eb3', '1/6'], ['E3', '1/2'],
+        ['B2', '1/6'], ['Db3', '1/6'], ['Eb3', '1/6'], ['E3', '1/2'],
+        ['B2', '1/6'], ['Db3', '1/6'], ['Eb3', '1/6'], ['E3', '1/2']],
+    captionList: [['', '1'],['Ee', '1'],['Oo', '1'],['Ah', '1']]
+}));
+
+// fix this one up
+lessons.push(new Lesson({
+    title: 'Jumping Pattern \'Yaw\'',
     noteList:
         [['-', '1'], ['A3', '1/4'], ['E4', '1/4'], ['A4', '1/4'], ['E4', '1/4'],
         ['A3', '1/4'], ['E4', '1/4'], ['A4', '1/4'], ['E4', '1/4'],
@@ -37,8 +77,37 @@ lessons.push(new Lesson({
         ['THE END', '1/4']]
 }));
 
+
 var users = [];
-users.push(new User('G3', 'G4'));
+users.push(new User('G3', 'A4'));
+
+
+// dynamically present all the lessons on the page
+var domListItems = [];
+domListItems.push('<ul>');
+_.forEach(lessons, function(lesson, index) {
+    var lessonId = 'lesson-'.concat(index);
+    domListItems.push('<li><span id="'.concat(lessonId).concat('">').concat(lesson.title).concat('</span></li>'));
+});
+domListItems.push('</ul>');
+$('#content').append(domListItems.join(''));
+
+// make each dynamic item clickable
+_.forEach(lessons, function(lesson, index) {
+    var lessonId = '#lesson-'.concat(index);
+    $(lessonId).click(function(){
+        curLesson = lesson;
+        initLesson(users[0], curLesson);
+        console.log(curLesson.bpm);
+    });
+});
+
+$(window).load(function() {
+    // load the 1st lesson when page comes up
+    curLesson = lessons[0];
+    initLesson(users[0], curLesson);
+});
+
 
 window.lPlayer = null;
 
@@ -75,7 +144,7 @@ function initLesson(aUser, aLesson){
 
 var curLesson = null;
 // Canvas onClick, start the lesson
-jQuery('#lesson').click(function(){
+$('#lesson').click(function(){
     initLesson(users[0], curLesson);
     if (window.lPlayer) {
         resetPlayerListenersInMain();
@@ -83,29 +152,8 @@ jQuery('#lesson').click(function(){
     }
 });
 
-jQuery('#lesson-0').click(function(){
-    curLesson = lessons[0];
-    initLesson(users[0], curLesson);
-});
 
-jQuery('#lesson-1').click(function(){
-    curLesson = lessons[1];
-    initLesson(users[0], curLesson);
-});
-
-jQuery('#lesson-2').click(function(){
-    curLesson = lessons[2];
-    initLesson(users[0], curLesson);
-});
-
-jQuery(window).load(function() {
-    // load a lesson when page comes up
-    curLesson = lessons[2];
-    initLesson(users[0], curLesson);
-});
-
-
-jQuery(document).ready(function() {
+$(document).ready(function() {
     audio.initAudio();
     scriptNode = audio.getScriptNode();
     mpm = audio.getMPM();

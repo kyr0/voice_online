@@ -15,6 +15,8 @@ var bufferLength = 1024;
 var scriptNode = null;
 window.oscillator = null;
 var mediaStreamSource = null;
+
+// MAKE THIS FALSE FOR LIVE VOICE TESTING
 var test = true;
 
 function startOscOnNewNote(curNote) {  // formerly onStartNote event
