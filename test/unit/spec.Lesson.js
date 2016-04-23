@@ -66,6 +66,35 @@ describe('Lesson constructor given note list and captions', function() {
     });
 });
 
+
+describe('Lesson constructor given bpm', function() {
+    beforeEach(function () {
+        var noteList = [['B2', '1/4'], ['A2', '1/4'], ['B2', '1/4'], ['B2', '1/4']];
+
+        this.lesson = new Lesson({
+            noteList: noteList,
+            bpm: 60
+        });
+    });
+
+    it('should set correct bpm', function () {
+        expect(this.lesson.bpm).to.equal(60);
+    });
+
+    it('should have correct length in milliseconds', function () {
+        expect(this.lesson.lengthInMilliseconds).to.equal(4000);  // 4 beats, 4 seconds, 60bpm
+    });
+
+    it('should have correct length in milliseconds for each note', function () {
+        expect(this.lesson.notes[0].lengthInMilliseconds).to.equal(1000);  // 1 beats, 1 second, 60bpm
+        expect(this.lesson.notes[1].lengthInMilliseconds).to.equal(1000);  // 1 beats, 1 second, 60bpm
+        expect(this.lesson.notes[2].lengthInMilliseconds).to.equal(1000);  // 1 beats, 1 second, 60bpm
+        expect(this.lesson.notes[3].lengthInMilliseconds).to.equal(1000);  // 1 beats, 1 second, 60bpm
+    });
+
+});
+
+
 describe('Lesson', function() {
     beforeEach(function () {
         this.lesson = new Lesson();

@@ -1,4 +1,6 @@
 "use strict";
+
+var _ = require('lodash');
 var Lesson = require("./Lesson.js");
 var InvalidRangeError = require("./customErrors").InvalidRangeError;
 
@@ -24,7 +26,8 @@ function Exercise(aUser, aLesson){
             var newCapLength = baseLesson.captions[cap].length;
             newCaps.push([newCapText, newCapLength]);
         }
-        return new Lesson({ noteList: newNotes, captionList: newCaps });
+        var newOptions = _.assign(baseLesson, { noteList: newNotes, captionList: newCaps });
+        return new Lesson(newOptions);
     }
 
     function generateSets(){

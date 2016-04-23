@@ -1,4 +1,5 @@
 'use strict';
+var _ = require('lodash');
 
 var Exercise = require('../../src/client/js/Exercise.js');
 var InvalidRangeError = require('../../src/client/js/customErrors.js').InvalidRangeError;
@@ -84,6 +85,16 @@ describe('Exercise', function() {
         var aLesson = new Lesson({ noteList: [['B2', '1'], ['-', '1']] });
         this.exercise = new Exercise(aUser, aLesson);
         expect(this.exercise.sets.length).to.equal(24);
+    });
+
+    it('should preserve all non-transposed options from original lesson in each set', function () {
+        var aUser = new User('A2', 'Ab4');
+        var aLesson = new Lesson({ noteList: [['B2', '1'], ['-', '1']], bpm: 50, title: 'title' });
+        this.exercise = new Exercise(aUser, aLesson);
+        _.forEach(this.exercise.sets, function(set) {
+            expect(set.bpm).to.equal(50);
+            expect(set.title).to.equal('title');
+        });
     });
 
 });

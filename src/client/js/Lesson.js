@@ -8,9 +8,10 @@ var CaptionLengthError = require('./customErrors').CaptionsTooLongError;
 
 function Lesson (options_param) {
 
-    var options = _.defaults(options_param || {}, {});
+    this.options = _.defaults(options_param || {}, {});
 
     var that = this;
+    this.title = 'Untitled';
     this.notes = [];
     this.intervals = [];
     this.captions = [];
@@ -185,6 +186,10 @@ function Lesson (options_param) {
             numerator += that._sumNumeratorToHighestDenominator(noteLength, highestDenom);
         }
         that.lengthInMeasures =  numerator / highestDenom;
+        _updateLengthInMilliseconds();
+    };
+
+    var _updateLengthInMilliseconds = function () {
         var beatCount = that.lengthInMeasures * that.tempo;
         var minute = 60000;
         that.lengthInMilliseconds = beatCount * (minute / that.bpm);
@@ -195,12 +200,22 @@ function Lesson (options_param) {
         return range.halfsteps;
     };
 
-    if (typeof options.noteList !== 'undefined') {
-        this.addNotes(options.noteList);
+    if (typeof this.options.noteList !== 'undefined') {
+        this.addNotes(this.options.noteList);
     }
 
-    if (typeof options.captionList !== 'undefined') {
-        this.addCaptions(options.captionList);
+    if (typeof this.options.captionList !== 'undefined') {
+        this.addCaptions(this.options.captionList);
+    }
+
+    if (typeof this.options.bpm !== 'undefined') {
+        this.bpm = this.options.bpm;
+        _updateLengthInMilliseconds();
+        this._updateNotesWithLengthInMilliseconds();
+    }
+
+    if (typeof this.options.title !== 'undefined') {
+        this.title = this.options.title;
     }
 }
 
