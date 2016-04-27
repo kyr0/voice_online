@@ -191,7 +191,7 @@ function drawScores(aggNoteScores) {
         var curNoteWidth = unitWidth * curNote.lengthInMeasures;
         var curNoteY = unitHeight * curNote.relativeInterval + (unitHeight / 2);
         var scoreText = new PointText([consumedX, curNoteY]);
-        scoreText.content = aggNoteScores[scr];
+        scoreText.content = Math.round(aggNoteScores[scr]);
         scoreText.strokeColor = 'black';
         scoreBoard.push(scoreText);
         consumedX += curNoteWidth;

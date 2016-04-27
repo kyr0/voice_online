@@ -20,19 +20,9 @@ var scriptNode = null;
 var ntMaps = new NoteMaps();
 var lessons = [];
 
-lessons.push(new Lesson({
-    title: '\'Ee\' Rapid Pattern Down',
-    noteList:
-        [['-', '1'],
-            ['Bb3', '1/4'], ['A3', '1/12'], ['G3', '1/6'],
-            ['A3', '1/4'], ['G3', '1/12'], ['F3', '1/6'],
-            ['G3', '1/4'], ['F3', '1/12'], ['Eb3', '1/6'],
-            ['F3', '1/4'], ['Eb3', '1/12'], ['D3', '1/6'],
-            ['Eb3', '1/4'], ['D3', '1/12'], ['C3', '1/6'],
-            ['D3', '1/4'], ['C3', '1/12'], ['Bb2', '1/6'],
-            ['C3', '1/4'], ['Bb2', '1/12'], ['A2', '1/6'],['Bb2', '1/3']],
-    captionList: [['', '1'],['Ee', '3'],['', '5/6']]
-}));
+var users = [];
+users.push(new User('C3', 'C5'));
+
 
 // Should slow down to bpm
 lessons.push(new Lesson({
@@ -42,7 +32,7 @@ lessons.push(new Lesson({
         ['G3', '1/8'], ['Gb3', '1/8'], ['A3', '1/8'], ['G3', '1/8'], ['B3', '1/8'],
         ['A3', '1/8'], ['G3', '1/8'], ['Gb3', '1/8'], ['E3', '1/8'], ['D3', '1/2']],
     captionList: [['', '1'],['Brr', '2']],
-    bpm: 50
+    bpm: 110
 }));
 
 // Should cut off at the very end, see if 2.5 is an allowed length, add tests for float maybe?
@@ -54,15 +44,6 @@ lessons.push(new Lesson({
     captionList: [['', '1'],['Yaw', '2.5']]
 }));
 
-// Should cut off at the very end
-lessons.push(new Lesson({
-    title: 'Agility w/ Rising Tones',
-    noteList:
-        [['-', '1'], ['B2', '1/6'], ['Db3', '1/6'], ['Eb3', '1/6'], ['E3', '1/2'],
-        ['B2', '1/6'], ['Db3', '1/6'], ['Eb3', '1/6'], ['E3', '1/2'],
-        ['B2', '1/6'], ['Db3', '1/6'], ['Eb3', '1/6'], ['E3', '1/2']],
-    captionList: [['', '1'],['Ee', '1'],['Oo', '1'],['Ah', '1']]
-}));
 
 // fix this one up
 lessons.push(new Lesson({
@@ -77,9 +58,31 @@ lessons.push(new Lesson({
         ['THE END', '1/4']]
 }));
 
+lessons.push(new Lesson({
+    title: '\'Ee\' Rapid Pattern Down',
+    noteList:
+        [['-', '1'],
+            ['Bb3', '1/4'], ['A3', '1/12'], ['G3', '1/6'],
+            ['A3', '1/4'], ['G3', '1/12'], ['F3', '1/6'],
+            ['G3', '1/4'], ['F3', '1/12'], ['Eb3', '1/6'],
+            ['F3', '1/4'], ['Eb3', '1/12'], ['D3', '1/6'],
+            ['Eb3', '1/4'], ['D3', '1/12'], ['C3', '1/6'],
+            ['D3', '1/4'], ['C3', '1/12'], ['Bb2', '1/6'],
+            ['C3', '1/4'], ['Bb2', '1/12'], ['A2', '1/6'],['Bb2', '1/3']],
+    captionList: [['', '1'],['Ee', '3'],['', '5/6']],
+    bpm: 130
 
-var users = [];
-users.push(new User('G3', 'A4'));
+}));
+
+// Should cut off at the very end
+lessons.push(new Lesson({
+    title: 'Agility w/ Rising Tones',
+    noteList:
+        [['-', '1'], ['B2', '1/6'], ['Db3', '1/6'], ['Eb3', '1/6'], ['E3', '1/2'],
+            ['B2', '1/6'], ['Db3', '1/6'], ['Eb3', '1/6'], ['E3', '1/2'],
+            ['B2', '1/6'], ['Db3', '1/6'], ['Eb3', '1/6'], ['E3', '1/2']],
+    captionList: [['', '1'],['Ee', '1'],['Oo', '1'],['Ah', '1']]
+}));
 
 
 // dynamically present all the lessons on the page
