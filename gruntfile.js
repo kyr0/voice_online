@@ -45,7 +45,7 @@ module.exports = function(grunt) {
                 browsers: ['PhantomJS']
             },
 
-            prod: {
+            once: {
                 singleRun: true,
                 browsers: ['PhantomJS']
             }
@@ -84,10 +84,11 @@ module.exports = function(grunt) {
                 //hot: true // adds the HotModuleReplacementPlugin and switch the server to hot mode
                 // Use this in combination with the inline option
             },
-            spike: {
-                entry: "./spikes/bacon/js/main.js",
+            build: {
+                // webpack options
+                entry: "./src/client/js/main.js",
                 output: {
-                    path: "./spikes/bacon/build/",
+                    path: "./src/client/build/",
                     filename: "[name].bundle.js"
                 },
                 resolve: {
@@ -100,11 +101,8 @@ module.exports = function(grunt) {
                     hash: false
                 },
                 progress: true,
-                failOnError: false, // don't report error to grunt if webpack find errors
-                watch: true, // use webpacks watcher
-                keepalive: true // don't finish the grunt task
-            }
-
+                failOnError: true
+            },
         },
 
         concurrent: {
@@ -120,6 +118,6 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', ['concurrent:dev']);
     grunt.registerTask('coverage', ['karma:coverage']);
-    grunt.registerTask('spike', ['webpack:spike']);
+    grunt.registerTask('build', ['webpack:build', 'karma:once']);
 
 };
