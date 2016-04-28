@@ -56,7 +56,7 @@ module.exports = function(grunt) {
                 // webpack options
                 entry: "./src/client/js/main.js",
                 output: {
-                    path: "./src/client/build/",
+                    path: "../superlists/lessons/static/js/",
                     filename: "[name].bundle.js"
                 },
                 resolve: {
@@ -88,7 +88,7 @@ module.exports = function(grunt) {
                 // webpack options
                 entry: "./src/client/js/main.js",
                 output: {
-                    path: "./src/client/build/",
+                    path: "../superlists/lessons/static/js/",
                     filename: "[name].bundle.js"
                 },
                 resolve: {
