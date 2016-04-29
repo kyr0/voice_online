@@ -4,6 +4,7 @@ module.exports = function(grunt) {
     'use strict';
 
     grunt.loadNpmTasks('grunt-webpack');
+    var webpack = require('webpack');
     require('load-grunt-tasks')(grunt);
 
     grunt.initConfig({
@@ -91,6 +92,26 @@ module.exports = function(grunt) {
                     path: "../superlists/lessons/static/js/",
                     filename: "[name].bundle.js"
                 },
+                plugins: [
+                    // This plugin looks for similar chunks and files
+                    // and merges them for better caching by the user
+                    new webpack.optimize.DedupePlugin(),
+
+                    // This plugins optimizes chunks and modules by
+                    // how much they are used in your app
+                    new webpack.optimize.OccurenceOrderPlugin(),
+
+                    // This plugin prevents Webpack from creating chunks
+                    // that would be too small to be worth loading separately
+                    new webpack.optimize.MinChunkSizePlugin({
+                        minChunkSize: 51200 // ~50kb
+                    }),
+
+                    new webpack.optimize.UglifyJsPlugin({
+                        mangle: true,
+                        sourceMap: true
+                    })
+                ],
                 resolve: {
                     modulesDirectories: ['node_modules']
                 },
