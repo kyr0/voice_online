@@ -140,5 +140,6 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['concurrent:dev']);
     grunt.registerTask('coverage', ['karma:coverage']);
     grunt.registerTask('build', ['webpack:build', 'karma:once']);
+    grunt.registerTask('staging', ['webpack:build']);
 
 };
