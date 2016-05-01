@@ -25,7 +25,7 @@ module.exports = function(grunt) {
                 reporters: ['progress', 'coverage'],
                 autoWatch: false,
                 singleRun: true,
-                browsers: ['PhantomJS'],
+                browsers: ['PhantomJS2'],
                 browserify: {
                     debug: true,
                     transform: [
