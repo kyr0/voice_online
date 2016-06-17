@@ -1,20 +1,34 @@
-var istanbul = require("browserify-istanbul");
+var path = require('path');
 
 module.exports = function(grunt) {
     'use strict';
 
-    grunt.loadNpmTasks('grunt-webpack');
-    var webpack = require('webpack');
+    var webpack = require('webpack');  // for plugins
     require('load-grunt-tasks')(grunt);
 
     grunt.initConfig({
 
         watch: {
+            // FROM KARMA ORIGINALLY
+            // html2js preprocessor takes this file and converts it
+            // to a string in our JS when the tests run.
+            // {pattern: 'test/integration/fixtures/index.html',  watched: true, served: false}
+            frontend: {
+                files: [
+                    './src/client/**/*.js*',
+                    './test/**/*'
+                ],
+                // github.com/karma-runner/grunt-karma#karma-server-with-grunt-watch
+                tasks: [
+                    'webpack:dev',
+                    'karma:dev:run' // NOTE the :run flag
+                ]
+            },
             static: {
                 files: ['./src/client/js/drawLesson.js'],
                 tasks: ['shell:cp_static']
             },
-            python: {
+            backend: {
                 files: ['../source/**/*.py'],
                 tasks: ['shell:be_test']
             }
@@ -22,50 +36,77 @@ module.exports = function(grunt) {
 
         karma: {
             options: {
-                configFile: 'karma.conf.js'
-            },
-
-            coverage: {
-                preprocessors: {
-                    'test/**/*.js': ['browserify'],
-                    'src/client/**/*.js': ['coverage']
-                },
-                coverageReporter: {
-                    dir: 'test/coverage/'
-                },
-                reporters: ['progress', 'coverage'],
+                basePath: '',
+                frameworks: ['mocha', 'chai'],
                 autoWatch: false,
                 singleRun: true,
-                browsers: ['PhantomJS'],
-                browserify: {
-                    debug: true,
-                    transform: [
-                        [
-                            istanbul({
-                                ignore: ["node_modules/**", "**/*.spec.js"],
-                                includeUntested: false,
-                                defaultIgnore: true
-                            }),
-                            {global: true}
-                        ]
-                    ]
+                concurrency: 1,
+                logLevel: 'INFO',
+                colors: true,
+                browsers: ['Chrome'],
+                webpackMiddleware: {
+                    noInfo: true
                 }
             },
-
             dev: {
-                //browsers: ['Chrome', 'Firefox', 'PhantomJS']
-                browsers: ['PhantomJS']
+                preprocessors: {
+                    'test/**/spec.*.js': ['webpack', 'sourcemap']
+                },
+                files: [
+                    { src: 'test/**/spec.*.js' }
+                ],
+                exclude: ['test/coverage/**/*', '*bundle*'],
+                reporters: ['progress'],
+                background: true,
+                singleRun: false
             },
-
-            once: {
-                singleRun: true,
-                browsers: ['PhantomJS']
-            }
+            test: {
+                preprocessors: {
+                    'test/**/spec.*.js': ['webpack', 'sourcemap']
+                },
+                files: [
+                    { src: 'test/**/spec.*.js' }
+                ],
+                exclude: ['test/coverage/**/*', '*bundle*'],
+                reporters: ['progress']
+            },
+            coverage: {
+                preprocessors: {
+                    'test/**/*.js': ['webpack', 'sourcemap']
+                },
+                files: [
+                    { src: 'test/**/spec.*.js' }
+                ],
+                coverageReporter: {
+                    type: 'text'
+                },
+                reporters: ['progress', 'coverage'],
+                browserNoActivityTimeout: 40000,
+                webpack: {
+                    module: {
+                        postLoaders: [
+                            {
+                                test: /\.js$/,
+                                include: path.resolve('src/client/'),
+                                exclude: /(test|node_modules)\//,
+                                loader: 'istanbul-instrumenter'
+                            }
+                        ]
+                    }
+                }
+            },
         },
 
         webpack: {
-            dev: {
-                // webpack options
+            options: {
+                // Legacy spike bundles from browserify, may be useful again when refactoring MPM
+                // './spikes/paper/js/lesson.js -o ./spikes/paper/js/lesson.bundle.js',
+                // './spikes/practice_tuner/js/tuner.js -o ./spikes/practice_tuner/js/tuner.bundle.js',
+                // './spikes/canvas/scripts/canvas.js -o ./spikes/canvas/scripts/canvas.bundle.js',
+                // './spikes/pitch/js/getBuffersFromTones.js -o ./spikes/pitch/js/getBuffersFromTones.bundle.js',
+                // './spikes/pitch/js/drive_mpm.js -o ./spikes/pitch/js/drive_mpm.bundle.js',
+                // './spikes/pitch/js/drive_webAudio.js -o ./spikes/pitch/js/drive_webAudio.bundle.js',
+
                 entry: "./src/client/js/main.js",
                 output: {
                     path: "../source/lesson/static/js/",
@@ -81,58 +122,23 @@ module.exports = function(grunt) {
                     hash: false
                 },
                 progress: true,
-                failOnError: false, // don't report error to grunt if webpack find errors
-                // Use this if webpack errors are tolerable and grunt should continue
 
-                watch: true, // use webpacks watcher
-                // You need to keep the grunt process alive
-
-                keepalive: true // don't finish the grunt task
-                // Use this in combination with the watch option
-
-                //inline: true,  // embed the webpack-dev-server runtime into the bundle
-                // Defaults to false
-
-                //hot: true // adds the HotModuleReplacementPlugin and switch the server to hot mode
-                // Use this in combination with the inline option
+            },
+            dev: {
+                failOnError: false // don't report error to grunt if webpack find errors
             },
             build: {
-                // webpack options
-                entry: "./src/client/js/main.js",
-                output: {
-                    path: "../source/lesson/static/js/",
-                    filename: "[name].bundle.js"
-                },
                 plugins: [
-                    // This plugin looks for similar chunks and files
-                    // and merges them for better caching by the user
                     new webpack.optimize.DedupePlugin(),
-
-                    // This plugins optimizes chunks and modules by
-                    // how much they are used in your app
                     new webpack.optimize.OccurenceOrderPlugin(),
-
-                    // This plugin prevents Webpack from creating chunks
-                    // that would be too small to be worth loading separately
                     new webpack.optimize.MinChunkSizePlugin({
                         minChunkSize: 51200 // ~50kb
                     }),
-
                     new webpack.optimize.UglifyJsPlugin({
                         mangle: true,
                         sourceMap: true
                     })
                 ],
-                resolve: {
-                    modulesDirectories: ['node_modules']
-                },
-                stats: {
-                    modules: false,
-                    reasons: false,
-                    version: false,
-                    hash: false
-                },
-                progress: true,
                 failOnError: true
             }
         },
@@ -162,7 +168,6 @@ module.exports = function(grunt) {
                 }
             },
             cp_static: {  // note that this is not responsible for bundles which are placed in BE by webpack
-                // TODO manage bundles here
                 command: [
                     'set -x',  // make the commands echo to stdout
                     'mkdir -p ../source/lesson/static/js',
@@ -173,14 +178,8 @@ module.exports = function(grunt) {
         },
 
         concurrent: {
-            runserver: {
-                tasks: ['shell:runserver'],
-                options: {
-                    logConcurrentOutput: true
-                }
-            },
             dev: {
-                tasks: ['shell:runserver', 'karma:dev', 'webpack', 'watch:python', 'watch:static'],
+                tasks: ['shell:runserver', ['karma:dev:start', 'watch']],
                 options: {
                     logConcurrentOutput: true
                 }
@@ -192,7 +191,6 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['concurrent:dev']);
     grunt.registerTask('coverage', ['karma:coverage']);
     grunt.registerTask('build', ['webpack:build', 'shell:cp_static']);
-    grunt.registerTask('test', ['karma:once', 'shell:be_test']);
-    grunt.registerTask('staging', ['webpack:build']);
+    grunt.registerTask('test', ['karma:test', 'shell:be_test']);
 
 };
