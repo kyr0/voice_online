@@ -107,10 +107,26 @@ module.exports = function(grunt) {
                 // './spikes/pitch/js/drive_mpm.js -o ./spikes/pitch/js/drive_mpm.bundle.js',
                 // './spikes/pitch/js/drive_webAudio.js -o ./spikes/pitch/js/drive_webAudio.bundle.js',
 
-                entry: "./src/client/js/main.js",
+                entry: "./src/client/js/main.jsx",
                 output: {
                     path: "../source/lesson/static/js/",
-                    filename: "[name].bundle.js"
+                    filename: "[name].bundle.js",
+                    // serve your source maps from a server that is only accessible to your development team
+                    // sourceMapFilename: "[name].bundle.js.map"
+                },
+                module: {
+                    loaders: [
+                        {
+                            // Test for js or jsx files.
+                            test: /\.jsx?$/,
+                            exclude: /node_modules/,
+                            loader: 'babel-loader',
+                            query: {
+                                presets: ['es2015', 'react'],
+                                cacheDirectory: true
+                            }
+                        }
+                    ]
                 },
                 resolve: {
                     modulesDirectories: ['node_modules']
@@ -121,11 +137,12 @@ module.exports = function(grunt) {
                     version: false,
                     hash: false
                 },
-                progress: true,
-
+                progress: true
             },
             dev: {
-                failOnError: false // don't report error to grunt if webpack find errors
+                failOnError: false, // don't report error to grunt if webpack find errors
+                devtool: "sourcemap",
+                debug: true
             },
             build: {
                 plugins: [
@@ -136,7 +153,6 @@ module.exports = function(grunt) {
                     }),
                     new webpack.optimize.UglifyJsPlugin({
                         mangle: true,
-                        sourceMap: true
                     })
                 ],
                 failOnError: true
@@ -179,7 +195,7 @@ module.exports = function(grunt) {
 
         concurrent: {
             dev: {
-                tasks: ['shell:runserver', ['karma:dev:start', 'watch']],
+                tasks: ['shell:runserver', ['webpack:dev', 'karma:dev:start', 'watch']],
                 options: {
                     logConcurrentOutput: true
                 }

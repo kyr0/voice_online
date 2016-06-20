@@ -3,6 +3,10 @@
 var $ = require('jquery');
 var _ = require('lodash');
 
+var React = require('react');
+var ReactDOM = require('react-dom');
+var LessonBox = require('./Components/LessonList.jsx')
+
 var NoteMaps = require('./NoteMaps.js');
 var Lesson = require('./Lesson.js');
 var User = require('./User.js');
@@ -84,6 +88,11 @@ lessons.push(new Lesson({
     captionList: [['', '1'],['Ee', '1'],['Oo', '1'],['Ah', '1']]
 }));
 
+
+ReactDOM.render(
+<LessonBox url="/api/lesson/" pollInterval={2000} />,
+    document.getElementById('react-content')
+);
 
 // dynamically present all the lessons on the page
 var domListItems = [];
