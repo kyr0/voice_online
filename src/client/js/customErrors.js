@@ -14,15 +14,15 @@ function CaptionsTooLongError(message) {
 CaptionsTooLongError.prototype = Error.prototype;
 
 
-function InvalidLengthError(message) {
-    this.name = 'InvalidLengthError';
+function InvalidDurationError(message) {
+    this.name = 'InvalidDurationError';
     this.message = (message || '');
 }
-InvalidLengthError.prototype = Error.prototype;
+InvalidDurationError.prototype = Error.prototype;
 
 
 module.exports = {
     InvalidRangeError: InvalidRangeError,
     CaptionsTooLongError: CaptionsTooLongError,
-    InvalidLengthError: InvalidLengthError
+    InvalidDurationError: InvalidDurationError
 };

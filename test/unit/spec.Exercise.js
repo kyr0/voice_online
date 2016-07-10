@@ -41,16 +41,16 @@ describe('Exercise', function() {
         var exercise = new Exercise(aUser, aLesson);
         var expected = {
             notes: [
-                {name: 'B3', length: '1/8'},
-                {name: 'A2', length: '1/2'},
-                {name: 'Db4', length: '1/4'},
-                {name: 'B3', length: '1/32'}
+                {name: 'B3', duration: '1/8'},
+                {name: 'A2', duration: '1/2'},
+                {name: 'Db4', duration: '1/4'},
+                {name: 'B3', duration: '1/32'}
             ],
             captions: [
-                {text: 'One', length: '1/8'},
-                {text: '-', length: '1/2'},
-                {text: 'Two', length: '1/4'},
-                {text: 'Three', length: '1/32'}
+                {text: 'One', duration: '1/8'},
+                {text: '-', duration: '1/2'},
+                {text: 'Two', duration: '1/4'},
+                {text: 'Three', duration: '1/32'}
             ]
         };
         compareLessonLists(exercise.sets[0], expected);
@@ -65,16 +65,16 @@ describe('Exercise', function() {
         var exercise = new Exercise(aUser, aLesson);
         var expected = {
             notes: [
-                {name: 'G4', length: '1/8'},
-                {name: '-', length: '1/2'},
-                {name: 'A4', length: '1/4'},
-                {name: 'G4', length: '1/32'}
+                {name: 'G4', duration: '1/8'},
+                {name: '-', duration: '1/2'},
+                {name: 'A4', duration: '1/4'},
+                {name: 'G4', duration: '1/32'}
             ],
             captions: [
-                {text: '', length: '1/8'},
-                {text: 'One', length: '1/2'},
-                {text: 'Two', length: '1/4'},
-                {text: 'Three', length: '1/32'}
+                {text: '', duration: '1/8'},
+                {text: 'One', duration: '1/2'},
+                {text: 'Two', duration: '1/4'},
+                {text: 'Three', duration: '1/32'}
             ]
         };
         compareLessonLists(exercise.sets.pop(), expected);

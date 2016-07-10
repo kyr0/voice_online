@@ -6,7 +6,7 @@ var EventEmitter = require('events').EventEmitter;
 function LessonTimer(lesson) {
     EventEmitter.call(this);
 
-    this.lengthInMilliseconds = lesson.lengthInMilliseconds;
+    this.durationInMilliseconds = lesson.durationInMilliseconds;
     this.curNoteIdx = 0;
     this.notes = lesson.notes;
     this.curNote = this.notes[this.curNoteIdx];
@@ -20,7 +20,7 @@ LessonTimer.prototype.startTimer = function(){
     this.startTime = new Date().getTime();
     this.emit('startSet');
     this.emit('startNote', this.curNote);
-    this.curID = setTimeout(this.timerInstance.bind(this), this.curNote.lengthInMilliseconds);
+    this.curID = setTimeout(this.timerInstance.bind(this), this.curNote.durationInMilliseconds);
 };
 
 LessonTimer.prototype.stopTimer = function(){
@@ -42,14 +42,14 @@ LessonTimer.prototype.timerInstance = function(){
         return;
     }
     // the diff resets latency which occurs during timer to keep it on track
-    var diff = (new Date().getTime() - this.startTime) - (expectedNoteEnd * this.lengthInMilliseconds);
-    this.curID = setTimeout(this.timerInstance.bind(this), this.curNote.lengthInMilliseconds - diff);
+    var diff = (new Date().getTime() - this.startTime) - (expectedNoteEnd * this.durationInMilliseconds);
+    this.curID = setTimeout(this.timerInstance.bind(this), this.curNote.durationInMilliseconds - diff);
 };
 
 LessonTimer.prototype.getPctComplete = function(){
     if (this.startTime){
         var elapsedTime = (new Date().getTime() - this.startTime);
-        return elapsedTime / this.lengthInMilliseconds;
+        return elapsedTime / this.durationInMilliseconds;
     }
     else {
         return 0;

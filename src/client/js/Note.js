@@ -1,14 +1,14 @@
 'use strict';
 
 var NoteMaps = require('./NoteMaps.js');
-var InvalidLengthError = require('./customErrors.js').InvalidLengthError;
+var InvalidDurationError = require('./customErrors.js').InvalidDurationError;
 
 
-function Note (name, noteLength){
+function Note (name, noteDuration){
 
     var nMaps = new NoteMaps();
 
-    this.setNoteLength = function(noteLength){
+    this.setNoteDuration = function(noteDuration){
 
         function _getDenominator(nLen){
             return nLen.split('/')[1];
@@ -17,19 +17,19 @@ function Note (name, noteLength){
             return nLen.split('/')[0];
         }
 
-        var newNoteLength = noteLength;
+        var newNoteDuration = noteDuration;
 
         // handle whole numbers eg. 1, 2, 10
-        if (!isNaN(noteLength)) newNoteLength = noteLength + '/1';
-        else if (typeof noteLength === 'undefined') newNoteLength = '1/1';
+        if (!isNaN(noteDuration)) newNoteDuration = noteDuration + '/1';
+        else if (typeof noteDuration === 'undefined') newNoteDuration = '1/1';
 
-        if ((newNoteLength.indexOf('/') === -1) ||
-            (isNaN(_getDenominator(newNoteLength))) ||
-            (isNaN(_getNumerator(newNoteLength))))
+        if ((newNoteDuration.indexOf('/') === -1) ||
+            (isNaN(_getDenominator(newNoteDuration))) ||
+            (isNaN(_getNumerator(newNoteDuration))))
         {
-            throw new InvalidLengthError('The supplied length is invalid: ' + noteLength);
+            throw new InvalidDurationError('The supplied duration is invalid: ' + noteDuration);
         }
-        return newNoteLength;
+        return newNoteDuration;
     };
 
     this.transpose = function(distance){
@@ -98,7 +98,7 @@ function Note (name, noteLength){
 
     if (name === '-'){
         this.name = name;
-        this.length = this.setNoteLength(noteLength);
+        this.duration = this.setNoteDuration(noteDuration);
         this.previousNote = null;
         this.nextNote = null;
         this.frequency = -1;
@@ -108,7 +108,7 @@ function Note (name, noteLength){
     }
     else {
         this.name = nMaps.validateNoteName(name);
-        this.length = this.setNoteLength(noteLength);
+        this.duration = this.setNoteDuration(noteDuration);
         var _noteObj = nMaps.pitchMap[this.name];
         this.previousNote = _noteObj.previousNote;
         this.nextNote = _noteObj.nextNote;

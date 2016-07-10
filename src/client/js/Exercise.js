@@ -17,14 +17,14 @@ function Exercise(aUser, aLesson){
         var newNotes = [];
         for(var note = 0; note < baseLesson.notes.length; note++){
             var newNoteName = baseLesson.notes[note].transpose(distance);
-            var noteLength = baseLesson.notes[note].length;
-            newNotes.push([newNoteName, noteLength]);
+            var noteDuration = baseLesson.notes[note].duration;
+            newNotes.push([newNoteName, noteDuration]);
         }
         var newCaps = [];
-        for(var cap = 0; cap < baseLesson.captions.length; cap++) {
+        for(var cap = 0; cap < baseLesson.captions.duration; cap++) {
             var newCapText = baseLesson.captions[cap].text;
-            var newCapLength = baseLesson.captions[cap].length;
-            newCaps.push([newCapText, newCapLength]);
+            var newCapDuration = baseLesson.captions[cap].duration;
+            newCaps.push([newCapText, newCapDuration]);
         }
         var newOptions = _.assign(baseLesson, { noteList: newNotes, captionList: newCaps });
         return new Lesson(newOptions);

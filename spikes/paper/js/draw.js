@@ -7,7 +7,7 @@ var height = view.size.height;
 var width = view.size.width;
 var curSet = window.lPlayer.getCurrentSet();
 var range = curSet.getLessonRange() + 2;  // pad top and bottom
-var lessonLength = curSet.lengthInMeasures;
+var lessonLength = curSet.durationInMeasures;
 var measureCount = Math.floor(lessonLength);
 var unitHeight = height / range;
 var unitWidth = width / lessonLength;
@@ -56,7 +56,7 @@ function initWidget() {
     var tmpNtNames = [];  // used to filter out duplicate note labels
     for (var nt = 0; nt < curSet.notes.length; nt++) {
         var curNote = curSet.notes[nt];
-        var curNoteWidth = unitWidth * curNote.lengthInMeasures;
+        var curNoteWidth = unitWidth * curNote.durationInMeasures;
         var curNoteY = unitHeight * curNote.relativeInterval + (unitHeight / 2);
 
         // Bubble related
@@ -147,7 +147,7 @@ jQuery(window).on('resize', function(){
     for (var nt = 0; nt < curSet.notes.length; nt++) {
         var curNote = curSet.notes[nt];
         var curNoteY = unitHeight * curNote.relativeInterval + (unitHeight / 2);
-        var curNoteWidth = unitWidth * curNote.lengthInMeasures;
+        var curNoteWidth = unitWidth * curNote.durationInMeasures;
 
         var bubRect = new Rectangle(consumedX, curNoteY, curNoteWidth, unitHeight);
         var cornerSize = new Size((unitWidth / 6),(unitHeight / 2));

@@ -1,7 +1,7 @@
 'use strict';
 
 var Note = require('../../src/client/js/Note.js');
-var InvalidLengthError = require('../../src/client/js/customErrors.js').InvalidLengthError;
+var InvalidDurationError = require('../../src/client/js/customErrors.js').InvalidDurationError;
 
 
 describe('Silent note Object', function() {
@@ -26,8 +26,8 @@ describe('Silent note Object', function() {
         expect(this.silentNote.transpose(0)).to.equal('-');
     });
 
-    it('should set length when passed in to constructor', function () {
-        expect(this.silentNote.length).to.equal('1/4');
+    it('should set duration when passed in to constructor', function () {
+        expect(this.silentNote.duration).to.equal('1/4');
     });
 
 });
@@ -40,26 +40,26 @@ describe('Note Object', function() {
         this.silentNote = new Note('-');
     });
 
-    it('should have passed in name, related frequency, and default length of 1/1', function () {
-        var expectNoteLength = '1/1';
+    it('should have passed in name, related frequency, and default duration of 1/1', function () {
+        var expectNoteDuration = '1/1';
         var expectFrequency = 123.47;
         var noteObj = this.note;
         expect(noteObj.name).to.equal(this.noteName);
-        expect(noteObj.length).to.equal(expectNoteLength);
+        expect(noteObj.duration).to.equal(expectNoteDuration);
         expect(noteObj.frequency).to.equal(expectFrequency);
     });
 
-    it('should set length when passed in to constructor', function () {
-        var noteLength = '1/8';
-        var noteObj = new Note(this.noteName, noteLength);
-        expect(noteObj.length).to.equal(noteLength);
+    it('should set duration when passed in to constructor', function () {
+        var noteDuration = '1/8';
+        var noteObj = new Note(this.noteName, noteDuration);
+        expect(noteObj.duration).to.equal(noteDuration);
     });
 
-    it('should convert length of "1" to a note using a length of "1/1"', function () {
-        var noteLength = '1';
-        var expectedNoteObj = { name : this.noteName, length : '1/1' };
-        var noteObj = new Note(this.noteName, noteLength);
-        expect(noteObj.length).to.equal(expectedNoteObj.length);
+    it('should convert duration of "1" to a note using a duration of "1/1"', function () {
+        var noteDuration = '1';
+        var expectedNoteObj = { name : this.noteName, duration : '1/1' };
+        var noteObj = new Note(this.noteName, noteDuration);
+        expect(noteObj.duration).to.equal(expectedNoteObj.duration);
     });
 
     it('should transpose the note accurately (up)', function () {
@@ -92,58 +92,58 @@ describe('Note Object', function() {
 
     describe('Note Object', function() {
 
-        it('should accept a note length longer than a full measure', function () {
-            var expectLength = '2/1';
+        it('should accept a note duration longer than a full measure', function () {
+            var expectDuration = '2/1';
             var noteObj = new Note('A2', '2');
-            expect(noteObj.length).to.equal(expectLength);
+            expect(noteObj.duration).to.equal(expectDuration);
         });
 
         it('should accept any multiple of a full measure', function () {
-            var expectLength = '200/1';
+            var expectDuration = '200/1';
             var noteObj = new Note('A2', '200');
-            expect(noteObj.length).to.equal(expectLength);
+            expect(noteObj.duration).to.equal(expectDuration);
         });
 
-        it('should accept a note length where numerator > 1 ', function () {
-            var expectLength = '3/32';
+        it('should accept a note duration where numerator > 1 ', function () {
+            var expectDuration = '3/32';
             var noteObj = new Note('A2', '3/32');
-            expect(noteObj.length).to.equal(expectLength);
+            expect(noteObj.duration).to.equal(expectDuration);
         });
 
     });
 
     describe('should throw an error when', function() {
 
-        it('attempting to create a note with invalid length (invalid numerator)', function () {
-            var noteLength = 'dummy/4';
+        it('attempting to create a note with invalid duration (invalid numerator)', function () {
+            var noteDuration = 'dummy/4';
             var fn = function(){
-                var dum = new Note('-', noteLength);
+                var dum = new Note('-', noteDuration);
             };
-            expect(fn).to.throw(InvalidLengthError);
+            expect(fn).to.throw(InvalidDurationError);
         });
 
-        it('attempting to create a note with invalid length (invalid denominator)', function () {
-            var noteLength = '1/stuff';
+        it('attempting to create a note with invalid duration (invalid denominator)', function () {
+            var noteDuration = '1/stuff';
             var fn = function(){
-                var dum = new Note('-', noteLength);
+                var dum = new Note('-', noteDuration);
             };
-            expect(fn).to.throw(InvalidLengthError);
+            expect(fn).to.throw(InvalidDurationError);
         });
 
-        it('attempting to create a note with invalid length (string)', function () {
-            var noteLength = 'dummy';
+        it('attempting to create a note with invalid duration (string)', function () {
+            var noteDuration = 'dummy';
             var fn = function(){
-                var dum = new Note('-', noteLength);
+                var dum = new Note('-', noteDuration);
             };
-            expect(fn).to.throw(InvalidLengthError);
+            expect(fn).to.throw(InvalidDurationError);
         });
 
-        it('attempting to create a note with invalid length (array)', function () {
-            var noteLength = ['dummy', 4];
+        it('attempting to create a note with invalid duration (array)', function () {
+            var noteDuration = ['dummy', 4];
             var fn = function(){
-                var dum = new Note('-', noteLength);
+                var dum = new Note('-', noteDuration);
             };
-            expect(fn).to.throw(InvalidLengthError);
+            expect(fn).to.throw(InvalidDurationError);
         });
 
     });

@@ -2,7 +2,7 @@
 
 var Lesson = require('../../src/client/js/Lesson.js');
 var Interval = require('../../src/client/js/Interval.js');
-var CaptionLengthError = require('../../src/client/js/customErrors').CaptionsTooLongError;
+var CaptionDurationError = require('../../src/client/js/customErrors').CaptionsTooLongError;
 
 
 describe('Lesson constructor given note list', function() {
@@ -12,14 +12,14 @@ describe('Lesson constructor given note list', function() {
     });
 
     it('should get correct length in measures', function () {
-        expect(this.lesson.lengthInMeasures).to.equal(0.90625);
+        expect(this.lesson.durationInMeasures).to.equal(0.90625);
     });
 
     it('should get correct length in milliseconds', function () {
-        var beatCount = this.lesson.lengthInMeasures * this.lesson.tempo;
+        var beatCount = this.lesson.durationInMeasures * this.lesson.tempo;
         var minute = 60000;
         var expectedMs = beatCount * (minute / this.lesson.bpm);
-        expect(this.lesson.lengthInMilliseconds).to.equal(expectedMs);
+        expect(this.lesson.durationInMilliseconds).to.equal(expectedMs);
     });
 
     it('should get correct range', function () {
@@ -48,13 +48,13 @@ describe('Lesson constructor given note list and captions', function() {
     });
 
     it('should have captions with correct length in measures', function () {
-        expect(this.lesson.captions[0].lengthInMeasures).to.equal(0.25);
-        expect(this.lesson.captions[1].lengthInMeasures).to.equal(0.5);
+        expect(this.lesson.captions[0].durationInMeasures).to.equal(0.25);
+        expect(this.lesson.captions[1].durationInMeasures).to.equal(0.5);
     });
 
     it('should be able to add new captions after initialization', function () {
         this.lesson.addCaptions([['', '1/4']]);
-        expect(this.lesson.captions[2].lengthInMeasures).to.equal(0.25);
+        expect(this.lesson.captions[2].durationInMeasures).to.equal(0.25);
     });
 
     it('should throw an error if length of captions exceeds Lesson length', function () {
@@ -62,7 +62,7 @@ describe('Lesson constructor given note list and captions', function() {
         var fn = function(){
             that.lesson.addCaptions([['', '1/3']]);
         };
-        expect(fn).to.throw(CaptionLengthError);
+        expect(fn).to.throw(CaptionDurationError);
     });
 });
 
@@ -82,14 +82,14 @@ describe('Lesson constructor given bpm', function() {
     });
 
     it('should have correct length in milliseconds', function () {
-        expect(this.lesson.lengthInMilliseconds).to.equal(4000);  // 4 beats, 4 seconds, 60bpm
+        expect(this.lesson.durationInMilliseconds).to.equal(4000);  // 4 beats, 4 seconds, 60bpm
     });
 
     it('should have correct length in milliseconds for each note', function () {
-        expect(this.lesson.notes[0].lengthInMilliseconds).to.equal(1000);  // 1 beats, 1 second, 60bpm
-        expect(this.lesson.notes[1].lengthInMilliseconds).to.equal(1000);  // 1 beats, 1 second, 60bpm
-        expect(this.lesson.notes[2].lengthInMilliseconds).to.equal(1000);  // 1 beats, 1 second, 60bpm
-        expect(this.lesson.notes[3].lengthInMilliseconds).to.equal(1000);  // 1 beats, 1 second, 60bpm
+        expect(this.lesson.notes[0].durationInMilliseconds).to.equal(1000);  // 1 beats, 1 second, 60bpm
+        expect(this.lesson.notes[1].durationInMilliseconds).to.equal(1000);  // 1 beats, 1 second, 60bpm
+        expect(this.lesson.notes[2].durationInMilliseconds).to.equal(1000);  // 1 beats, 1 second, 60bpm
+        expect(this.lesson.notes[3].durationInMilliseconds).to.equal(1000);  // 1 beats, 1 second, 60bpm
     });
 
 });
@@ -120,10 +120,10 @@ describe('Lesson', function() {
     describe('with multiple notes', function () {
         beforeEach(function () {
             this.newNotes = [
-                {name: 'B2', length: '3/8'},
-                {name: 'A1', length: '1/2'},
-                {name: 'Db3', length: '1/4'},
-                {name: 'B2', length: '2'}
+                {name: 'B2', duration: '3/8'},
+                {name: 'A1', duration: '1/2'},
+                {name: 'Db3', duration: '1/4'},
+                {name: 'B2', duration: '2'}
             ];
             this.lesson.addNotes(this.newNotes);
             this.lesson.addNotes([['B3', '1/16'], ['C4', '1/32']]);
@@ -145,36 +145,36 @@ describe('Lesson', function() {
             });
         });
 
-        describe('_updateRelativeNoteLengths', function () {
+        describe('_updateRelativeNoteDurations', function () {
 
-            it('should set the relative length to a percent of a measure', function () {
+            it('should set the relative duration to a percent of a measure', function () {
                 var expectedRelLen = 3 / 8;
-                expect(this.lesson.notes[0].lengthInMeasures).to.equal(expectedRelLen);
+                expect(this.lesson.notes[0].durationInMeasures).to.equal(expectedRelLen);
             });
 
         });
 
-        it('should always know the combined length (in measures) of notes contained', function () {
+        it('should always know the combined duration (in measures) of notes contained', function () {
             // 3/8 *4 = 12/32, 1/2 *16 = 16/32, 1/4 *8 = 8/32, 2 = 64/32, 1/16 = 2/32, 1/32
             // 12 + 16 + 8 + 64 + 2 + 1 = 103
             // 103 / 32 (highest denominator) = 3.21875
-            var expectedLength = (3 / 8) + (1 / 2) + (1 / 4) + 2 + (1 / 16) + (1 / 32);
-            expect(this.lesson.lengthInMeasures).to.equal(expectedLength);
+            var expectedDuration = (3 / 8) + (1 / 2) + (1 / 4) + 2 + (1 / 16) + (1 / 32);
+            expect(this.lesson.durationInMeasures).to.equal(expectedDuration);
         });
 
         it('should have notes which are aware of percentOnComplete ', function () {
-            var expectedLength = (3 / 8) / this.lesson.lengthInMeasures;
-            expect(this.lesson.notes[0].percentOnComplete).to.equal(expectedLength);
-            expectedLength = ((3 / 8) + (1 / 2)) / this.lesson.lengthInMeasures;
-            expect(this.lesson.notes[1].percentOnComplete).to.equal(expectedLength);
-            expectedLength = ((3 / 8) + (1 / 2) + (1 / 4)) / this.lesson.lengthInMeasures;
-            expect(this.lesson.notes[2].percentOnComplete).to.equal(expectedLength);
-            expectedLength = ((3 / 8) + (1 / 2) + (1 / 4) + 2) / this.lesson.lengthInMeasures;
-            expect(this.lesson.notes[3].percentOnComplete).to.equal(expectedLength);
-            expectedLength = ((3 / 8) + (1 / 2) + (1 / 4) + 2 + (1 / 16)) / this.lesson.lengthInMeasures;
-            expect(this.lesson.notes[4].percentOnComplete).to.equal(expectedLength);
-            expectedLength = ((3 / 8) + (1 / 2) + (1 / 4) + 2 + (1 / 16) + (1 / 32)) / this.lesson.lengthInMeasures;
-            expect(this.lesson.notes[5].percentOnComplete).to.equal(expectedLength);
+            var expectedDuration = (3 / 8) / this.lesson.durationInMeasures;
+            expect(this.lesson.notes[0].percentOnComplete).to.equal(expectedDuration);
+            expectedDuration = ((3 / 8) + (1 / 2)) / this.lesson.durationInMeasures;
+            expect(this.lesson.notes[1].percentOnComplete).to.equal(expectedDuration);
+            expectedDuration = ((3 / 8) + (1 / 2) + (1 / 4)) / this.lesson.durationInMeasures;
+            expect(this.lesson.notes[2].percentOnComplete).to.equal(expectedDuration);
+            expectedDuration = ((3 / 8) + (1 / 2) + (1 / 4) + 2) / this.lesson.durationInMeasures;
+            expect(this.lesson.notes[3].percentOnComplete).to.equal(expectedDuration);
+            expectedDuration = ((3 / 8) + (1 / 2) + (1 / 4) + 2 + (1 / 16)) / this.lesson.durationInMeasures;
+            expect(this.lesson.notes[4].percentOnComplete).to.equal(expectedDuration);
+            expectedDuration = ((3 / 8) + (1 / 2) + (1 / 4) + 2 + (1 / 16) + (1 / 32)) / this.lesson.durationInMeasures;
+            expect(this.lesson.notes[5].percentOnComplete).to.equal(expectedDuration);
         });
 
         it('should always have the intervals of all the notes it contains', function () {
@@ -202,16 +202,16 @@ describe('Lesson', function() {
     describe('with multiple notes', function () {
         beforeEach(function () {
             this.createTheseNotes = [
-                {name: 'B2', length: '1/8'},
-                {name: 'A1', length: '1/2'},
-                {name: 'Db3', length: '1/4'},
-                {name: 'B2', length: '1/32'}
+                {name: 'B2', duration: '1/8'},
+                {name: 'A1', duration: '1/2'},
+                {name: 'Db3', duration: '1/4'},
+                {name: 'B2', duration: '1/32'}
             ];
             this.expectedList = [
-                {name: 'B2', length: '1/8'},
-                {name: 'A1', length: '1/2'},
-                {name: 'Db3', length: '1/4'},
-                {name: 'B2', length: '1/32'}
+                {name: 'B2', duration: '1/8'},
+                {name: 'A1', duration: '1/2'},
+                {name: 'Db3', duration: '1/4'},
+                {name: 'B2', duration: '1/32'}
             ];
             this.lesson.addNotes(this.createTheseNotes);
         });
@@ -235,7 +235,7 @@ describe('Lesson', function() {
         });
 
         it('smallestNoteSize should return measure size of the smallest note', function () {
-            this.lesson.addNotes([{name: 'B2', length: '1/64'}]);
+            this.lesson.addNotes([{name: 'B2', duration: '1/64'}]);
             expect(this.lesson.smallestNoteSize).to.equal(0.015625);
         });
 
@@ -248,15 +248,15 @@ describe('Lesson constructor with silentNotes', function() {
         this.lesson = new Lesson({ noteList: arrayList });
     });
 
-    it('should get correct length in measures', function () {
-        expect(this.lesson.lengthInMeasures).to.equal(1.40625);
+    it('should get correct duration in measures', function () {
+        expect(this.lesson.durationInMeasures).to.equal(1.40625);
     });
 
-    it('should get correct length in milliseconds', function () {
-        var beatCount = this.lesson.lengthInMeasures * this.lesson.tempo;
+    it('should get correct duration in milliseconds', function () {
+        var beatCount = this.lesson.durationInMeasures * this.lesson.tempo;
         var minute = 60000;
         var expectedMs = beatCount * (minute / this.lesson.bpm);
-        expect(this.lesson.lengthInMilliseconds).to.equal(expectedMs);
+        expect(this.lesson.durationInMilliseconds).to.equal(expectedMs);
     });
 
     it('should get correct range', function () {
@@ -283,6 +283,6 @@ describe('Lesson constructor with silentNotes', function() {
 function compareNoteLists(noteList, expectedList) {
     for (var i = 0; i < noteList.length; i++) {
         expect(noteList[i].name).to.equal(expectedList[i].name);
-        expect(noteList[i].length).to.equal(expectedList[i].length);
+        expect(noteList[i].duration).to.equal(expectedList[i].duration);
     }
 }

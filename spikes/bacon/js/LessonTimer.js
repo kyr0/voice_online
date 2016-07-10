@@ -7,7 +7,7 @@ function LessonTimer(lessonObj) {
     var lesson = lessonObj ;
     EventEmitter.call(this);
 
-    var measureCount = lesson.lengthInMeasures;
+    var measureCount = lesson.durationInMeasures;
     var beatCount = measureCount * lesson.tempo;
     var minute = 60000;
     this.timerLength = beatCount * (minute / lesson.bpm);
@@ -15,7 +15,7 @@ function LessonTimer(lessonObj) {
     this.fragmentLength = beatLength / (lesson.smallestNoteSize / lesson.tempo);
     var curNoteIdx = 0;
     var curNote = lesson.notes[curNoteIdx];
-    var curNoteLength = curNote.lengthInMeasures * (this.timerLength / measureCount);
+    var curNoteLength = curNote.durationInMeasures * (this.timerLength / measureCount);
 
 
     this.startTime = null;
@@ -34,7 +34,7 @@ function LessonTimer(lessonObj) {
                 lastNoteElapsedFragments = this.elapsedFragments;
                 curNoteIdx++;
                 curNote = lesson.notes[curNoteIdx];
-                curNoteLength = curNote.lengthInMeasures * (this.timerLength / measureCount);
+                curNoteLength = curNote.durationInMeasures * (this.timerLength / measureCount);
             }
         }
     });

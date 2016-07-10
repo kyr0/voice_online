@@ -2,16 +2,16 @@
 
 var Note = require('./Note.js');
 
-function Caption (captionText, captionLength){
+function Caption (captionText, captionDuration){
 
-    this.setCaptionLength = function(captionLength){
+    this.setCaptionDuration = function(captionDuration){
 
-        var tmpNote = new Note('-', captionLength);
-        return tmpNote.length;
+        var tmpNote = new Note('-', captionDuration);
+        return tmpNote.duration;
     };
 
     this.text = captionText;
-    this.length = this.setCaptionLength(captionLength);
+    this.duration = this.setCaptionDuration(captionDuration);
 }
 
 module.exports = Caption;

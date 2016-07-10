@@ -3,7 +3,7 @@ var _ = require('lodash');
 var Note = require('./Note.js');
 var Interval = require('./Interval.js');
 var Caption = require('./Caption.js');
-var CaptionLengthError = require('./customErrors').CaptionsTooLongError;
+var CaptionDurationError = require('./customErrors').CaptionsTooLongError;
 
 
 function Lesson (options_param) {
@@ -15,36 +15,36 @@ function Lesson (options_param) {
     this.notes = [];
     this.intervals = [];
     this.captions = [];
-    var totalCaptionLengthInMeasures = 0;
+    var totalCaptionDurationInMeasures = 0;
     this.bpm = 120;
     this.tempo = 4; // beats per measure
-    this.lengthInMeasures = 0;
-    this.lengthInMilliseconds = 0;
+    this.durationInMeasures = 0;
+    this.durationInMilliseconds = 0;
     this.smallestNoteSize = null;
     this.lowestNote = null;
     this.highestNote = null;
 
-    function _getDenominator(length){
-        return length.split('/')[1];
+    function _getDenominator(duration){
+        return duration.split('/')[1];
     }
 
-    function _getNumerator(length){
-        return length.split('/')[0];
+    function _getNumerator(duration){
+        return duration.split('/')[0];
     }
 
     this._getHighestDenominator = function(objList) {
         var highestDenom = 0;
         var currentDenom;
         for (var i = 0; i < objList.length; i++) {
-            currentDenom = Number(_getDenominator(objList[i].length));
+            currentDenom = Number(_getDenominator(objList[i].duration));
             if (currentDenom > highestDenom) {highestDenom = currentDenom;}
         }
         return highestDenom;
     };
 
-    this._sumNumeratorToHighestDenominator = function(length, highestDenom) {
-        var numerator = _getNumerator(length);
-        var denominator = _getDenominator(length);
+    this._sumNumeratorToHighestDenominator = function(duration, highestDenom) {
+        var numerator = _getNumerator(duration);
+        var denominator = _getDenominator(duration);
         while (denominator < highestDenom) {
             numerator *= 2;
             denominator *= 2;
@@ -75,18 +75,18 @@ function Lesson (options_param) {
         var noteObjArr = [];
         var name;
         var newNoteObj;
-        var noteLength;
+        var noteDuration;
         for (var i = 0; i < newNotes.length; i++) {
             if (newNotes[i].constructor === Array){
                 name = newNotes[i][0];
-                noteLength = newNotes[i][1];
+                noteDuration = newNotes[i][1];
             }
             else if (typeof newNotes[i].name !== 'undefined'){
                 name = newNotes[i].name;
-                noteLength = newNotes[i].length;
+                noteDuration = newNotes[i].duration;
             }
-            newNoteObj = new Note(name, noteLength);
-            newNoteObj.lengthInMeasures = _getObjLengthInMeasures(newNoteObj);
+            newNoteObj = new Note(name, noteDuration);
+            newNoteObj.durationInMeasures = _getObjDurationInMeasures(newNoteObj);
             noteObjArr.push(newNoteObj);
             _setRangeDelimiters(newNoteObj);
         }
@@ -114,38 +114,38 @@ function Lesson (options_param) {
         }
     };
 
-    var _getObjLengthInMeasures = function (obj){
+    var _getObjDurationInMeasures = function (obj){
         /**
         Whenever notes are added the note is made aware of how long it
-         is relative to the length of a measure. eg 2 is == 2 measures
+         is relative to the duration of a measure. eg 2 is == 2 measures
          */
-        var num = _getNumerator(obj.length);
-        var den = _getDenominator(obj.length);
+        var num = _getNumerator(obj.duration);
+        var den = _getDenominator(obj.duration);
         return (num / den);
     };
 
-    this._updateNotesWithLengthInMilliseconds = function(){
+    this._updateNotesWithDurationInMilliseconds = function(){
         for (var i = 0; i < that.notes.length; i++) {
-            var lMs = that.notes[i].lengthInMeasures * (that.lengthInMilliseconds / that.lengthInMeasures);
-            that.notes[i].lengthInMilliseconds = lMs;
+            var lMs = that.notes[i].durationInMeasures * (that.durationInMilliseconds / that.durationInMeasures);
+            that.notes[i].durationInMilliseconds = lMs;
         }
     };
 
     this._updateNotesWithPctCompleteAtNotesEnd = function (){
-        var lessonLength = that.lengthInMeasures;
-        var priorCombinedLength = 0;
+        var lessonDuration = that.durationInMeasures;
+        var priorCombinedDuration = 0;
         for (var i = 0; i < that.notes.length; i++){
-            var combinedLengthAtNotesEnd = that.notes[i].lengthInMeasures + priorCombinedLength;
-            that.notes[i].percentOnComplete = combinedLengthAtNotesEnd / lessonLength;
-            priorCombinedLength += that.notes[i].lengthInMeasures;
+            var combinedDurationAtNotesEnd = that.notes[i].durationInMeasures + priorCombinedDuration;
+            that.notes[i].percentOnComplete = combinedDurationAtNotesEnd / lessonDuration;
+            priorCombinedDuration += that.notes[i].durationInMeasures;
         }
     };
 
     function _updateSmallestNoteSize(){
-        that.smallestNoteSize = that.lengthInMeasures;
+        that.smallestNoteSize = that.durationInMeasures;
         for (var i = 0; i < that.notes.length; i++) {
-            if (that.notes[i].lengthInMeasures < that.smallestNoteSize) {
-                that.smallestNoteSize = that.notes[i].lengthInMeasures;
+            if (that.notes[i].durationInMeasures < that.smallestNoteSize) {
+                that.smallestNoteSize = that.notes[i].durationInMeasures;
             }
         }
     }
@@ -153,46 +153,54 @@ function Lesson (options_param) {
     this.addNotes = function(newNotes) {
         var noteObjArr = this._createListOfNoteObjects(newNotes);
         this.notes = this.notes.concat(noteObjArr);
-        _updateLessonLength();
+        _updateLessonDuration();
         this.intervals = _updateIntervals(this.notes);
         this._updateNotesWithRelativeInterval();
         this._updateNotesWithPctCompleteAtNotesEnd();
-        this._updateNotesWithLengthInMilliseconds();
+        this._updateNotesWithDurationInMilliseconds();
         _updateSmallestNoteSize();
     };
 
     this.addCaptions = function(newCaptions) {
+        var text;
+        var duration;
         for (var idx = 0; idx < newCaptions.length; idx++) {
-            var text = newCaptions[idx][0];
-            var length = newCaptions[idx][1];
-            var newCaptionObj = new Caption(text, length);
-            newCaptionObj.lengthInMeasures = _getObjLengthInMeasures(newCaptionObj);
-            totalCaptionLengthInMeasures += newCaptionObj.lengthInMeasures;
-            if (totalCaptionLengthInMeasures > this.lengthInMeasures) {
-                throw new CaptionLengthError('Combined length of captions "' + totalCaptionLengthInMeasures +
-                    '" cannot exceed the lesson length "' + this.lengthInMeasures + '".');
+            if (newCaptions[idx].constructor === Array){
+                text = newCaptions[idx][0];
+                duration = newCaptions[idx][1];
+            }
+            else if (typeof newCaptions[idx].text !== 'undefined'){
+                text = newCaptions[idx].text;
+                duration = newCaptions[idx].duration;
+            }
+            var newCaptionObj = new Caption(text, duration);
+            newCaptionObj.durationInMeasures = _getObjDurationInMeasures(newCaptionObj);
+            totalCaptionDurationInMeasures += newCaptionObj.durationInMeasures;
+            if (totalCaptionDurationInMeasures > this.durationInMeasures) {
+                throw new CaptionDurationError('Combined duration of captions "' + totalCaptionDurationInMeasures +
+                    '" cannot exceed the lesson duration "' + this.durationInMeasures + '".');
             }
             this.captions.push(newCaptionObj);
         }
     };
 
-    var _updateLessonLength = function () {
+    var _updateLessonDuration = function () {
         var arrayOfNotes = that.notes;
         var highestDenom = that._getHighestDenominator(arrayOfNotes);
         var numerator = 0;
         for (var i = 0; i < arrayOfNotes.length; i++) {
-            var noteLength = arrayOfNotes[i].length;
+            var noteDuration = arrayOfNotes[i].duration;
             // TODO handle odd time signatures eg. 5/7 and find common denominator
-            numerator += that._sumNumeratorToHighestDenominator(noteLength, highestDenom);
+            numerator += that._sumNumeratorToHighestDenominator(noteDuration, highestDenom);
         }
-        that.lengthInMeasures =  numerator / highestDenom;
-        _updateLengthInMilliseconds();
+        that.durationInMeasures =  numerator / highestDenom;
+        _updateDurationInMilliseconds();
     };
 
-    var _updateLengthInMilliseconds = function () {
-        var beatCount = that.lengthInMeasures * that.tempo;
+    var _updateDurationInMilliseconds = function () {
+        var beatCount = that.durationInMeasures * that.tempo;
         var minute = 60000;
-        that.lengthInMilliseconds = beatCount * (minute / that.bpm);
+        that.durationInMilliseconds = beatCount * (minute / that.bpm);
     };
 
     this.getLessonRange = function() {
@@ -210,8 +218,8 @@ function Lesson (options_param) {
 
     if (typeof this.options.bpm !== 'undefined') {
         this.bpm = this.options.bpm;
-        _updateLengthInMilliseconds();
-        this._updateNotesWithLengthInMilliseconds();
+        _updateDurationInMilliseconds();
+        this._updateNotesWithDurationInMilliseconds();
     }
 
     if (typeof this.options.title !== 'undefined') {

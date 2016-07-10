@@ -10,7 +10,7 @@ var lessonHeight = height - captionHeight;
 
 var curSet = null;
 var range = null;
-var lessonLength = null;
+var lessonDuration = null;
 var measureCount = null;
 var unitHeight = null;
 var unitWidth = null;
@@ -35,10 +35,10 @@ var initLessonCanvas = function() {
     curSet = window.lPlayer.getCurrentSet();
     templateSet = curSet;
     range = curSet.getLessonRange() + 2;  // pad top and bottom
-    lessonLength = curSet.lengthInMeasures;
-    measureCount = Math.floor(lessonLength);
+    lessonDuration = curSet.durationInMeasures;
+    measureCount = Math.floor(lessonDuration);
     unitHeight = lessonHeight / range;
-    unitWidth = width / lessonLength;
+    unitWidth = width / lessonDuration;
     resetDrawables();
     resetPlayerListenersInDraw();
     initWidget();
@@ -129,7 +129,7 @@ function initWidget() {
     var tmpNtNames = [];  // used to filter out duplicate note labels
     for (var nt = 0; nt < curSet.notes.length; nt++) {
         var curNote = curSet.notes[nt];
-        var curNoteWidth = unitWidth * curNote.lengthInMeasures;
+        var curNoteWidth = unitWidth * curNote.durationInMeasures;
         var curNoteY = unitHeight * curNote.relativeInterval + (unitHeight / 2);
 
         // Bubble related
@@ -159,7 +159,7 @@ function initWidget() {
     var consumedCaptionX = 0;
     for (var cap = 0; cap < curSet.captions.length; cap++) {
         var curCap = curSet.captions[cap];
-        var curCapWidth = unitWidth * curCap.lengthInMeasures;
+        var curCapWidth = unitWidth * curCap.durationInMeasures;
         var capY = lessonHeight + (captionHeight / 2);
         var captionText = new PointText([consumedCaptionX, capY]);
         captionText.content = curCap.text;
@@ -188,7 +188,7 @@ function drawScores(aggNoteScores) {
     var consumedX = 0;
     for (var scr = 0; scr < aggNoteScores.length; scr++) {
         var curNote = templateSet.notes[scr];
-        var curNoteWidth = unitWidth * curNote.lengthInMeasures;
+        var curNoteWidth = unitWidth * curNote.durationInMeasures;
         var curNoteY = unitHeight * curNote.relativeInterval + (unitHeight / 2);
         var scoreText = new PointText([consumedX, curNoteY]);
         scoreText.content = Math.round(aggNoteScores[scr]);
