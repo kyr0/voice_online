@@ -1,31 +1,30 @@
 var React = require('react');
 var $ = require('jquery');
 
+var canvasMgr = require('../canvasManager.js');
 
-// tutorial7.js
-var Lesson = React.createClass({
+
+var LessonData = React.createClass({
+    handleClick: function() {
+        canvasMgr.initLesson(this.props);
+    },
     render: function() {
         return (
-            <div className="lesson">
-                <h2 className="lessonOwner">
-                    {this.props.owner}
-                </h2>
+            <div className="lessonData" onClick={this.handleClick}>
                 {this.props.children}
-                {JSON.stringify(this.props.notes)}
-                {JSON.stringify(this.props.captions)}
             </div>
         );
     }
 });
 
-// tutorial10.js
 var LessonList = React.createClass({
     render: function() {
         var lessonNodes = this.props.data.results.map(function(lesson) {
             return (
-                <Lesson owner={lesson.owner} key={lesson.url} notes={lesson.notes} captions={lesson.captions}>
+                <LessonData owner={lesson.owner} key={lesson.url} noteList={lesson.notes}
+                            captionList={lesson.captions} bpm={lesson.bpm}>
                     {lesson.title}
-                </Lesson>
+                </LessonData>
             );
         });
         return (
@@ -36,7 +35,6 @@ var LessonList = React.createClass({
     }
 });
 
-// tutorial9.js
 var LessonBox = React.createClass({
     loadLessonsFromServer: function() {
         $.ajax({
