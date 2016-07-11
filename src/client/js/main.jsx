@@ -1,7 +1,6 @@
 'use strict';
 
 var $ = require('jquery');
-var _ = require('lodash');
 
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -28,6 +27,18 @@ var mpm = null;
 var scriptNode = null;
 
 var ntMaps = new NoteMaps();
+
+$.ajax({
+    url: '/api/user/current/',
+    dataType: 'json',
+    cache: true,
+    success: function(data) {
+        console.log(data);
+    }.bind(this),
+    error: function(xhr, status, err) {
+        console.error(this.url, status, err.toString());
+    }.bind(this)
+});
 
 
 ReactDOM.render(
