@@ -4,7 +4,9 @@ var $ = require('jquery');
 
 var React = require('react');
 var ReactDOM = require('react-dom');
-var LessonBox = require('./Components/LessonList.jsx')
+
+var LessonBox = require('./Components/LessonList.jsx');
+var UserProfile = require('./Components/UserProfile.jsx');
 
 var NoteMaps = require('./NoteMaps.js');
 var Lesson = require('./Lesson.js');
@@ -28,21 +30,19 @@ var scriptNode = null;
 
 var ntMaps = new NoteMaps();
 
-$.ajax({
-    url: '/api/user/current/',
-    dataType: 'json',
-    cache: true,
-    success: function(data) {
-        console.log(data);
-    }.bind(this),
-    error: function(xhr, status, err) {
-        console.error(this.url, status, err.toString());
-    }.bind(this)
+var Main = React.createClass({
+    render: function() {
+        return (
+            <div>
+                <LessonBox url="/api/lesson/" pollInterval={2000} />
+                <UserProfile />
+            </div>
+        );
+    }
 });
 
-
 ReactDOM.render(
-    <LessonBox url="/api/lesson/" pollInterval={2000} />,
+    <Main />,
     document.getElementById('react-content')
 );
 
