@@ -2,18 +2,32 @@ var React = require('react');
 var $ = require('jquery');
 
 
-var RangeInput = React.createClass({
-    handleChange: function(event) {
-        this.setProps({value: event.target.value});
+var ProfileInputs = React.createClass({
+    handleChange: function() {
+        this.props.onUserInput(
+            this.refs.upperRangeInput.value,
+            this.refs.lowerRangeInput.value
+        );
     },
+
     render: function() {
         return (
             <form>
-                {this.props.label}
+                Upper Range:
                 <input
                     type="text"
                     size="13"
-                    value={JSON.stringify(this.props.value)}
+                    value={this.props.upper_range}
+                    ref="upperRangeInput"
+                    onChange={this.handleChange}
+                />
+                Lower Range:
+                <input
+                    id="lower_range"
+                    type="text"
+                    size="13"
+                    value={this.props.lower_range}
+                    ref="lowerRangeInput"
                     onChange={this.handleChange}
                 />
             </form>
@@ -25,11 +39,15 @@ var RangeInput = React.createClass({
 var ProfileForm = React.createClass({
     loadUserDataFromServer: function() {
         $.ajax({
-            url: '/api/user/current/',
+            url: '/api/profile/current/',
             dataType: 'json',
             cache: true,
             success: function(data) {
-                this.setState({data: data});
+                this.setState({
+                    data: data,
+                    upper_range: data.upper_range,
+                    lower_range: data.lower_range
+                });
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(this.url, status, err.toString());
@@ -37,18 +55,33 @@ var ProfileForm = React.createClass({
         });
     },
     getInitialState: function() {
-        return {data: {"upper_range": null, "lower_range": null}};
+        return {
+            upper_range: null,
+            lower_range: null
+        };
     },
+
+    handleUserInput: function(upper_range, lower_range) {
+        this.setState({
+            upper_range: upper_range,
+            lower_range: lower_range
+        });
+    },
+
     componentDidMount: function() {
         this.loadUserDataFromServer();
     },
+
     render: function() {
         return (
             <div className="profileForm">
                 <h1>Profile</h1>
                 <p>{JSON.stringify(this.state.data)}</p>
-                <RangeInput id="upper_range" label="Upper Range" value={this.state.data.upper_range}/>
-                <RangeInput id="lower_range" label="Lower Range" value={this.state.data.lower_range}/>
+                <ProfileInputs
+                    upper_range={this.state.upper_range}
+                    lower_range={this.state.lower_range}
+                    onUserInput={this.handleUserInput}
+                />
             </div>
         );
     }
