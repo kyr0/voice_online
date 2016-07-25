@@ -172,6 +172,14 @@ module.exports = function(grunt) {
                     }
                 }
             },
+            killall: {
+                // Just in case it is running, wasted lots of time on this
+                command: [
+                    'killall -9 node',
+                    'killall -9 python'
+                ].join(';'),
+                options: { failOnError: false }
+            },
             runserver: {
                 command: [
                     'source ../.tox/py34-postgresql/bin/activate',
@@ -204,7 +212,7 @@ module.exports = function(grunt) {
 
     });
 
-    grunt.registerTask('default', ['concurrent:dev']);
+    grunt.registerTask('default', ['shell:killall', 'concurrent:dev']);
     grunt.registerTask('coverage', ['karma:coverage']);
     grunt.registerTask('build', ['webpack:build', 'shell:cp_static']);
     grunt.registerTask('test', ['karma:test', 'shell:be_test']);

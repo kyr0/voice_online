@@ -6,10 +6,10 @@
     "node": "5.5.0"
   },
   "devDependencies": {
-    "babel-core": "^6.9.1",
+    "babel-core": "^6.11.4",
     "babel-loader": "^6.2.4",
     "babel-preset-es2015": "^6.9.0",
-    "babel-preset-react": "^6.5.0",
+    "babel-preset-react": "^6.11.1",
     "chai": "^3.5.0",
     "grunt": "^0.4.5",
     "grunt-concurrent": "^2.2.1",
@@ -17,7 +17,7 @@
     "grunt-karma": "^0.12.2",
     "grunt-shell": "^1.3.0",
     "grunt-webpack": "^1.0.11",
-    "istanbul": "^0.4.2",
+    "istanbul": "^0.4.4",
     "istanbul-instrumenter-loader": "^0.2.0",
     "jshint": "^2.8.0",
     "karma": "^0.13.21",
@@ -27,7 +27,7 @@
     "karma-firefox-launcher": "^0.1.7",
     "karma-html2js-preprocessor": "^0.1.0",
     "karma-mocha": "^0.2.2",
-    "karma-sinon-chai": "^1.2.0",
+    "karma-sinon-chai": "^1.2.3",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^1.7.0",
     "load-grunt-tasks": "^3.1.0",
@@ -40,8 +40,11 @@
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
-    "jquery": "^2.2.1",
-    "lodash": "^4.9.0",
+    "//": "lolex is a peer dep of most packages",
+    "axios": "^0.13.1",
+    "jquery": "^2.2.4",
+    "lodash": "^4.14.0",
+    "lolex": "^1.5.0",
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
     "soundfont-player": "^0.7.0"
