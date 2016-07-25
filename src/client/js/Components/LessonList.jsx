@@ -1,7 +1,8 @@
 var React = require('react');
-var $ = require('jquery');
+var axios = require('../lib/helpers').axios;
 
 var canvasMgr = require('../canvasManager.js');
+
 
 
 var LessonData = React.createClass({
@@ -37,17 +38,13 @@ var LessonList = React.createClass({
 
 var LessonBox = React.createClass({
     loadLessonsFromServer: function() {
-        $.ajax({
-            url: this.props.url,
-            dataType: 'json',
-            cache: false,
-            success: function(data) {
-                this.setState({data: data});
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(this.props.url, status, err.toString());
-            }.bind(this)
-        });
+        axios(this.props.url)
+            .then(function(response) {
+                this.setState({data: response.data});
+            }.bind(this))
+            .catch(function (error) {
+                console.log(error);
+            });
     },
     getInitialState: function() {
         return {data: {"results": []}};

@@ -1,6 +1,7 @@
 var React = require('react');
-var $ = require('jquery');
+var _ = require('lodash');
 
+var axios = require('../lib/helpers').axios;
 
 var ProfileInputs = React.createClass({
     handleChange: function() {
@@ -10,9 +11,14 @@ var ProfileInputs = React.createClass({
         );
     },
 
+    handleSubmit: function(event) {
+        event.preventDefault();
+        this.props.onProfileSubmit();
+    },
+
     render: function() {
         return (
-            <form>
+            <form className="profileForm" onSubmit={this.handleSubmit}>
                 Upper Range:
                 <input
                     type="text"
@@ -30,6 +36,7 @@ var ProfileInputs = React.createClass({
                     ref="lowerRangeInput"
                     onChange={this.handleChange}
                 />
+                <input type="submit" value="Submit" />
             </form>
         );
     }
@@ -38,21 +45,17 @@ var ProfileInputs = React.createClass({
 
 var ProfileForm = React.createClass({
     loadUserDataFromServer: function() {
-        $.ajax({
-            url: '/api/profile/current/',
-            dataType: 'json',
-            cache: true,
-            success: function(data) {
+        axios('/api/profile/current/')
+            .then(function(response) {
                 this.setState({
-                    data: data,
-                    upper_range: data.upper_range,
-                    lower_range: data.lower_range
+                    data: response.data,
+                    upper_range: response.data.upper_range,
+                    lower_range: response.data.lower_range
                 });
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(this.url, status, err.toString());
-            }.bind(this)
-        });
+            }.bind(this))
+            .catch(function (error) {
+                console.log(error);
+            });
     },
     getInitialState: function() {
         return {
@@ -68,6 +71,24 @@ var ProfileForm = React.createClass({
         });
     },
 
+    handleProfileSubmit: function() {
+        var new_upper_range = this.state.upper_range.trim();
+        var new_lower_range = this.state.lower_range.trim();
+        // TODO Add input validation - maybe validation should go in the form itself tho, not sure
+        axios.put('/api/profile/current/', {
+            upper_range: new_upper_range,
+            lower_range: new_lower_range,
+        })
+            .then(function(response) {
+                this.setState({
+                    data: response.data
+                });
+            }.bind(this))
+            .catch(function (error) {
+                console.log('Error', error.message);
+            });
+    },
+
     componentDidMount: function() {
         this.loadUserDataFromServer();
     },
@@ -81,6 +102,7 @@ var ProfileForm = React.createClass({
                     upper_range={this.state.upper_range}
                     lower_range={this.state.lower_range}
                     onUserInput={this.handleUserInput}
+                    onProfileSubmit={this.handleProfileSubmit}
                 />
             </div>
         );
