@@ -34,7 +34,7 @@ var Main = React.createClass({
     render: function() {
         return (
             <div>
-                <LessonBox url="/api/lesson/" pollInterval={2000} />
+                <LessonBox pollInterval={2000} />
                 <UserProfile />
             </div>
         );
