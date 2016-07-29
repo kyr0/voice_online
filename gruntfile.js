@@ -107,7 +107,7 @@ module.exports = function(grunt) {
                 // './spikes/pitch/js/drive_mpm.js -o ./spikes/pitch/js/drive_mpm.bundle.js',
                 // './spikes/pitch/js/drive_webAudio.js -o ./spikes/pitch/js/drive_webAudio.bundle.js',
 
-                entry: "./src/client/js/main.jsx",
+                entry: "./src/client/js/index.jsx",
                 output: {
                     path: "../source/lesson/static/js/",
                     filename: "[name].bundle.js",
