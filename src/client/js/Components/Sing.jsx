@@ -103,4 +103,13 @@ var LessonBox = React.createClass({
     }
 });
 
-module.exports = LessonBox;
+
+export default React.createClass({
+    render: function() {
+        return (
+            <div>
+                <LessonBox pollInterval={2000} />
+            </div>
+        );
+    }
+});

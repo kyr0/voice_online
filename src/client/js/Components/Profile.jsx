@@ -109,4 +109,13 @@ var ProfileForm = React.createClass({
     }
 });
 
-module.exports = ProfileForm;
+
+export default React.createClass({
+    render: function() {
+        return (
+            <div>
+                <ProfileForm />
+            </div>
+        );
+    }
+});

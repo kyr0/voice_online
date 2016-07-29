@@ -2,11 +2,13 @@
 
 var $ = require('jquery');
 
-var React = require('react');
-var ReactDOM = require('react-dom');
+import React from 'react'
+import { render } from 'react-dom'
+import { Router, Route, hashHistory } from 'react-router'
 
-var LessonBox = require('./Components/LessonList.jsx');
-var UserProfile = require('./Components/UserProfile.jsx');
+import Main from './Components/Main.jsx'
+import Sing from './Components/Sing.jsx'
+import Profile from './Components/Profile.jsx'
 
 var NoteMaps = require('./NoteMaps.js');
 var Lesson = require('./Lesson.js');
@@ -30,19 +32,13 @@ var scriptNode = null;
 
 var ntMaps = new NoteMaps();
 
-var Main = React.createClass({
-    render: function() {
-        return (
-            <div>
-                <LessonBox pollInterval={2000} />
-                <UserProfile />
-            </div>
-        );
-    }
-});
 
-ReactDOM.render(
-    <Main />,
+render(
+    <Router history={hashHistory}>
+        <Route path="/" component={Main}/>
+        <Route path="/sing" component={Sing}/>
+        <Route path="/profile" component={Profile}/>
+    </Router>,
     document.getElementById('react-content')
 );
 
