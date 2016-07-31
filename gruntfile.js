@@ -212,7 +212,7 @@ module.exports = function(grunt) {
 
     });
 
-    grunt.registerTask('default', ['shell:killall', 'concurrent:dev']);
+    grunt.registerTask('default', ['shell:killall', 'shell:cp_static', 'karma:test', 'shell:be_test', 'concurrent:dev']);
     grunt.registerTask('coverage', ['karma:coverage']);
     grunt.registerTask('build', ['webpack:build', 'shell:cp_static']);
     grunt.registerTask('test', ['karma:test', 'shell:be_test']);
