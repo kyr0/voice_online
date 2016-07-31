@@ -12,4 +12,7 @@ node_modules/
 src/client/build/
 *.bundle.js
 
+# Test automation side-effects
 test/coverage/
+test/integration/fixtures/static/
+test/integration/fixtures/index.html

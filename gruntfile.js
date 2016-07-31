@@ -16,7 +16,10 @@ module.exports = function(grunt) {
             frontend: {
                 files: [
                     './src/client/**/*.js*',
-                    './test/**/*'
+                    './test/**/*',
+                    '!./test/**/static/js/*',
+                    '!./test/**/index.html',
+                    '!./src/client/js/drawLesson.js'
                 ],
                 // github.com/karma-runner/grunt-karma#karma-server-with-grunt-watch
                 tasks: [
@@ -25,7 +28,7 @@ module.exports = function(grunt) {
                 ]
             },
             static: {
-                files: ['./src/client/js/drawLesson.js'],
+                files: ['./src/client/js/drawLesson.js', './src/client/index.html'],
                 tasks: ['shell:cp_static']
             },
             backend: {
@@ -109,7 +112,7 @@ module.exports = function(grunt) {
 
                 entry: "./src/client/js/index.jsx",
                 output: {
-                    path: "../source/lesson/static/js/",
+                    path: "./test/integration/fixtures/static/js/",
                     filename: "[name].bundle.js",
                     // serve your source maps from a server that is only accessible to your development team
                     // sourceMapFilename: "[name].bundle.js.map"
@@ -194,9 +197,15 @@ module.exports = function(grunt) {
             cp_static: {  // note that this is not responsible for bundles which are placed in BE by webpack
                 command: [
                     'set -x',  // make the commands echo to stdout
-                    'mkdir -p ../source/lesson/static/js',
-                    'cp ./src/client/js/drawLesson.js ../source/lesson/static/js/',
-                    'cp ./src/dependencies/paper-full.min.js ../source/lesson/static/js/'
+                    'mkdir -p ../source/lesson/static/js',  // for dev server
+                    'mkdir -p ./test/integration/fixtures/static/js',  // fixture for test suite
+                    // for test suite
+                    'cp ./src/client/index.html ./test/integration/fixtures/index.html',  // in 2 repos
+                    'cp ./src/client/js/drawLesson.js ./test/integration/fixtures/static/js/',
+                    'cp ./src/dependencies/paper-full.min.js ./test/integration/fixtures/static/js/',
+                    // for dev
+                    'cp ./src/client/index.html ../source/lesson/templates/paper.html',
+                    'cp ./test/integration/fixtures/static/js/* ../source/lesson/static/js/'
                 ].join('&&')
             }
         },
@@ -212,7 +221,7 @@ module.exports = function(grunt) {
 
     });
 
-    grunt.registerTask('default', ['shell:killall', 'shell:cp_static', 'karma:test', 'shell:be_test', 'concurrent:dev']);
+    grunt.registerTask('default', ['shell:killall', 'webpack:dev', 'shell:cp_static', 'karma:test', 'shell:be_test', 'concurrent:dev']);
     grunt.registerTask('coverage', ['karma:coverage']);
     grunt.registerTask('build', ['webpack:build', 'shell:cp_static']);
     grunt.registerTask('test', ['karma:test', 'shell:be_test']);
