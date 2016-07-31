@@ -1,6 +1,9 @@
 'use strict';
+var $ = require('jquery');
 
 var MPM = require('./MPM.js');
+var Note = require('./Note.js');
+
 var Soundfont = require('soundfont-player');
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -108,11 +111,72 @@ function getScriptNode() {
     return scriptNode;
 }
 
+
+function updatePitch(buf) {
+    var resultObj = mpm.detectPitch(buf);
+    var pitchFreq = resultObj.getPitchFrequency();
+    var probability = resultObj.getProbability();
+    if (pitchFreq === -1 || probability < 0.95) {
+        window.pitchYAxisRatio = null;
+        window.lPlayer.pushScore(null);
+    }
+    else {
+        var noteObj =  new Note(pitchFreq);
+        var noteName = noteObj.name;
+        // The current chart is  used to show if the note is within
+        // the visible bounds of the set that is playing.
+        var curChart = window.lPlayer.getCurrentChart();
+        var relativeItvl = curChart[noteName] + 1;
+        if (relativeItvl){
+            var offPitchAmt = noteObj.getCentsDiff(pitchFreq);
+            window.pitchYAxisRatio = relativeItvl + (offPitchAmt / 100);
+            window.lPlayer.pushScore(offPitchAmt);
+        }
+        else {
+            window.pitchYAxisRatio = null;
+            window.lPlayer.pushScore(null);
+        }
+    }
+}
+
+
+function resetAudio(){
+    window.lPlayer.on('startNote', function(curNote){
+        startOscOnNewNote(curNote);
+    });
+
+    window.lPlayer.on('startExercise', function(){
+        initOsc();
+    });
+
+    window.lPlayer.on('stopExercise', function(){
+        stopOsc();
+    });
+
+    window.lPlayer.on('endExercise', function(aggNoteScore){
+        stopOsc(); // blinking timeDot could mean this was never run.
+        console.log("SCORE: " + aggNoteScore);
+    });
+}
+
+
+$(document).ready(function() {
+    initAudio();
+    scriptNode = getScriptNode();
+    mpm = getMPM();
+
+    // When the buffer is full of frames this event is executed
+    scriptNode.onaudioprocess = function(audioProcessingEvent) {
+        // TODO fix the transition detection errors by averaging frames
+        //console.log('OnAudioProcess');
+        var inputBuffer = audioProcessingEvent.inputBuffer;
+        var inputData = inputBuffer.getChannelData(0);
+        updatePitch(inputData);
+    };
+
+});
+
+
 module.exports = {
-    getMPM: getMPM,
-    getScriptNode: getScriptNode,
-    initAudio: initAudio,
-    initOsc: initOsc,
-    stopOsc: stopOsc,
-    startOscOnNewNote: startOscOnNewNote,
+    resetAudio: resetAudio
 };
