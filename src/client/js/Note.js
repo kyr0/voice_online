@@ -4,8 +4,8 @@ var NoteMaps = require('./NoteMaps.js');
 var InvalidDurationError = require('./customErrors.js').InvalidDurationError;
 
 
-function Note (name, noteDuration){
-
+function Note (nameOrFreq, noteDuration){
+    var that = this;
     var nMaps = new NoteMaps();
 
     this.setNoteDuration = function(noteDuration){
@@ -32,7 +32,7 @@ function Note (name, noteDuration){
         return newNoteDuration;
     };
 
-    this.transpose = function(distance){
+    this.transpose = function(distance) {
         var newIndex = distance + nMaps.pitchMap[this.name].index;
         return nMaps.pitchArray[newIndex].name;
     };
@@ -43,7 +43,7 @@ function Note (name, noteDuration){
         }
 
         var direction = null;
-        var startFreq = _noteObj.frequency;
+        var startFreq = that.frequency;
         var endFreq = nMaps.pitchMap[otherNtName].frequency;
 
         if (startFreq === endFreq){
@@ -96,18 +96,36 @@ function Note (name, noteDuration){
         return centsOff;
     };
 
-    if (name === '-'){
-        this.name = name;
+    // takes a raw frequency and returns the nearest musical note name
+    this.getClosestNoteFromPitch = function(frequency){
+        var noteNum = 12 * (Math.log(frequency / 440)/Math.log(2) );
+        try {
+            var name = nMaps.pitchArray[Math.round(noteNum) + 57].name;
+        }
+        catch (err){
+            throw new Error("The supplied frequency is invalid - " + frequency);
+        }
+        return name;
+    };
+
+
+    if (nameOrFreq === '-'){
+        this.name = nameOrFreq;
         this.duration = this.setNoteDuration(noteDuration);
         this.previousNote = null;
         this.nextNote = null;
         this.frequency = -1;
-        this.transpose = function() { return name; };
+        this.transpose = function() { return nameOrFreq; };
         this.getCentsDiff = function() { return null; };
         this.getDistanceToNote = function() { return null; };
     }
     else {
-        this.name = nMaps.validateNoteName(name);
+        if (typeof nameOrFreq === 'number') {
+            this.name = this.getClosestNoteFromPitch(nameOrFreq);
+        }
+        else {
+            this.name = nMaps.validateNoteName(nameOrFreq);
+        }
         this.duration = this.setNoteDuration(noteDuration);
         var _noteObj = nMaps.pitchMap[this.name];
         this.previousNote = _noteObj.previousNote;

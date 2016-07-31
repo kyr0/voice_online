@@ -19,7 +19,7 @@ var captionBg = null;
 var gridX = [];
 var gridY = [];
 var bubbles = [];
-var captions = [];
+var captionList = [];
 var scoreBoard = [];
 var noteLbls = [];
 var timeline = null;
@@ -76,7 +76,7 @@ function resetDrawables() {
     gridX = [];
     gridY = [];
     bubbles = [];
-    captions = [];
+    captionList = [];
     scoreBoard = [];
     noteLbls = [];
     timeline = null;
@@ -127,8 +127,8 @@ function initWidget() {
     // Begin epic bubble drawing
     var consumedX = 0;
     var tmpNtNames = [];  // used to filter out duplicate note labels
-    for (var nt = 0; nt < curSet.notes.length; nt++) {
-        var curNote = curSet.notes[nt];
+    for (var nt = 0; nt < curSet.noteList.length; nt++) {
+        var curNote = curSet.noteList[nt];
         var curNoteWidth = unitWidth * curNote.durationInMeasures;
         var curNoteY = unitHeight * curNote.relativeInterval + (unitHeight / 2);
 
@@ -157,14 +157,14 @@ function initWidget() {
 
     // Begin caption drawing
     var consumedCaptionX = 0;
-    for (var cap = 0; cap < curSet.captions.length; cap++) {
-        var curCap = curSet.captions[cap];
+    for (var cap = 0; cap < curSet.captionList.length; cap++) {
+        var curCap = curSet.captionList[cap];
         var curCapWidth = unitWidth * curCap.durationInMeasures;
         var capY = lessonHeight + (captionHeight / 2);
         var captionText = new PointText([consumedCaptionX, capY]);
         captionText.content = curCap.text;
         captionText.strokeColor = 'coral';
-        captions.push(captionText);
+        captionList.push(captionText);
         consumedCaptionX += curCapWidth;
     }
 
@@ -187,7 +187,7 @@ function initWidget() {
 function drawScores(aggNoteScores) {
     var consumedX = 0;
     for (var scr = 0; scr < aggNoteScores.length; scr++) {
-        var curNote = templateSet.notes[scr];
+        var curNote = templateSet.noteList[scr];
         var curNoteWidth = unitWidth * curNote.durationInMeasures;
         var curNoteY = unitHeight * curNote.relativeInterval + (unitHeight / 2);
         var scoreText = new PointText([consumedX, curNoteY]);

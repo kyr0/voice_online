@@ -66,21 +66,4 @@ describe('NoteMaps', function() {
         expect(catchError(this.nMaps.validateNoteName, noteName)).to.equal(errMsg);
     });
 
-    it("getClosestNoteFromPitch() should find the note with exact input", function() {
-        var freqC0 = 16.352;
-        expect(this.nMaps.getClosestNoteFromPitch(freqC0).name).to.equal("C0");
-    });
-
-    it("getClosestFreqFromPitch() should be accurate when frequency <= 50 cents off", function() {
-        // NOTE: 50 cents equals .5 semitone
-        var sharpA7Freq = 3623.1;
-        expect(this.nMaps.getClosestFreqFromPitch(sharpA7Freq)).to.equal(3520.0);
-    });
-
-    it("getClosestFreqFromPitch() should be accurate when frequency <= 50 cents off", function() {
-        // NOTE: 50 cents equals .5 semitone
-        var flatA1Freq = 53.435;
-        expect(this.nMaps.getClosestFreqFromPitch(flatA1Freq)).to.equal(55.000);
-    });
-
 });

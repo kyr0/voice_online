@@ -15,9 +15,6 @@
  */
 function NoteMaps() {
 
-    // TODO this is a terrible hack, move getClosestNoteFromPitch into a constructor for Note
-    var Note = require("./Note.js");
-
     // the raw data used to generate the stuff
     // TODO make sharps a possible choice
     var _noteNames = ["C", "Db",    "D",   "Eb",    "E",    "F",   "Gb",    "G",   "Ab",    "A",   "Bb",    "B"];
@@ -91,15 +88,8 @@ function NoteMaps() {
         return pitchMap[_noteNames[prevNoteNum] + prevOctave];
     }
 
-    // takes a raw frequency and returns the nearest musical note name
-    this.getClosestNoteFromPitch = function(frequency){
-        var noteNum = 12 * (Math.log(frequency / 440)/Math.log(2) );
-        var note = new Note(this.pitchArray[Math.round(noteNum) + 57].name);
-        return note;
-    };
-
     // take a raw frequency and returns the on-key frequency of the nearest musical note
-    // Note: this is faster than the getClosestNoteFromPitch method
+    // Note: this is faster than the getClosestNoteFromPitch method on the Note object
     this.getClosestFreqFromPitch = function(frequency){
         var noteNum = 12 * (Math.log(frequency / 440)/Math.log(2) );
         return this.pitchArray[Math.round(noteNum) + 57].frequency;

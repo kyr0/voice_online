@@ -40,13 +40,13 @@ describe('Exercise', function() {
         });
         var exercise = new Exercise(aUser, aLesson);
         var expected = {
-            notes: [
+            noteList: [
                 {name: 'B3', duration: '1/8'},
                 {name: 'A2', duration: '1/2'},
                 {name: 'Db4', duration: '1/4'},
                 {name: 'B3', duration: '1/32'}
             ],
-            captions: [
+            captionList: [
                 {text: 'One', duration: '1/8'},
                 {text: '-', duration: '1/2'},
                 {text: 'Two', duration: '1/4'},
@@ -64,13 +64,13 @@ describe('Exercise', function() {
         });
         var exercise = new Exercise(aUser, aLesson);
         var expected = {
-            notes: [
+            noteList: [
                 {name: 'G4', duration: '1/8'},
                 {name: '-', duration: '1/2'},
                 {name: 'A4', duration: '1/4'},
                 {name: 'G4', duration: '1/32'}
             ],
-            captions: [
+            captionList: [
                 {text: '', duration: '1/8'},
                 {text: 'One', duration: '1/2'},
                 {text: 'Two', duration: '1/4'},
@@ -101,12 +101,12 @@ describe('Exercise', function() {
 
 
 function compareLessonLists(aSet, expected) {
-    for (var i = 0; i < aSet.notes.length; i++) {
-        expect(aSet.notes[i].name).to.equal(expected.notes[i].name);
-        expect(aSet.notes[i].length).to.equal(expected.notes[i].length);
+    for (var i = 0; i < aSet.noteList.length; i++) {
+        expect(aSet.noteList[i].name).to.equal(expected.noteList[i].name);
+        expect(aSet.noteList[i].length).to.equal(expected.noteList[i].length);
     }
-    for (var j = 0; j < aSet.captions.length; j++) {
-        expect(aSet.captions[j].text).to.equal(expected.captions[j].text);
-        expect(aSet.captions[j].length).to.equal(expected.captions[j].length);
+    for (var j = 0; j < aSet.captionList.length; j++) {
+        expect(aSet.captionList[j].text).to.equal(expected.captionList[j].text);
+        expect(aSet.captionList[j].length).to.equal(expected.captionList[j].length);
     }
 }

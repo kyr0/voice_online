@@ -55,7 +55,7 @@ describe('Note Object', function() {
         expect(noteObj.duration).to.equal(noteDuration);
     });
 
-    it('should convert duration of "1" to a note using a duration of "1/1"', function () {
+    it('should convert duration of `1` to a note using a duration of `1/1`', function () {
         var noteDuration = '1';
         var expectedNoteObj = { name : this.noteName, duration : '1/1' };
         var noteObj = new Note(this.noteName, noteDuration);
@@ -90,7 +90,7 @@ describe('Note Object', function() {
         expect(this.note.getDistanceToNote('-')).to.be.null;
     });
 
-    describe('Note Object', function() {
+    describe('', function() {
 
         it('should accept a note duration longer than a full measure', function () {
             var expectDuration = '2/1';
@@ -109,6 +109,44 @@ describe('Note Object', function() {
             var noteObj = new Note('A2', '3/32');
             expect(noteObj.duration).to.equal(expectDuration);
         });
+
+        it ('should create a note if frequency is passed in instead of name', function () {
+            expect(new Note(441).name).to.equal('A4');
+        });
+
+        it('should create the note with exact frequency input', function() {
+            var freqC0 = 16.352;
+            expect(new Note(freqC0).name).to.equal('C0');
+        });
+
+        it('should create accurate Note when frequency <= 50 cents off', function() {
+            // NOTE: 50 cents equals .5 semitone
+            var sharpA7Freq = 3623.1;
+            expect(new Note(sharpA7Freq).frequency).to.equal(3520.0);
+        });
+
+        it('should create accurate Note when frequency <= 50 cents off', function() {
+            // NOTE: 50 cents equals .5 semitone
+            var flatA1Freq = 53.435;
+            expect(new Note(flatA1Freq).frequency).to.equal(55.000);
+        });
+
+        it('should throw an error when frequency way too high', function() {
+            var invalidFreq = 10000;
+            var fn = function() {
+                var dum = new Note(invalidFreq);
+            }
+            expect(fn).to.throw(/supplied frequency is invalid/);
+        });
+        
+        it('should throw an error when frequency way too low', function() {
+            var invalidFreq = 1;
+            var fn = function() {
+                var dum = new Note(invalidFreq);
+            }
+            expect(fn).to.throw(/supplied frequency is invalid/);
+        });
+
 
     });
 

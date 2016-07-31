@@ -8,8 +8,8 @@ function LessonTimer(lesson) {
 
     this.durationInMilliseconds = lesson.durationInMilliseconds;
     this.curNoteIdx = 0;
-    this.notes = lesson.notes;
-    this.curNote = this.notes[this.curNoteIdx];
+    this.noteList = lesson.noteList;
+    this.curNote = this.noteList[this.curNoteIdx];
     this.startTime = null;
     this.curID = null;
 }
@@ -33,7 +33,7 @@ LessonTimer.prototype.timerInstance = function(){
     this.emit('endNote', this.curNote);
     var expectedNoteEnd = this.curNote.percentOnComplete;
     this.curNoteIdx++;
-    this.curNote = this.notes[this.curNoteIdx];
+    this.curNote = this.noteList[this.curNoteIdx];
     if (this.curNote) { // solves race condition with endEvent
         this.emit('startNote', this.curNote);
     }

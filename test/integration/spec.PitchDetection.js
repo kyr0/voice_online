@@ -3,10 +3,7 @@
 var assert = require("assert");
 var MPM = require("../../src/client/js/MPM.js");
 var buffer = require("../resources/audioBuffers.js");
-var NoteMaps = require("../../src/client/js/NoteMaps.js");
 var Note = require("../../src/client/js/Note.js");
-
-var ntMaps = new NoteMaps();
 
 /*
  * A suite of longer running tests to test all apect of the pitch component.
@@ -49,7 +46,7 @@ function assertValidPitchDetectionOnRangeOfNotes(startNote, endNote, mpm) {
     while (note.name !== endNote){
         tone = buffer.noteBuffers[note.name + "_1024"];
         pitchDetected = mpm.detectPitch(tone);
-        var noteObj = ntMaps.getClosestNoteFromPitch(pitchDetected);
+        var noteObj = new Note(Number(pitchDetected));
         expect(noteObj.getCentsDiff(pitchDetected)).to.equal(0);
         note = note.nextNote;
         noteFreq = note.frequency;

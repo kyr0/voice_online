@@ -1,5 +1,5 @@
 var MPM = require("../../../src/client/js/MPM.js");
-var NoteMaps = require("../../../src/client/js/NoteMaps.js");
+var Note = require("../../../src/client/js/Note.js");
 var Lesson = require("../../../src/client/js/Lesson.js");
 var User = require("../../../src/client/js/User.js");
 var LessonPlayer = require("../../../src/client/js/LessonPlayer.js");
@@ -17,7 +17,6 @@ var scriptNode = null;
 window.oscillator = null;
 var mediaStreamSource = null;
 var mpm = null;
-var ntMaps = new NoteMaps();
 var lastResult = null;
 
 var lessons = [];
@@ -110,7 +109,7 @@ function updatePitch(buf) {
         lastResult = -1;
     }
     else {
-        var noteObj =  ntMaps.getClosestNoteFromPitch(pitchFreq);
+        var noteObj =  new Note(pitchFreq);
         var noteName = noteObj.name;
         var curChart = lPlayer.getCurrentChart();
         var relativeItvl = curChart[noteName] + 1;

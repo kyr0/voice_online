@@ -11,37 +11,43 @@ function Exercise(aUser, aLesson){
     }
 
     var baseSet = null;
-    var baseDistance = aLesson.lowestNote.getDistanceToNote(aUser.bottomNote.name);
+    var baseDistance = aLesson.lowestNote.getDistanceToNote(aUser.bottomNote);
 
     function transposeLesson(distance, baseLesson){
         var newNotes = [];
-        for(var note = 0; note < baseLesson.notes.length; note++){
-            var newNoteName = baseLesson.notes[note].transpose(distance);
-            var noteDuration = baseLesson.notes[note].duration;
+        for(var nt = 0; nt < baseLesson.noteList.length; nt++){
+            var newNoteName = baseLesson.noteList[nt].transpose(distance);
+            var noteDuration = baseLesson.noteList[nt].duration;
             newNotes.push([newNoteName, noteDuration]);
         }
         var newCaps = [];
-        for(var cap = 0; cap < baseLesson.captions.duration; cap++) {
-            var newCapText = baseLesson.captions[cap].text;
-            var newCapDuration = baseLesson.captions[cap].duration;
+        for(var cap = 0; cap < baseLesson.captionList.duration; cap++) {
+            var newCapText = baseLesson.captionList[cap].text;
+            var newCapDuration = baseLesson.captionList[cap].duration;
             newCaps.push([newCapText, newCapDuration]);
         }
-        var newOptions = _.assign(baseLesson, { noteList: newNotes, captionList: newCaps });
+        var newOptions = {
+            bpm: baseLesson.bpm,
+            title: baseLesson.title,
+            noteList: newNotes,
+            captionList: newCaps
+        };
         return new Lesson(newOptions);
     }
 
     function generateSets(){
         var sets = [];
         sets.push(baseSet);
-        var setCount = baseSet.highestNote.getDistanceToNote(aUser.topNote.name) + 1;
-        for (var set = 1; set < setCount; set++){
-            sets.push(transposeLesson(set, baseSet));
+
+        var setCount = baseSet.highestNote.getDistanceToNote(aUser.topNote) + 1;
+        for (var aSet = 1; aSet < setCount; aSet++){
+            sets.push(transposeLesson(aSet, baseSet));
         }
-        for (set = 0; set < sets.length; set++){
-            var ntList = sets[set].notes;
-            sets[set].chart = {};
+        for (aSet = 0; aSet < sets.length; aSet++){
+            var ntList = sets[aSet].noteList;
+            sets[aSet].chart = {};
             for (var nt = 0; nt < ntList.length; nt++){
-                sets[set].chart[ntList[nt].name] = ntList[nt].relativeInterval;
+                sets[aSet].chart[ntList[nt].name] = ntList[nt].relativeInterval;
             }
         }
         return sets;

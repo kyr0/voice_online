@@ -8,13 +8,11 @@ var CaptionDurationError = require('./customErrors').CaptionsTooLongError;
 
 function Lesson (options_param) {
 
-    this.options = _.defaults(options_param || {}, {});
-
     var that = this;
     this.title = 'Untitled';
-    this.notes = [];
+    this.noteList = [];
     this.intervals = [];
-    this.captions = [];
+    this.captionList = [];
     var totalCaptionDurationInMeasures = 0;
     this.bpm = 120;
     this.tempo = 4; // beats per measure
@@ -52,22 +50,22 @@ function Lesson (options_param) {
         return Number(numerator);
     };
 
-    function _setRangeDelimiters(note) {
-        if (note.name === '-') {
+    function _setRangeDelimiters(noteObj) {
+        if (noteObj.name === '-') {
             return;
         }
 
         if (that.lowestNote === null) {
-            that.lowestNote = note;
+            that.lowestNote = noteObj;
         }
         if (that.highestNote === null) {
-            that.highestNote = note;
+            that.highestNote = noteObj;
         }
-        if (note.frequency < that.lowestNote.frequency) {
-            that.lowestNote = note;
+        if (noteObj.frequency < that.lowestNote.frequency) {
+            that.lowestNote = noteObj;
         }
-        else if (note.frequency > that.highestNote.frequency) {
-            that.highestNote = note;
+        else if (noteObj.frequency > that.highestNote.frequency) {
+            that.highestNote = noteObj;
         }
     }
 
@@ -108,9 +106,9 @@ function Lesson (options_param) {
         Whenever notes are added the Note is made aware of how far away it
         is from the highest note in the lesson.
          */
-        for (var i = 0; i < this.notes.length; i++) {
-            var itvl = new Interval(this.notes[i].name, this.highestNote.name);
-            this.notes[i].relativeInterval = itvl.halfsteps;
+        for (var i = 0; i < this.noteList.length; i++) {
+            var itvl = new Interval(this.noteList[i].name, this.highestNote.name);
+            this.noteList[i].relativeInterval = itvl.halfsteps;
         }
     };
 
@@ -125,36 +123,36 @@ function Lesson (options_param) {
     };
 
     this._updateNotesWithDurationInMilliseconds = function(){
-        for (var i = 0; i < that.notes.length; i++) {
-            var lMs = that.notes[i].durationInMeasures * (that.durationInMilliseconds / that.durationInMeasures);
-            that.notes[i].durationInMilliseconds = lMs;
+        for (var i = 0; i < that.noteList.length; i++) {
+            var lMs = that.noteList[i].durationInMeasures * (that.durationInMilliseconds / that.durationInMeasures);
+            that.noteList[i].durationInMilliseconds = lMs;
         }
     };
 
     this._updateNotesWithPctCompleteAtNotesEnd = function (){
         var lessonDuration = that.durationInMeasures;
         var priorCombinedDuration = 0;
-        for (var i = 0; i < that.notes.length; i++){
-            var combinedDurationAtNotesEnd = that.notes[i].durationInMeasures + priorCombinedDuration;
-            that.notes[i].percentOnComplete = combinedDurationAtNotesEnd / lessonDuration;
-            priorCombinedDuration += that.notes[i].durationInMeasures;
+        for (var i = 0; i < that.noteList.length; i++){
+            var combinedDurationAtNotesEnd = that.noteList[i].durationInMeasures + priorCombinedDuration;
+            that.noteList[i].percentOnComplete = combinedDurationAtNotesEnd / lessonDuration;
+            priorCombinedDuration += that.noteList[i].durationInMeasures;
         }
     };
 
     function _updateSmallestNoteSize(){
         that.smallestNoteSize = that.durationInMeasures;
-        for (var i = 0; i < that.notes.length; i++) {
-            if (that.notes[i].durationInMeasures < that.smallestNoteSize) {
-                that.smallestNoteSize = that.notes[i].durationInMeasures;
+        for (var i = 0; i < that.noteList.length; i++) {
+            if (that.noteList[i].durationInMeasures < that.smallestNoteSize) {
+                that.smallestNoteSize = that.noteList[i].durationInMeasures;
             }
         }
     }
 
     this.addNotes = function(newNotes) {
         var noteObjArr = this._createListOfNoteObjects(newNotes);
-        this.notes = this.notes.concat(noteObjArr);
+        Array.prototype.push.apply(this.noteList, noteObjArr);
         _updateLessonDuration();
-        this.intervals = _updateIntervals(this.notes);
+        this.intervals = _updateIntervals(this.noteList);
         this._updateNotesWithRelativeInterval();
         this._updateNotesWithPctCompleteAtNotesEnd();
         this._updateNotesWithDurationInMilliseconds();
@@ -180,12 +178,12 @@ function Lesson (options_param) {
                 throw new CaptionDurationError('Combined duration of captions "' + totalCaptionDurationInMeasures +
                     '" cannot exceed the lesson duration "' + this.durationInMeasures + '".');
             }
-            this.captions.push(newCaptionObj);
+            this.captionList.push(newCaptionObj);
         }
     };
 
     var _updateLessonDuration = function () {
-        var arrayOfNotes = that.notes;
+        var arrayOfNotes = that.noteList;
         var highestDenom = that._getHighestDenominator(arrayOfNotes);
         var numerator = 0;
         for (var i = 0; i < arrayOfNotes.length; i++) {
@@ -208,22 +206,24 @@ function Lesson (options_param) {
         return range.halfsteps;
     };
 
-    if (typeof this.options.noteList !== 'undefined') {
-        this.addNotes(this.options.noteList);
-    }
+    if (options_param) {
+        if (options_param.noteList) {
+            this.addNotes(options_param.noteList);
+        }
 
-    if (typeof this.options.captionList !== 'undefined') {
-        this.addCaptions(this.options.captionList);
-    }
+        if (options_param.captionList) {
+            this.addCaptions(options_param.captionList);
+        }
 
-    if (typeof this.options.bpm !== 'undefined') {
-        this.bpm = this.options.bpm;
-        _updateDurationInMilliseconds();
-        this._updateNotesWithDurationInMilliseconds();
-    }
+        if (options_param.bpm) {
+            this.bpm = options_param.bpm;
+            _updateDurationInMilliseconds();
+            this._updateNotesWithDurationInMilliseconds();
+        }
 
-    if (typeof this.options.title !== 'undefined') {
-        this.title = this.options.title;
+        if (options_param.title) {
+            this.title = options_param.title;
+        }
     }
 }
 
