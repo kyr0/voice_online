@@ -97,6 +97,17 @@ describe('Exercise', function() {
         });
     });
 
+    it('should not erase functions on Note object during transpose', function () {
+        var aUser = new User('A2', 'Ab4');
+        var aLesson = new Lesson({ noteList: [['B2', '1'], ['-', '1']], bpm: 50, title: 'title' });
+        this.exercise = new Exercise(aUser, aLesson);
+        _.forEach(this.exercise.sets, function(set) {
+            _.forEach(set.noteList, function(nt) {
+                expect(nt.transpose).to.be.truthy;
+            });
+        });
+    });
+
 });
 
 
