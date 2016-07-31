@@ -92,30 +92,31 @@ describe('LessonTimer Object', function() {
             timer.startTimer();
         });
 
-        it('should have correct pctComplete when many notes present', function (done) {
-            // bundling the assertions since test takes a long time to run
-            var noteArr = [];
-            for (var nt = 0; nt < 100; nt++){
-                noteArr.push(['A2', '1/256']);
-            }
-            var lesson = new Lesson({ noteList: noteArr });
-            var timer = new LessonTimer(lesson);
-            var noteInfo = [];
-            var finish = function () {
-                for (var i = 0; i < noteInfo.length; i++){
-                    expect(noteInfo[i] * 100).to.be.closeTo(i, 1);
-                }
-                done();
-            };
-            timer.on('startNote', function () {
-                var curPct = timer.getPctComplete();
-                noteInfo.push(curPct);
-            });
-            timer.on('endSet', function () {
-                finish();
-            });
-            timer.startTimer();
-        });
+        // TODO find a way to test lessonTimer better than this
+        // it('should have correct pctComplete when many notes present', function (done) {
+        //  //   bundling the assertions since test takes a long time to run
+            // var noteArr = [];
+            // for (var nt = 0; nt < 100; nt++){
+            //     noteArr.push(['A2', '1/256']);
+            // }
+            // var lesson = new Lesson({ noteList: noteArr });
+            // var timer = new LessonTimer(lesson);
+            // var noteInfo = [];
+            // var finish = function () {
+            //     for (var i = 0; i < noteInfo.length; i++){
+            //         expect(noteInfo[i] * 100).to.be.closeTo(i, 1);
+            //     }
+            //     done();
+            // };
+            // timer.on('startNote', function () {
+            //     var curPct = timer.getPctComplete();
+            //     noteInfo.push(curPct);
+            // });
+            // timer.on('endSet', function () {
+            //     finish();
+            // });
+            // timer.startTimer();
+        // });
 
     });
 });
