@@ -10,10 +10,7 @@ import Main from './Components/Main.jsx'
 import Sing from './Components/Sing.jsx'
 import Profile from './Components/Profile.jsx'
 
-var NoteMaps = require('./NoteMaps.js');
-var Lesson = require('./Lesson.js');
-var User = require('./User.js');
-var Player = require('./Player.js');
+var Note = require('./Note.js');
 
 var audio = require('./setupAudio');
 var canvasMgr = require('./canvasManager.js');
@@ -30,14 +27,13 @@ window.curLesson = null;
 var mpm = null;
 var scriptNode = null;
 
-var ntMaps = new NoteMaps();
-
 
 render(
     <Router history={hashHistory}>
-        <Route path="/" component={Main}/>
-        <Route path="/sing" component={Sing}/>
-        <Route path="/profile" component={Profile}/>
+        <Route path="/" component={Main}>
+            <Route path="/sing" component={Sing}/>
+            <Route path="/profile" component={Profile}/>
+        </Route>
     </Router>,
     document.getElementById('react-content')
 );
@@ -67,7 +63,8 @@ function resetPlayerListenersInMain(){
 
 // Canvas onClick, start the lesson
 $('#lesson').click(function(){
-    canvasMgr.initLesson(window.curLesson);
+    console.log("JQUERY CLICK");
+    canvasMgr.initLesson();
     if (window.lPlayer) {
         resetPlayerListenersInMain();
         window.lPlayer.start();
@@ -101,7 +98,7 @@ function updatePitch(buf) {
         pushScore(null);
     }
     else {
-        var noteObj =  ntMaps.getClosestNoteFromPitch(pitchFreq);
+        var noteObj =  new Note(pitchFreq);
         var noteName = noteObj.name;
         // The current chart is  used to show if the note is within
         // the visible bounds of the set that is playing.

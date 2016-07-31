@@ -8,6 +8,7 @@ var canvasMgr = require('../canvasManager.js');
 var LessonData = React.createClass({
 
     handleClick: function() {
+        console.log("REACT CLICK");
         canvasMgr.initLesson(this.props);
     },
 
