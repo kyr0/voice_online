@@ -12,8 +12,9 @@ import Profile from './Components/Profile.jsx'
 
 
 var canvasMgr = require('./canvasManager.js');
-var audioMgr = require('./audioManager.js');
+var Audio = require('./Audio.js');
 
+var audio = null;
 
 // these window assignments must be done outside of onLoad
 // for sharing with paper.js in case they are accessed before load
@@ -34,14 +35,17 @@ render(
 );
 
 
-
 // Canvas onClick, start the lesson
 $('#lesson').click(function(){
     console.log("JQUERY CLICK");
     canvasMgr.initLesson();
     if (window.lPlayer) {
-        audioMgr.resetAudio();
+        audio.resetAudio(window);
         window.lPlayer.start();
     }
 });
 
+
+$(document).ready(function() {
+    audio = new Audio(window);
+});
