@@ -24,6 +24,7 @@ module.exports = function(grunt) {
                 // github.com/karma-runner/grunt-karma#karma-server-with-grunt-watch
                 tasks: [
                     'webpack:dev',
+                    'shell:cp_static',
                     'karma:dev:run' // NOTE the :run flag
                 ]
             },
