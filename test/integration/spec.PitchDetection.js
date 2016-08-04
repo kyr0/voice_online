@@ -48,7 +48,7 @@ function assertValidPitchDetectionOnRangeOfNotes(startNote, endNote, mpm) {
         pitchDetected = mpm.detectPitch(tone);
         var noteObj = new Note(Number(pitchDetected));
         expect(noteObj.getCentsDiff(pitchDetected)).to.equal(0);
-        note = note.nextNote;
+        note = note.getNextNote();
         noteFreq = note.frequency;
     }
 }
@@ -62,6 +62,6 @@ function assertInvalidPitchDetectionOnRangeOfNotes(startNote, endNote, mpm) {
         result = mpm.detectPitch(tone);
         expect(result.isPitched()).to.equal(false);
         expect(result.getPitchFrequency()).to.equal(-1);
-        note = note.nextNote;
+        note = note.getNextNote();
     }
 }

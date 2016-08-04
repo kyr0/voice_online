@@ -112,8 +112,8 @@ function Note (nameOrFreq, noteDuration){
     if (nameOrFreq === '-'){
         this.name = nameOrFreq;
         this.duration = this.setNoteDuration(noteDuration);
-        this.previousNote = null;
-        this.nextNote = null;
+        this.getPreviousNote = null;
+        this.getNextNote = null;
         this.frequency = -1;
         this.transpose = function() { return nameOrFreq; };
         this.getCentsDiff = function() { return null; };
@@ -128,8 +128,8 @@ function Note (nameOrFreq, noteDuration){
         }
         this.duration = this.setNoteDuration(noteDuration);
         var _noteObj = nMaps.pitchMap[this.name];
-        this.previousNote = _noteObj.previousNote;
-        this.nextNote = _noteObj.nextNote;
+        this.getPreviousNote = function () { return new Note(_noteObj.previousNote.name) };
+        this.getNextNote = function () { return new Note(_noteObj.nextNote.name) };
         this.frequency = _noteObj.frequency;
     }
 }

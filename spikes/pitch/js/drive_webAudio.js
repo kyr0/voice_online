@@ -25,7 +25,7 @@
     // oscillator.stop(.00581); // stop the oscillator after 256 frames == 44.1k per second * .00581
 
     window.nextTone = function(){
-        note = note.nextNote;
+        note = note.getNextNote();
         oscillator.frequency.value = note.frequency;
         count = 0;
     };
@@ -57,7 +57,7 @@
             //console.log("Buffer length: " + inputBuffer.length + "\n" +
             //    "Data Values: \n" + makeDataLog);
 
-            if (note.nextNote === null) {
+            if (note.getNextNote() === null) {
                 oscillator.disconnect();
                 console.log("WERE DONE");
             }

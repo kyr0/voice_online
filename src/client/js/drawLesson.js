@@ -203,7 +203,7 @@ function drawScores(aggNoteScores) {
 function updateSet(){
     for (var lbl = 0; lbl < noteLbls.length; lbl++) {
         var curNoteLbl = noteLbls[lbl];
-        curNoteLbl.ntObj = curNoteLbl.ntObj.nextNote;
+        curNoteLbl.ntObj = curNoteLbl.ntObj.getNextNote();
         curNoteLbl.content = curNoteLbl.ntObj.name;
     }
 }
