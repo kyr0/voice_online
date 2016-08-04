@@ -40,7 +40,7 @@ $('#lesson').click(function(){
     console.log("JQUERY CLICK");
     canvasMgr.initLesson();
     if (window.lPlayer) {
-        audio.resetAudio(window);
+        audio.resetAudio(window, "hi");
         window.lPlayer.start();
     }
 });
