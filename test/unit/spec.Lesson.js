@@ -220,6 +220,19 @@ describe('Lesson', function() {
             compareNoteLists(this.lesson.noteList, this.expectedList);
         });
 
+
+        it('should have the correct chart', function () {
+            var expectedChart = {
+                'A1': 16, 'Bb1': 15, 'B1': 14, 'C2': 13, 'Db2': 12, 'D2': 11, 'Eb2': 10,
+                'E2': 9, 'F2': 8, 'Gb2': 7, 'G2': 6, 'Ab2': 5, 'A2': 4, 'Bb2': 3, 'B2': 2,
+                'C3': 1, 'Db3': 0
+            };
+            expect(this.lesson.chart).to.eql(expectedChart);
+            expect(this.lesson.highestNote.name).to.equal('Db3');
+            expect(this.lesson.lowestNote.name).to.equal('A1');
+        });
+
+
         it('can be created at once with nested arrays', function () {
             var arrayList = [['B2', '1/8'], ['A1', '1/2'], ['Db3', '1/4'], ['B2', '1/32']];
             var fromArray = this.lesson._createListOfNoteObjects(arrayList);
@@ -244,7 +257,7 @@ describe('Lesson', function() {
 
 describe('Lesson constructor with silentNotes', function() {
     beforeEach(function () {
-        var arrayList = [["-", "1/8"], ["A2", "1/2"], ["-", "1/4"], ["B2", "1/32"], ["A2", "1/2"]];
+        var arrayList = [['-', '1/8'], ['A2', '1/2'], ['-', '1/4'], ['B2', '1/32'], ['A2', '1/2']];
         this.lesson = new Lesson({ noteList: arrayList });
     });
 

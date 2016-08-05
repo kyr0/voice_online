@@ -40,24 +40,9 @@ function Exercise(aUser, aLesson){
         // set for every possible pitch within the user's range.
         var sets = [];
         sets.push(baseSet);
-
         var setCount = baseSet.highestNote.getDistanceToNote(aUser.topNote) + 1;
-        var range = baseSet.getLessonRange();
-
         for (var aSet = 1; aSet < setCount; aSet++){
             sets.push(transposeLesson(aSet, baseSet));
-        }
-
-        // The following generates the chart for each set in exercise.
-        // A chart basically allows us to tell where the indicator should appear
-        //  on the canvas to represent the user's current pitch.
-        for (aSet = 0; aSet < sets.length; aSet++){
-            var note = sets[aSet].lowestNote;
-            sets[aSet].chart = {};
-            for (var step = 0; step < range; step++){
-                sets[aSet].chart[note.name] = note.getDistanceToNote(sets[aSet].highestNote.name);
-                note = note.getNextNote();
-            }
         }
         return sets;
     }

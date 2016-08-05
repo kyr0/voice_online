@@ -5,7 +5,7 @@ var Interval = require('./Interval.js');
 var Caption = require('./Caption.js');
 var CaptionDurationError = require('./customErrors').CaptionsTooLongError;
 
-
+// TODO this shit is ugly, let's refactor, exporting so many unnecessary functions for testing via `this`
 function Lesson (options_param) {
 
     var that = this;
@@ -13,6 +13,7 @@ function Lesson (options_param) {
     this.noteList = [];
     this.intervals = [];
     this.captionList = [];
+    this.chart = {};
     var totalCaptionDurationInMeasures = 0;
     this.bpm = 120;
     this.tempo = 4; // beats per measure
@@ -22,13 +23,16 @@ function Lesson (options_param) {
     this.lowestNote = null;
     this.highestNote = null;
 
+
     function _getDenominator(duration){
         return duration.split('/')[1];
     }
 
+
     function _getNumerator(duration){
         return duration.split('/')[0];
     }
+
 
     this._getHighestDenominator = function(objList) {
         var highestDenom = 0;
@@ -40,6 +44,7 @@ function Lesson (options_param) {
         return highestDenom;
     };
 
+
     this._sumNumeratorToHighestDenominator = function(duration, highestDenom) {
         var numerator = _getNumerator(duration);
         var denominator = _getDenominator(duration);
@@ -49,6 +54,7 @@ function Lesson (options_param) {
         }
         return Number(numerator);
     };
+
 
     function _setRangeDelimiters(noteObj) {
         if (noteObj.name === '-') {
@@ -68,6 +74,7 @@ function Lesson (options_param) {
             that.highestNote = noteObj;
         }
     }
+
 
     this._createListOfNoteObjects = function (newNotes) {
         var noteObjArr = [];
@@ -91,6 +98,7 @@ function Lesson (options_param) {
         return noteObjArr;
     };
 
+
     var _updateIntervals = function(noteArr){
         var itvlObjArr = [];
         for (var i = 0; i < noteArr.length - 1; i++) {
@@ -100,6 +108,7 @@ function Lesson (options_param) {
         }
         return itvlObjArr;
     };
+
 
     this._updateNotesWithRelativeInterval = function (){
         /**
@@ -112,6 +121,7 @@ function Lesson (options_param) {
         }
     };
 
+
     var _getObjDurationInMeasures = function (obj){
         /**
         Whenever notes are added the note is made aware of how long it
@@ -122,12 +132,14 @@ function Lesson (options_param) {
         return (num / den);
     };
 
+
     this._updateNotesWithDurationInMilliseconds = function(){
         for (var i = 0; i < that.noteList.length; i++) {
             var lMs = that.noteList[i].durationInMeasures * (that.durationInMilliseconds / that.durationInMeasures);
             that.noteList[i].durationInMilliseconds = lMs;
         }
     };
+
 
     this._updateNotesWithPctCompleteAtNotesEnd = function (){
         var lessonDuration = that.durationInMeasures;
@@ -139,12 +151,25 @@ function Lesson (options_param) {
         }
     };
 
+
     function _updateSmallestNoteSize(){
         that.smallestNoteSize = that.durationInMeasures;
         for (var i = 0; i < that.noteList.length; i++) {
             if (that.noteList[i].durationInMeasures < that.smallestNoteSize) {
                 that.smallestNoteSize = that.noteList[i].durationInMeasures;
             }
+        }
+    }
+
+    function _generateChart() {
+        // Generates the chart for each set in exercise.
+        // A chart basically allows us to tell where the indicator should appear
+        //  on the canvas to represent the user's current pitch.
+        var note = that.lowestNote;
+        var range = that.getLessonRange();
+        for (var step = 0; step < range + 1; step++){
+            that.chart[note.name] = note.getDistanceToNote(that.highestNote.name);
+            note = note.getNextNote();
         }
     }
 
@@ -157,7 +182,9 @@ function Lesson (options_param) {
         this._updateNotesWithPctCompleteAtNotesEnd();
         this._updateNotesWithDurationInMilliseconds();
         _updateSmallestNoteSize();
+        _generateChart();
     };
+
 
     this.addCaptions = function(newCaptions) {
         var text;
@@ -182,6 +209,7 @@ function Lesson (options_param) {
         }
     };
 
+
     var _updateLessonDuration = function () {
         var arrayOfNotes = that.noteList;
         var highestDenom = that._getHighestDenominator(arrayOfNotes);
@@ -195,16 +223,19 @@ function Lesson (options_param) {
         _updateDurationInMilliseconds();
     };
 
+
     var _updateDurationInMilliseconds = function () {
         var beatCount = that.durationInMeasures * that.tempo;
         var minute = 60000;
         that.durationInMilliseconds = beatCount * (minute / that.bpm);
     };
 
+
     this.getLessonRange = function() {
         var range = new Interval(this.lowestNote.name, this.highestNote.name);
         return range.halfsteps;
     };
+
 
     if (options_param) {
         if (options_param.noteList) {
