@@ -66,42 +66,27 @@ function Audio (win) {
         console.log("STOP");
         accompany.stop();
         accompany.disconnect();
-        // win.oscillator.disconnect();
-        // win.oscillator.stop();
+        scriptNode.disconnect();
     }
 
 
-    function startAudio() {
+    function startAudio(getSource) {
         console.log("START");
         accompany = audioContext.createOscillator();  // can't call start 2x on same osc
         accompany.start();
         accompany.connect(audioContext.destination);
-
-        audioIn = audioContext.createOscillator(); // always do this directly before start
-        audioIn.start();
-        audioIn.frequency.value = 369.99;
-        audioIn.connect(scriptNode);
-        scriptNode.connect(audioContext.destination);
-
+        getSource();
     }
 
 
-    this.resetAudio = function(win, other_media) {
-        // var connectionMedia = null;
-        //
-        // if (other_media) {
-        //     connectionMedia = other_media;
-        // }
-        // else {
-        //     connectionMedia = getUserInput();
-        // }
+    this.resetAudio = function(win, getSource) {
 
         win.lPlayer.on('startNote', function (curNote) {
             startNewNote(curNote);
         });
 
         win.lPlayer.on('startExercise', function () {
-            startAudio();
+            startAudio(getSource);
         });
 
         win.lPlayer.on('stopExercise', function () {
@@ -117,10 +102,18 @@ function Audio (win) {
 
 
     this.getTestInput = function () {
-        accompany = audioContext.createOscillator();
-        accompany.connect(scriptNode);
-        accompany.start();
-    }
+        audioIn = accompany; // always do this directly before osc.start()
+        audioIn.connect(scriptNode);
+        scriptNode.connect(audioContext.destination);
+    };
+
+    this.getSingleNoteTestInput = function () {
+        audioIn = audioContext.createOscillator(); // always do this directly before osc.start()
+        audioIn.start();
+        audioIn.frequency.value = 369.99;
+        audioIn.connect(scriptNode);
+        scriptNode.connect(audioContext.destination);
+    };
 
 
     this.getUserInput = function () {
@@ -139,6 +132,7 @@ function Audio (win) {
         function initStream(stream) {
             audioIn = audioContext.createMediaStreamSource(stream);
             audioIn.connect(scriptNode);
+            scriptNode.connect(audioContext.destination);
         }
 
         function error() {
