@@ -1,6 +1,5 @@
 "use strict";
 
-var _ = require('lodash');
 var Lesson = require("./Lesson.js");
 var InvalidRangeError = require("./customErrors").InvalidRangeError;
 

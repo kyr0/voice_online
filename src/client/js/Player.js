@@ -38,7 +38,7 @@ Player.prototype.resetListeners = function(curSet){
     this.timer = new LessonTimer(curSet);
 
     this.timer.on('startSet', function(){
-        that.emit('startSet');
+        that.emit('startSet', that.sets[that.curSetIdx]);
     });
 
     this.timer.on('startNote', function(curNote){

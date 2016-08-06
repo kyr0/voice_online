@@ -13,6 +13,8 @@ function Audio (win) {
     var accompany = null;
     var audioIn = null;
 
+    var currentNote = null;
+    var currentChart = null;
 
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function (audioProcessingEvent) {
@@ -25,7 +27,7 @@ function Audio (win) {
 
 
     function updatePitch(buf) {
-        var resultObj = mpm.detectPitch(buf);
+        var resultObj = mpm.detectPitch(buf);  // this could return an array with frequency and probability, faster
         var pitchFreq = resultObj.getPitchFrequency();
         var probability = resultObj.getProbability();
         if (pitchFreq === -1 || probability < 0.95) {
@@ -37,14 +39,10 @@ function Audio (win) {
             var noteName = noteObj.name;
             // The current chart is  used to show if the note is within
             // the visible bounds of the set that is playing.
-            var curChart = win.lPlayer.getCurrentChart();  // TODO set as a global and updated on every set event
-            var relativeItvl = curChart[noteName] + 1;
-            console.log("NOTE NAME: " + noteName + " REL ITV: " + relativeItvl);
+            var relativeItvl = currentChart[noteName] + 1;
             if (relativeItvl) {
-                var offPitchAmt = noteObj.getCentsDiff(pitchFreq);
-                // TODO basing this on offPitchAmt is wrong, should be on current set hi/lo freq,
-                // TODO - ATM it's not visible if more the 50 cents off
-                win.pitchYAxisRatio = relativeItvl + (offPitchAmt / 100);
+                var offPitchAmt = currentNote.getCentsDiff(pitchFreq);
+                win.pitchYAxisRatio = relativeItvl + (noteObj.getCentsDiff(pitchFreq) / 100);
                 win.lPlayer.pushScore(offPitchAmt);
             }
             else {
@@ -55,15 +53,18 @@ function Audio (win) {
     }
 
 
-    function startNewNote(curNote) {  // formerly onStartNote event
-        console.log("NEW NOTE");
-        // win.oscillator.frequency.value = curNote.frequency;  // osc start frequency
-        accompany.frequency.value = curNote.frequency;
+    function startNote(curNote) {
+        currentNote = curNote;
+        accompany.frequency.value = currentNote.frequency;
+    }
+
+
+    function startSet(curSet) {
+        currentChart = curSet.chart;
     }
 
 
     function stopAudio() {
-        console.log("STOP");
         accompany.stop();
         accompany.disconnect();
         scriptNode.disconnect();
@@ -71,7 +72,6 @@ function Audio (win) {
 
 
     function startAudio(getSource) {
-        console.log("START");
         accompany = audioContext.createOscillator();  // can't call start 2x on same osc
         accompany.start();
         accompany.connect(audioContext.destination);
@@ -82,7 +82,11 @@ function Audio (win) {
     this.resetAudio = function(win, getSource) {
 
         win.lPlayer.on('startNote', function (curNote) {
-            startNewNote(curNote);
+            startNote(curNote);
+        });
+
+        win.lPlayer.on('startSet', function (curSet) {
+            startSet(curSet);
         });
 
         win.lPlayer.on('startExercise', function () {
@@ -94,7 +98,7 @@ function Audio (win) {
         });
 
         win.lPlayer.on('endExercise', function (aggNoteScore) {
-            stopAudio(); // blinking timeDot could mean this was never run.
+            stopAudio();
             console.log("SCORE: " + aggNoteScore);
         });
 

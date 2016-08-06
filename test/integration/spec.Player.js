@@ -58,6 +58,17 @@ describe('Player Object', function() {
         this.player.start();
     });
 
+    it('should pass the current Set when startSet is fired', function (done) {
+        var finish = function(curSet){
+            expect(curSet.chart).to.exist;
+            done();
+        };
+        this.player.on('startSet', function(curSet) {
+            finish(curSet);
+        });
+        this.player.start();
+    });
+
     it('should correctly set index and isPlaying when stopped', function (done) {
         var that = this;
         this.player.isPlaying = true;
