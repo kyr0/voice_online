@@ -4,8 +4,9 @@ var MPM = require('./MPM.js');
 var Note = require('./Note.js');
 
 
-function Audio (win) {
-    var audioContext = new (win.AudioContext || win.webkitAudioContext)();
+function Audio () {
+
+    var audioContext = new (window.AudioContext || window.webkitAudioContext)();
     var bufferLength = 1024;
     var scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
     var mpm = new MPM(audioContext.sampleRate, bufferLength);
@@ -16,23 +17,23 @@ function Audio (win) {
     var currentNote = null;
     var currentChart = null;
 
+
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function (audioProcessingEvent) {
         // TODO fix the transition detection errors by averaging frames
-        console.log('OnAudioProcess');
         var inputBuffer = audioProcessingEvent.inputBuffer;
         var inputData = inputBuffer.getChannelData(0);
-        updatePitch(inputData);
-    };
+        this.updatePitch(inputData);
+    }.bind(this);
 
 
-    function updatePitch(buf) {
+    this.updatePitch = function(buf) {
         var resultObj = mpm.detectPitch(buf);  // this could return an array with frequency and probability, faster
         var pitchFreq = resultObj.getPitchFrequency();
         var probability = resultObj.getProbability();
         if (pitchFreq === -1 || probability < 0.95) {
-            win.pitchYAxisRatio = null;
-            win.lPlayer.pushScore(null);
+            window.pitchYAxisRatio = null;
+            window.lPlayer.pushScore(null);
         }
         else {
             var noteObj = new Note(pitchFreq);
@@ -42,15 +43,15 @@ function Audio (win) {
             var relativeItvl = currentChart[noteName] + 1;
             if (relativeItvl) {
                 var offPitchAmt = currentNote.getCentsDiff(pitchFreq);
-                win.pitchYAxisRatio = relativeItvl + (noteObj.getCentsDiff(pitchFreq) / 100);
-                win.lPlayer.pushScore(offPitchAmt);
+                window.pitchYAxisRatio = relativeItvl + (noteObj.getCentsDiff(pitchFreq) / 100);
+                window.lPlayer.pushScore(offPitchAmt);
             }
             else {
-                win.pitchYAxisRatio = null;
-                win.lPlayer.pushScore(null);
+                window.pitchYAxisRatio = null;
+                window.lPlayer.pushScore(null);
             }
         }
-    }
+    };
 
 
     function startNote(curNote) {
@@ -59,50 +60,50 @@ function Audio (win) {
     }
 
 
-    function startSet(curSet) {
+    this.startSet = function(curSet) {
         currentChart = curSet.chart;
-    }
+    };
 
 
-    function stopAudio() {
+    this.stopAudio = function() {
         accompany.stop();
         accompany.disconnect();
         scriptNode.disconnect();
-    }
+    };
 
 
-    function startAudio(getSource) {
-        accompany = audioContext.createOscillator();  // can't call start 2x on same osc
+    this.startAudio = function(getSource) {
+        accompany = audioContext.createOscillator();  // must be new, can't call start 2x on same osc
         accompany.start();
         accompany.connect(audioContext.destination);
         getSource();
-    }
+    };
 
 
-    this.resetAudio = function(win, getSource) {
+    this.resetAudio = function(getSource) {
 
-        win.lPlayer.on('startNote', function (curNote) {
+        window.lPlayer.on('startNote', function (curNote) {
             startNote(curNote);
         });
 
-        win.lPlayer.on('startSet', function (curSet) {
-            startSet(curSet);
-        });
+        window.lPlayer.on('startSet', function (curSet) {
+            this.startSet(curSet);
+        }.bind(this));
 
-        win.lPlayer.on('startExercise', function () {
-            startAudio(getSource);
-        });
+        window.lPlayer.on('startExercise', function () {
+            this.startAudio(getSource);
+        }.bind(this));
 
-        win.lPlayer.on('stopExercise', function () {
-            stopAudio();
-        });
+        window.lPlayer.on('stopExercise', function () {
+            this.stopAudio();
+        }.bind(this));
 
-        win.lPlayer.on('endExercise', function (aggNoteScore) {
-            stopAudio();
+        window.lPlayer.on('endExercise', function (aggNoteScore) {
+            this.stopAudio();
             console.log("SCORE: " + aggNoteScore);
-        });
+        }.bind(this));
 
-    };
+    }.bind(this);
 
 
     this.getTestInput = function () {
@@ -156,8 +157,7 @@ function Audio (win) {
             alert('getUserMedia threw exception :' + e);
         }
 
-    }
-
+    };
 
 }
 

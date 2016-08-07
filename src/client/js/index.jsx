@@ -40,12 +40,14 @@ $('#lesson').click(function(){
     console.log("JQUERY CLICK");
     canvasMgr.initLesson();
     if (window.lPlayer) {
-        audio.resetAudio(window, "hi");
+        // audio.resetAudio(audio.getSingleNoteTestInput);
+        audio.resetAudio(audio.getUserInput);
+        // audio.resetAudio(audio.getTestInput);
         window.lPlayer.start();
     }
 });
 
 
 $(document).ready(function() {
-    audio = new Audio(window);
+    audio = new Audio();
 });
