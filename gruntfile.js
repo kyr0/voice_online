@@ -41,7 +41,7 @@ module.exports = function(grunt) {
         karma: {
             options: {
                 basePath: '',
-                frameworks: ['mocha', 'chai'],
+                frameworks: ['mocha', 'chai', 'sinon-chai'],
                 autoWatch: false,
                 singleRun: true,
                 concurrency: 1,
