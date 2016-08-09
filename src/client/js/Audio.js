@@ -6,6 +6,7 @@ var Note = require('./Note.js');
 
 function Audio () {
 
+    var player = null;
     var audioContext = new (window.AudioContext || window.webkitAudioContext)();
     var bufferLength = 1024;
     var scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
@@ -20,20 +21,26 @@ function Audio () {
 
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function (audioProcessingEvent) {
+        // console.log('onaudioprocess');
         // TODO fix the transition detection errors by averaging frames
         var inputBuffer = audioProcessingEvent.inputBuffer;
         var inputData = inputBuffer.getChannelData(0);
-        this.updatePitch(inputData);
+        this.handleBuffer(inputData);
     }.bind(this);
 
 
-    this.updatePitch = function(buf) {
+    this.handleBuffer = function(buf) {
         var resultObj = mpm.detectPitch(buf);  // this could return an array with frequency and probability, faster
         var pitchFreq = resultObj.getPitchFrequency();
         var probability = resultObj.getProbability();
+        this._processPitchResult(pitchFreq, probability);
+    }.bind(this);
+
+
+    this._processPitchResult = function(pitchFreq, probability) {
         if (pitchFreq === -1 || probability < 0.95) {
             window.pitchYAxisRatio = null;
-            window.lPlayer.pushScore(null);
+            player.pushScore(null);
         }
         else {
             var noteObj = new Note(pitchFreq);
@@ -44,11 +51,11 @@ function Audio () {
             if (relativeItvl) {
                 var offPitchAmt = currentNote.getCentsDiff(pitchFreq);
                 window.pitchYAxisRatio = relativeItvl + (noteObj.getCentsDiff(pitchFreq) / 100);
-                window.lPlayer.pushScore(offPitchAmt);
+                player.pushScore(offPitchAmt);
             }
             else {
                 window.pitchYAxisRatio = null;
-                window.lPlayer.pushScore(null);
+                player.pushScore(null);
             }
         }
     };
@@ -80,25 +87,26 @@ function Audio () {
     };
 
 
-    this.resetAudio = function(getSource) {
+    this.resetAudio = function(getSource, aPlayer) {
+        player = aPlayer;
 
-        window.lPlayer.on('startNote', function (curNote) {
+        player.on('startNote', function (curNote) {
             startNote(curNote);
         });
 
-        window.lPlayer.on('startSet', function (curSet) {
+        player.on('startSet', function (curSet) {
             this.startSet(curSet);
         }.bind(this));
 
-        window.lPlayer.on('startExercise', function () {
+        player.on('startExercise', function () {
             this.startAudio(getSource);
         }.bind(this));
 
-        window.lPlayer.on('stopExercise', function () {
+        player.on('stopExercise', function () {
             this.stopAudio();
         }.bind(this));
 
-        window.lPlayer.on('endExercise', function (aggNoteScore) {
+        player.on('endExercise', function (aggNoteScore) {
             this.stopAudio();
             console.log("SCORE: " + aggNoteScore);
         }.bind(this));

@@ -47,7 +47,13 @@ module.exports = function(grunt) {
                 concurrency: 1,
                 logLevel: 'INFO',
                 colors: true,
-                browsers: ['Chrome'],
+                browsers: ['Chrome_allow_media'],
+                customLaunchers: {
+                    Chrome_allow_media: {
+                        base: 'Chrome',
+                        flags: ['--use-fake-ui-for-media-stream']
+                    }
+                },
                 webpackMiddleware: {
                     noInfo: true
                 }

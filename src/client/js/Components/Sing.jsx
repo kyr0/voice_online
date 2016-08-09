@@ -1,15 +1,15 @@
 var React = require('react');
 var axios = require('../lib/helpers').axios;
 
-var canvasMgr = require('../canvasManager.js');
-
+var Canvas = require('../Canvas.js');
+var canvas = new Canvas();
 
 
 var LessonData = React.createClass({
 
     handleClick: function() {
         console.log("REACT CLICK");
-        canvasMgr.initLesson(this.props);
+        canvas.initLesson(this.props);
     },
 
     render: function() {
