@@ -6,8 +6,6 @@ import React from 'react'
 import { render } from 'react-dom'
 import { Router, Route, hashHistory } from 'react-router'
 
-import PIXI from '../../dependencies/pixi.min.js';
-
 import Main from './Components/Main.jsx'
 import Sing from './Components/Sing.jsx'
 import Profile from './Components/Profile.jsx'
