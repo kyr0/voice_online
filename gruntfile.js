@@ -1,5 +1,6 @@
 var path = require('path');
 
+
 module.exports = function(grunt) {
     'use strict';
 
@@ -56,6 +57,11 @@ module.exports = function(grunt) {
                 },
                 webpackMiddleware: {
                     noInfo: true
+                },
+                webpack: {
+                    module: {
+                        loaders: [ custom_babel_loader ]
+                    }
                 }
             },
             dev: {
@@ -94,6 +100,7 @@ module.exports = function(grunt) {
                 browserNoActivityTimeout: 40000,
                 webpack: {
                     module: {
+                        loaders: [ custom_babel_loader ],
                         postLoaders: [
                             {
                                 test: /\.js$/,
@@ -117,7 +124,12 @@ module.exports = function(grunt) {
                 // './spikes/pitch/js/drive_mpm.js -o ./spikes/pitch/js/drive_mpm.bundle.js',
                 // './spikes/pitch/js/drive_webAudio.js -o ./spikes/pitch/js/drive_webAudio.bundle.js',
 
-                entry: "./src/client/js/index.jsx",
+                entry: [
+                    // Set up an ES6-ish environment
+                    'babel-polyfill',
+                    // Application's script
+                    './src/client/js/index.jsx',
+                ],
                 output: {
                     path: "./test/integration/fixtures/static/js/",
                     filename: "[name].bundle.js",
@@ -125,18 +137,7 @@ module.exports = function(grunt) {
                     // sourceMapFilename: "[name].bundle.js.map"
                 },
                 module: {
-                    loaders: [
-                        {
-                            // Test for js or jsx files.
-                            test: /\.jsx?$/,
-                            exclude: /node_modules/,
-                            loader: 'babel-loader',
-                            query: {
-                                presets: ['es2015', 'react'],
-                                cacheDirectory: true
-                            }
-                        }
-                    ]
+                    loaders: [ custom_babel_loader ]
                 },
                 resolve: {
                     modulesDirectories: ['node_modules']
@@ -233,4 +234,21 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['webpack:build', 'shell:cp_static']);
     grunt.registerTask('test', ['karma:test', 'shell:be_test']);
 
+};
+
+
+// http://jamesknelson.com/using-es6-in-the-browser-with-babel-6-and-webpack
+var custom_babel_loader = {
+    loader: "babel-loader",
+    exclude: /node_modules/,
+
+    // Only run `.js` and `.jsx` files through Babel
+    test: /\.jsx?$/,
+
+    // Options to configure babel with
+    query: {
+        plugins: ['transform-runtime'],
+        presets: ['es2015', 'react'],
+        cacheDirectory: true
+    }
 };
