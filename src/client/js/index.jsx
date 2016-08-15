@@ -6,6 +6,8 @@ import React from 'react'
 import { render } from 'react-dom'
 import { Router, Route, hashHistory } from 'react-router'
 
+// import Root from './react/containers/Root'
+
 import Main from './Components/Main.jsx'
 import Sing from './Components/Sing.jsx'
 import Profile from './Components/Profile.jsx'
@@ -52,3 +54,9 @@ $('#lesson').click(function(){
 $(document).ready(function() {
     audio = new Audio();  // AudioContext needs DOM (I think)
 });
+
+// render(
+    {/*<Root />,*/}
+    // document.getElementById('root')
+// );
+
