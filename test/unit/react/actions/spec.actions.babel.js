@@ -5,9 +5,13 @@ import {
     GET_USER_REQUEST,
     GET_USER_SUCCESS,
     GET_USER_FAILURE,
+    UPDATE_USER_REQUEST,
+    UPDATE_USER_SUCCESS,
+    UPDATE_USER_FAILURE,
 
     // actionCreators
-    getUserIfNeeded
+    getUserIfNeeded,
+    updateUserIfNeeded
 } from '../../../../src/client/js/react/actions/index.babel'
 
 const middlewares = [ thunk ];
@@ -18,6 +22,7 @@ describe('actions', () => {
 
     let server;
     let store;
+    const user_data = '{ "upper_range": "C5", "lower_range": "C4" }';
 
     beforeEach(() => {
         server = sinon.fakeServer.create();
@@ -30,15 +35,21 @@ describe('actions', () => {
     });
 
 
-    it('should create an action to GET user request sucessful response', (done) => {
+    it('should not dispatch a GET action if user exists', () => {
+        store = mockStore({ user: 'some bogus'});
+        store.dispatch(getUserIfNeeded());
+        expect(store.getActions()).to.eql([]);
+    });
+
+    it('should create an action to GET user request successful response', (done) => {
         server.respondWith(
             "GET",
             "/api/profile/current/",
-            '{ "upper_range": "C5", "lower_range": "C4" }'
+            user_data
         );
         const expectedActions = [
             { type: GET_USER_REQUEST },
-            { type: GET_USER_SUCCESS, user: { "upper_range": "C5", "lower_range": "C4" }}
+            { type: GET_USER_SUCCESS, user: JSON.parse(user_data) }
         ];
         store.dispatch(getUserIfNeeded())
             .then(() => { // return of async actions
@@ -52,19 +63,33 @@ describe('actions', () => {
         server.respondWith(
             "GET",
             "/api/profile/current/",
-            [404, {}, 'yar matey']
+            [404, {}, 'dummy']
         );
-        const expectedActions = [
-            { type: GET_USER_REQUEST },
-            { type: GET_USER_FAILURE, error: {}}
-        ];
         store.dispatch(getUserIfNeeded())
             .then(() => { // return of async actions
-                console.log(JSON.stringify(store.getActions()));
+                expect(store.getActions()[0].type).to.eql(GET_USER_REQUEST);
                 expect(store.getActions()[1].type).to.eql(GET_USER_FAILURE);
+                expect(store.getActions()[1].error).to.exist;
                 done();
             })
             .catch(done)
     });
 
+    it('should create an action to UPDATE user request successful response', (done) => {
+        server.respondWith(
+            "UPDATE",
+            "/api/profile/current/",
+            user_data
+        );
+        console.log(JSON.stringify(store.getActions()));
+        store.dispatch(updateUserIfNeeded(user_data))
+            .then(() => { // return of async actions
+                expect(store.getActions()[0].type).to.eql(UPDATE_USER_REQUEST);
+                expect(store.getActions()[0].user).to.eql(user_data);
+                expect(store.getActions()[1].type).to.eql(UPDATE_USER_REQUEST);
+                expect(store.getActions()[1].response).to.exist;
+                done();
+            })
+            .catch(done)
+    });
 });
