@@ -10,10 +10,6 @@ module.exports = function(grunt) {
     grunt.initConfig({
 
         watch: {
-            // FROM KARMA ORIGINALLY
-            // html2js preprocessor takes this file and converts it
-            // to a string in our JS when the tests run.
-            // {pattern: 'test/integration/fixtures/index.html',  watched: true, served: false}
             frontend: {
                 files: [
                     './src/client/**/*.js*',
@@ -26,7 +22,7 @@ module.exports = function(grunt) {
                 tasks: [
                     'webpack:dev',
                     'shell:cp_static',
-                    'karma:dev:run' // NOTE the :run flag
+                    'karma:test' 
                 ]
             },
             static: {
@@ -65,34 +61,22 @@ module.exports = function(grunt) {
                 }
             },
             dev: {
-                preprocessors: {
-                    'test/**/spec.*.js': ['webpack', 'sourcemap']
-                },
-                files: [
-                    { src: 'test/**/spec.*.js' }
-                ],
-                exclude: ['test/coverage/**/*', '*bundle*'],
+                preprocessors: karma_preprocessors,
+                files: karma_files,
+                exclude: ['test/coverage/**/*', '*bundle*', '*es5.js'],
                 reporters: ['progress'],
                 background: true,
                 singleRun: false
             },
             test: {
-                preprocessors: {
-                    'test/**/spec.*.js': ['webpack', 'sourcemap']
-                },
-                files: [
-                    { src: 'test/**/spec.*.js' }
-                ],
+                preprocessors: karma_preprocessors,
+                files: karma_files,
                 exclude: ['test/coverage/**/*', '*bundle*'],
                 reporters: ['progress']
             },
             coverage: {
-                preprocessors: {
-                    'test/**/*.js': ['webpack', 'sourcemap']
-                },
-                files: [
-                    { src: 'test/**/spec.*.js' }
-                ],
+                preprocessors: karma_preprocessors,
+                files: karma_files,
                 coverageReporter: {
                     type: 'text'
                 },
@@ -220,7 +204,7 @@ module.exports = function(grunt) {
 
         concurrent: {
             dev: {
-                tasks: ['shell:runserver', ['webpack:dev', 'karma:dev:start', 'watch']],
+                tasks: ['shell:runserver', 'watch'],
                 options: {
                     logConcurrentOutput: true
                 }
@@ -242,13 +226,25 @@ var custom_babel_loader = {
     loader: "babel-loader",
     exclude: /node_modules/,
 
-    // Only run `.js` and `.jsx` files through Babel
-    test: /\.jsx?$/,
+    // Only run `babel.js` and `.jsx` files through Babel
+    test: /(\.babel\.js$|\.jsx$)/,
 
     // Options to configure babel with
     query: {
-        plugins: ['transform-runtime'],
+        plugins: [
+            'add-module-exports',
+            'transform-runtime'
+        ],
         presets: ['es2015', 'react'],
         cacheDirectory: true
     }
 };
+
+var karma_preprocessors = {
+    'test/**/spec.*.babel.js': ['webpack', 'sourcemap', 'babel'],
+    'test/**/spec.*.js': ['webpack', 'sourcemap']
+};
+
+var karma_files = [
+    { src: 'test/**/spec.*.js' }
+];
