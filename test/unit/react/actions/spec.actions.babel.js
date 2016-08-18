@@ -4,6 +4,7 @@ import {
     // actions
     GET_USER_REQUEST,
     GET_USER_SUCCESS,
+    GET_USER_FAILURE,
 
     // actionCreators
     getUserIfNeeded
@@ -29,7 +30,7 @@ describe('actions', () => {
     });
 
 
-    it('should create an action to GET user request', (done) => {
+    it('should create an action to GET user request sucessful response', (done) => {
         server.respondWith(
             "GET",
             "/api/profile/current/",
@@ -45,5 +46,25 @@ describe('actions', () => {
                 done();
             })
             .catch(done)
-    })
+    });
+
+    it('should create an action to GET user request failure response', (done) => {
+        server.respondWith(
+            "GET",
+            "/api/profile/current/",
+            [404, {}, 'yar matey']
+        );
+        const expectedActions = [
+            { type: GET_USER_REQUEST },
+            { type: GET_USER_FAILURE, error: {}}
+        ];
+        store.dispatch(getUserIfNeeded())
+            .then(() => { // return of async actions
+                console.log(JSON.stringify(store.getActions()));
+                expect(store.getActions()[1].type).to.eql(GET_USER_FAILURE);
+                done();
+            })
+            .catch(done)
+    });
+
 });

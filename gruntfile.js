@@ -22,7 +22,7 @@ module.exports = function(grunt) {
                 tasks: [
                     'webpack:dev',
                     'shell:cp_static',
-                    'karma:test' 
+                    'karma:test'
                 ]
             },
             static: {
