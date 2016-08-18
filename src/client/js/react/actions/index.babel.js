@@ -13,6 +13,7 @@ export const UPDATE_USER_FAILURE = 'UPDATE_USER_FAILURE';
  *  GET USER
  */
 function getUserRequest() {
+    console.log("TOTALLY GET USER REQUEST");
     return {
         type: GET_USER_REQUEST,
     }
@@ -20,6 +21,7 @@ function getUserRequest() {
 
 
 function receiveUser(user) {
+    console.log("HEY A USER: " + JSON.stringify(user));
     return {
         type: GET_USER_SUCCESS,
         user
@@ -28,6 +30,7 @@ function receiveUser(user) {
 
 
 function getUserError(error) {
+    console.log("HEY AN ERROR");
     return {
         type: GET_USER_FAILURE,
         error,
@@ -47,13 +50,16 @@ function getUser() {
 
 
 function shouldGetUser(state) {
-    return state.user
+    console.log("HEY SHOULD? " + state.user);
+    return !state.user
 }
 
 
 export function getUserIfNeeded() {
+    console.log("HEY IN GET USER");
     return (dispatch, getState) => {
         if (shouldGetUser(getState())) {
+            console.log("HEY WERE GOING TO DISPATCH!");
             return dispatch(getUser())
         }
     }

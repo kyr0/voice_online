@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { getUserIfNeeded, updateUserIfNeeded } from '../actions'
-import Profile from '../components/Profile'
+import { getUserIfNeeded, updateUserIfNeeded } from '../actions/index.babel'
+import Profile from '../components/Profile.babel'
 // import Practice from '../components/Practice'
 
 

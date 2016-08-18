@@ -6,7 +6,7 @@ import {
     UPDATE_USER_REQUEST,
     UPDATE_USER_SUCCESS,
     UPDATE_USER_FAILURE
-} from '../actions/index'
+} from '../actions/index.babel'
 
 
 function user(state = {isRequesting: false}, action) {

@@ -1,8 +1,8 @@
 import thunkMiddleware from 'redux-thunk'
 import createLogger from 'redux-logger'
 import { createStore, applyMiddleware } from 'redux'
-import { getUserIfNeeded } from './actions'
-import rootReducer from './reducers'
+import { getUserIfNeeded } from './actions/index.babel'
+import rootReducer from './reducers/index.babel'
 
 const loggerMiddleware = createLogger();
 
