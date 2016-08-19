@@ -52,7 +52,7 @@ describe('actions', () => {
             { type: GET_USER_SUCCESS, user: JSON.parse(user_data) }
         ];
         store.dispatch(getUserIfNeeded())
-            .then(() => { // return of async actions
+            .then(() => {
                 expect(store.getActions()).to.eql(expectedActions);
                 done();
             })
@@ -66,7 +66,7 @@ describe('actions', () => {
             [404, {}, 'dummy']
         );
         store.dispatch(getUserIfNeeded())
-            .then(() => { // return of async actions
+            .then(() => {
                 expect(store.getActions()[0].type).to.eql(GET_USER_REQUEST);
                 expect(store.getActions()[1].type).to.eql(GET_USER_FAILURE);
                 expect(store.getActions()[1].error).to.exist;
@@ -75,19 +75,43 @@ describe('actions', () => {
             .catch(done)
     });
 
+    it('should not dispatch an UPDATE action if user is the same as new data', () => {
+        store = mockStore({ user: user_data});
+        store.dispatch(updateUserIfNeeded(user_data));
+        expect(store.getActions()).to.eql([]);
+    });
+
     it('should create an action to UPDATE user request successful response', (done) => {
+        store = mockStore({ user: 'some bogus'});
         server.respondWith(
-            "UPDATE",
+            "PUT",
             "/api/profile/current/",
             user_data
         );
-        console.log(JSON.stringify(store.getActions()));
         store.dispatch(updateUserIfNeeded(user_data))
-            .then(() => { // return of async actions
+            .then(() => {
                 expect(store.getActions()[0].type).to.eql(UPDATE_USER_REQUEST);
                 expect(store.getActions()[0].user).to.eql(user_data);
-                expect(store.getActions()[1].type).to.eql(UPDATE_USER_REQUEST);
+                expect(store.getActions()[1].type).to.eql(UPDATE_USER_SUCCESS);
                 expect(store.getActions()[1].response).to.exist;
+                done();
+            })
+            .catch(done)
+    });
+
+    it('should create an action to UPDATE user request failure response', (done) => {
+        store = mockStore({ user: 'some bogus'});
+        server.respondWith(
+            "PUT",
+            "/api/profile/current/",
+            [404, {}, 'dummy']
+        );
+        store.dispatch(updateUserIfNeeded(user_data))
+            .then(() => {
+                expect(store.getActions()[0].type).to.eql(UPDATE_USER_REQUEST);
+                expect(store.getActions()[0].user).to.eql(user_data);
+                expect(store.getActions()[1].type).to.eql(UPDATE_USER_FAILURE);
+                expect(store.getActions()[1].error).to.exist;
                 done();
             })
             .catch(done)

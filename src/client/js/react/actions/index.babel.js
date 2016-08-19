@@ -81,7 +81,7 @@ function updateUserSuccess(response) {
 function updateUserError(error) {
     return {
         type: UPDATE_USER_FAILURE,
-        error,
+        error
     }
 }
 
@@ -99,11 +99,8 @@ function updateUser(new_user_data) {
 
 export function updateUserIfNeeded(new_user_data) {
     return (dispatch, getState) =>  {
-        const user = getState().user;
-        if (user != new_user_data) {  // if there are changes
-            return dispatch => {
-                dispatch(updateUser(new_user_data))
-            }
+        if (getState().user != new_user_data) {  // if there are changes
+            return dispatch(updateUser(new_user_data))
         }
 
     }
