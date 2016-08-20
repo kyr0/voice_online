@@ -18,10 +18,22 @@ module.exports = function(grunt) {
                     '!./test/**/index.html',
                     '!./src/client/js/drawLesson.js'
                 ],
-                // github.com/karma-runner/grunt-karma#karma-server-with-grunt-watch
                 tasks: [
                     'webpack:dev',
                     'shell:cp_static',
+                    'karma:test'
+                ]
+            },
+            fe_unit: {
+                files: [
+                    './src/client/**/*.js*',
+                    './test/**/*',
+                    '!./test/**/static/js/*',
+                    '!./test/**/index.html',
+                    '!./src/client/js/drawLesson.js'
+                ],
+                // github.com/karma-runner/grunt-karma#karma-server-with-grunt-watch
+                tasks: [
                     'karma:test'
                 ]
             },
@@ -63,7 +75,7 @@ module.exports = function(grunt) {
             dev: {
                 preprocessors: karma_preprocessors,
                 files: karma_files,
-                exclude: ['test/coverage/**/*', '*bundle*', '*es5.js'],
+                exclude: ['test/coverage/**/*', '*bundle*'],
                 reporters: ['progress'],
                 background: true,
                 singleRun: false
@@ -214,6 +226,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('default', ['shell:killall', 'webpack:dev', 'shell:cp_static', 'karma:test', 'shell:be_test', 'concurrent:dev']);
+    grunt.registerTask('fe_unit', ['shell:killall', 'watch:fe_unit']);
     grunt.registerTask('coverage', ['karma:coverage']);
     grunt.registerTask('build', ['webpack:build', 'shell:cp_static']);
     grunt.registerTask('test', ['karma:test', 'shell:be_test']);

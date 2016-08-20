@@ -9,7 +9,9 @@ import {
 } from '../actions/index.babel'
 
 
-function user(state = {isRequesting: false}, action) {
+const initialState = {};
+
+export function user (state = initialState, action) {
     switch (action.type) {
         case GET_USER_REQUEST:
             return Object.assign({}, state, {
@@ -18,6 +20,7 @@ function user(state = {isRequesting: false}, action) {
         case GET_USER_SUCCESS:
             return Object.assign({}, state, {
                 isRequesting: false,
+                user: action.user,
             });
         case GET_USER_FAILURE:
             return Object.assign({}, state, {
@@ -26,6 +29,7 @@ function user(state = {isRequesting: false}, action) {
         case UPDATE_USER_REQUEST:
             return Object.assign({}, state, {
                 isRequesting: true,
+                user: action.user,
             });
         case UPDATE_USER_SUCCESS:
             return Object.assign({}, state, {
