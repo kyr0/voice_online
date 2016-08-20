@@ -1,5 +1,5 @@
-import configureMockStore from 'redux-mock-store'
-import thunk from 'redux-thunk'
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import {
     // actions
     GET_USER_REQUEST,
@@ -11,8 +11,8 @@ import {
 
     // actionCreators
     getUserIfNeeded,
-    updateUserIfNeeded
-} from '../../../../src/client/js/react/actions/index.babel'
+    updateUserIfNeeded,
+} from '../../../../src/client/js/react/actions/index.babel';
 
 const middlewares = [ thunk ];
 const mockStore = configureMockStore(middlewares);
@@ -43,26 +43,26 @@ describe('actions', () => {
 
     it('should create an action to GET user request successful response', (done) => {
         server.respondWith(
-            "GET",
-            "/api/profile/current/",
+            'GET',
+            '/api/profile/current/',
             user_data
         );
         const expectedActions = [
             { type: GET_USER_REQUEST },
-            { type: GET_USER_SUCCESS, user: JSON.parse(user_data) }
+            { type: GET_USER_SUCCESS, user: JSON.parse(user_data) },
         ];
         store.dispatch(getUserIfNeeded())
             .then(() => {
                 expect(store.getActions()).to.eql(expectedActions);
                 done();
             })
-            .catch(done)
+            .catch(done);
     });
 
     it('should create an action to GET user request failure response', (done) => {
         server.respondWith(
-            "GET",
-            "/api/profile/current/",
+            'GET',
+            '/api/profile/current/',
             [404, {}, 'dummy']
         );
         store.dispatch(getUserIfNeeded())
@@ -72,7 +72,7 @@ describe('actions', () => {
                 expect(store.getActions()[1].error).to.exist;
                 done();
             })
-            .catch(done)
+            .catch(done);
     });
 
     it('should not dispatch an UPDATE action if user is the same as new data', () => {
@@ -84,8 +84,8 @@ describe('actions', () => {
     it('should create an action to UPDATE user request successful response', (done) => {
         store = mockStore({ user: 'some bogus'});
         server.respondWith(
-            "PUT",
-            "/api/profile/current/",
+            'PUT',
+            '/api/profile/current/',
             user_data
         );
         store.dispatch(updateUserIfNeeded(user_data))
@@ -96,14 +96,14 @@ describe('actions', () => {
                 expect(store.getActions()[1].response).to.exist;
                 done();
             })
-            .catch(done)
+            .catch(done);
     });
 
     it('should create an action to UPDATE user request failure response', (done) => {
         store = mockStore({ user: 'some bogus'});
         server.respondWith(
-            "PUT",
-            "/api/profile/current/",
+            'PUT',
+            '/api/profile/current/',
             [404, {}, 'dummy']
         );
         store.dispatch(updateUserIfNeeded(user_data))
@@ -114,6 +114,6 @@ describe('actions', () => {
                 expect(store.getActions()[1].error).to.exist;
                 done();
             })
-            .catch(done)
+            .catch(done);
     });
 });

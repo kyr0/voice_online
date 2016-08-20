@@ -1,7 +1,7 @@
-import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { getUserIfNeeded, updateUserIfNeeded } from '../actions/index.babel'
-import Profile from '../components/Profile.babel'
+import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { getUserIfNeeded, updateUserIfNeeded } from '../actions/index.babel';
+import Profile from '../components/Profile.babel';
 // import Practice from '../components/Practice'
 
 
@@ -13,11 +13,11 @@ class App extends Component {
 
     componentDidMount() {
         const { dispatch } = this.props;
-        dispatch(getUserIfNeeded())
+        dispatch(getUserIfNeeded());
     }
 
     handleChange(updated_user) {
-        this.props.dispatch(updateUserIfNeeded(updated_user))
+        this.props.dispatch(updateUserIfNeeded(updated_user));
     }
 
     render() {
@@ -26,7 +26,7 @@ class App extends Component {
             <div>
                 <Profile value={user} onChange={this.handleChange} />
             </div>
-        )
+        );
     }
 }
 
@@ -34,21 +34,15 @@ class App extends Component {
 App.propTypes = {
     user: PropTypes.object.isRequired,
     isRequesting: PropTypes.bool.isRequired,
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
 };
 
 
 function mapStateToProps(state) {
-    const { user } = state;
-    const { isRequesting } = postsByReddit[selectedReddit] || {
-        isRequesting: true,
-        items: []
-    };
-
     return {
-        user,
-        isRequesting,
-    }
+        user: state.user,
+        isRequesting: state.isRequesting,
+    };
 }
 
-export default connect(mapStateToProps)(App)
+export default connect(mapStateToProps)(App);

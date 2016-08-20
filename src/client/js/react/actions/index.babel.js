@@ -15,15 +15,15 @@ export const UPDATE_USER_FAILURE = 'UPDATE_USER_FAILURE';
 function getUserRequest() {
     return {
         type: GET_USER_REQUEST,
-    }
+    };
 }
 
 
 function receiveUser(user) {
     return {
         type: GET_USER_SUCCESS,
-        user
-    }
+        user,
+    };
 }
 
 
@@ -31,7 +31,7 @@ function getUserError(error) {
     return {
         type: GET_USER_FAILURE,
         error,
-    }
+    };
 }
 
 
@@ -42,21 +42,21 @@ function getUser() {
             .then(response => response.data)
             .then(user => dispatch(receiveUser(user)))
             .catch(error => dispatch(getUserError(error)));
-    }
+    };
 }
 
 
 function shouldGetUser(state) {
-    return !state.user
+    return !state.user;
 }
 
 
 export function getUserIfNeeded() {
     return (dispatch, getState) => {
         if (shouldGetUser(getState())) {
-            return dispatch(getUser())
+            return dispatch(getUser());
         }
-    }
+    };
 }
 
 /*
@@ -65,24 +65,24 @@ export function getUserIfNeeded() {
 function updateUserRequest(new_user_data) {
     return {
         type: UPDATE_USER_REQUEST,
-        user: new_user_data
-    }
+        user: new_user_data,
+    };
 }
 
 
 function updateUserSuccess(response) {
     return {
         type: UPDATE_USER_SUCCESS,
-        response
-    }
+        response,
+    };
 }
 
 
 function updateUserError(error) {
     return {
         type: UPDATE_USER_FAILURE,
-        error
-    }
+        error,
+    };
 }
 
 
@@ -92,7 +92,7 @@ function updateUser(new_user_data) {
         return axios.put('/api/profile/current/', new_user_data)
             .then(response => dispatch(updateUserSuccess(response)))
             .catch(error => dispatch(updateUserError(error)));
-    }
+    };
 
 }
 
@@ -100,9 +100,7 @@ function updateUser(new_user_data) {
 export function updateUserIfNeeded(new_user_data) {
     return (dispatch, getState) =>  {
         if (getState().user != new_user_data) {  // if there are changes
-            return dispatch(updateUser(new_user_data))
+            return dispatch(updateUser(new_user_data));
         }
-
-    }
-
+    };
 }

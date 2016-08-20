@@ -9,6 +9,13 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
 
+        eslint: {
+            target: [
+                './src/**/*.babel.js',
+                './test/**/*.babel.js',
+            ]
+        },
+
         watch: {
             frontend: {
                 files: [
@@ -16,12 +23,13 @@ module.exports = function(grunt) {
                     './test/**/*',
                     '!./test/**/static/js/*',
                     '!./test/**/index.html',
-                    '!./src/client/js/drawLesson.js'
+                    '!./src/client/js/drawLesson.js',
                 ],
                 tasks: [
+                    'eslint',
                     'webpack:dev',
                     'shell:cp_static',
-                    'karma:test'
+                    'karma:test',
                 ]
             },
             fe_unit: {
@@ -30,20 +38,21 @@ module.exports = function(grunt) {
                     './test/**/*',
                     '!./test/**/static/js/*',
                     '!./test/**/index.html',
-                    '!./src/client/js/drawLesson.js'
+                    '!./src/client/js/drawLesson.js',
                 ],
                 // github.com/karma-runner/grunt-karma#karma-server-with-grunt-watch
                 tasks: [
-                    'karma:test'
+                    'eslint',
+                    'karma:test',
                 ]
             },
             static: {
                 files: ['./src/client/js/drawLesson.js', './src/client/index.html'],
-                tasks: ['shell:cp_static']
+                tasks: ['shell:cp_static'],
             },
             backend: {
                 files: ['../source/**/*.py'],
-                tasks: ['shell:be_test']
+                tasks: ['shell:be_test'],
             }
         },
 
@@ -60,7 +69,7 @@ module.exports = function(grunt) {
                 customLaunchers: {
                     Chrome_allow_media: {
                         base: 'Chrome',
-                        flags: ['--use-fake-ui-for-media-stream']
+                        flags: ['--use-fake-ui-for-media-stream'],
                     }
                 },
                 webpackMiddleware: {
@@ -68,7 +77,7 @@ module.exports = function(grunt) {
                 },
                 webpack: {
                     module: {
-                        loaders: [ custom_babel_loader ]
+                        loaders: [ custom_babel_loader ],
                     }
                 }
             },
@@ -84,13 +93,13 @@ module.exports = function(grunt) {
                 preprocessors: karma_preprocessors,
                 files: karma_files,
                 exclude: ['test/coverage/**/*', '*bundle*'],
-                reporters: ['progress']
+                reporters: ['progress'],
             },
             coverage: {
                 preprocessors: karma_preprocessors,
                 files: karma_files,
                 coverageReporter: {
-                    type: 'text'
+                    type: 'text',
                 },
                 reporters: ['progress', 'coverage'],
                 browserNoActivityTimeout: 40000,
@@ -102,7 +111,7 @@ module.exports = function(grunt) {
                                 test: /\.js$/,
                                 include: path.resolve('src/client/'),
                                 exclude: /(test|node_modules)\//,
-                                loader: 'istanbul-instrumenter'
+                                loader: 'istanbul-instrumenter',
                             }
                         ]
                     }
@@ -127,10 +136,10 @@ module.exports = function(grunt) {
                     './src/client/js/index.jsx',
                 ],
                 output: {
-                    path: "./test/integration/fixtures/static/js/",
-                    filename: "[name].bundle.js",
+                    path: './test/integration/fixtures/static/js/',
+                    filename: '[name].bundle.js',
                     // serve your source maps from a server that is only accessible to your development team
-                    // sourceMapFilename: "[name].bundle.js.map"
+                    // sourceMapFilename: '[name].bundle.js.map'
                 },
                 module: {
                     loaders: [ custom_babel_loader ]
@@ -148,7 +157,7 @@ module.exports = function(grunt) {
             },
             dev: {
                 failOnError: false, // don't report error to grunt if webpack find errors
-                devtool: "sourcemap",
+                devtool: 'sourcemap',
                 debug: true
             },
             build: {
@@ -224,7 +233,6 @@ module.exports = function(grunt) {
         }
 
     });
-
     grunt.registerTask('default', ['shell:killall', 'webpack:dev', 'shell:cp_static', 'karma:test', 'shell:be_test', 'concurrent:dev']);
     grunt.registerTask('fe_unit', ['shell:killall', 'watch:fe_unit']);
     grunt.registerTask('coverage', ['karma:coverage']);
@@ -236,7 +244,7 @@ module.exports = function(grunt) {
 
 // http://jamesknelson.com/using-es6-in-the-browser-with-babel-6-and-webpack
 var custom_babel_loader = {
-    loader: "babel-loader",
+    loader: 'babel-loader',
     exclude: /node_modules/,
 
     // Only run `babel.js` and `.jsx` files through Babel
@@ -255,7 +263,7 @@ var custom_babel_loader = {
 
 var karma_preprocessors = {
     'test/**/spec.*.babel.js': ['webpack', 'sourcemap', 'babel'],
-    'test/**/spec.*.js': ['webpack', 'sourcemap']
+    'test/**/spec.*.js': ['webpack', 'sourcemap'],
 };
 
 var karma_files = [
