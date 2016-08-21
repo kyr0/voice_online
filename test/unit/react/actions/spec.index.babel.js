@@ -36,7 +36,7 @@ describe('actions', () => {
 
 
     it('should not dispatch a GET action if user exists', () => {
-        store = mockStore({ user: 'some bogus'});
+        store = mockStore({ user: 'some bogus' });
         store.dispatch(getUserIfNeeded());
         expect(store.getActions()).to.eql([]);
     });
@@ -76,13 +76,13 @@ describe('actions', () => {
     });
 
     it('should not dispatch an UPDATE action if user is the same as new data', () => {
-        store = mockStore({ user: user_data});
+        store = mockStore({ user: user_data });
         store.dispatch(updateUserIfNeeded(user_data));
         expect(store.getActions()).to.eql([]);
     });
 
     it('should create an action to UPDATE user request successful response', (done) => {
-        store = mockStore({ user: 'some bogus'});
+        store = mockStore({ user: 'some bogus' });
         server.respondWith(
             'PUT',
             '/api/profile/current/',
@@ -100,7 +100,7 @@ describe('actions', () => {
     });
 
     it('should create an action to UPDATE user request failure response', (done) => {
-        store = mockStore({ user: 'some bogus'});
+        store = mockStore({ user: 'some bogus' });
         server.respondWith(
             'PUT',
             '/api/profile/current/',
