@@ -1,14 +1,15 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { getUserIfNeeded, updateUserIfNeeded } from '../actions/index.babel';
-import Profile from '../components/Profile.babel';
-// import Practice from '../components/Practice'
+import ProfileForm from '../components/ProfileForm.babel';
 
 
 class App extends Component {
-    constructor(props) {
-        super(props);
-        this.handleChange = this.handleChange.bind(this);
+    static defaultProps() {
+        return {
+            user: {},
+            isRequesting: false,
+        };
     }
 
     componentDidMount() {
@@ -16,33 +17,44 @@ class App extends Component {
         dispatch(getUserIfNeeded());
     }
 
-    handleChange(updated_user) {
-        this.props.dispatch(updateUserIfNeeded(updated_user));
+    handleSubmit(new_user_data) {
+        this.props.dispatch(updateUserIfNeeded(new_user_data));
     }
 
     render() {
         const { user } = this.props;
+
         return (
             <div>
-                <Profile value={user} onChange={this.handleChange} />
+                <h1>Redux App</h1>
+                <ProfileForm
+                    onSubmitClicked={ () => this.props.handleSubmit() }
+                    user={user}
+                />
             </div>
         );
     }
 }
 
-
 App.propTypes = {
-    user: PropTypes.object.isRequired,
-    isRequesting: PropTypes.bool.isRequired,
-    dispatch: PropTypes.func.isRequired,
+    user: PropTypes.shape({
+        upper_range: PropTypes.string,
+        lower_range: PropTypes.string,
+        url: PropTypes.string,
+        user: PropTypes.string,
+        created_at: PropTypes.string,
+        updated_at: PropTypes.string,
+        date_of_birth: PropTypes.string,
+        gender: PropTypes.string,
+    }),
+    isRequesting: PropTypes.bool,
 };
 
-
-function mapStateToProps(state) {
+const mapStateToProps = (state) => {
     return {
         user: state.user,
         isRequesting: state.isRequesting,
     };
-}
+};
 
 export default connect(mapStateToProps)(App);

@@ -39,7 +39,10 @@
             "warn"
         ],
         "no-unused-vars": [
-            "warn"
+            "off"
+        ],
+        "no-class-assign": [
+            "off"
         ],
         "brace-style": [
             "error"

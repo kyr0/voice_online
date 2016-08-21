@@ -1,16 +1,30 @@
 'use strict';
 
+import 'babel-polyfill';
 var $ = require('jquery');
 
-import React from 'react'
-import { render } from 'react-dom'
-import { Router, Route, hashHistory } from 'react-router'
+import React from 'react';
+import { render } from 'react-dom';
+import { Router, Route, hashHistory } from 'react-router';
 
-// import Root from './react/containers/Root'
+// import Root from './react/containers/Root' initial react experiment
+import Main from './Components/Main.jsx';
+import Sing from './Components/Sing.jsx';
+import Profile from './Components/Profile.jsx';
 
-import Main from './Components/Main.jsx'
-import Sing from './Components/Sing.jsx'
-import Profile from './Components/Profile.jsx'
+/////////// BEGIN REDUX ////////////////////
+import { Provider } from 'react-redux';
+import configureStore from './react/store/configureStore.babel';
+import App from './react/containers/App.babel';
+
+const store = configureStore();
+render(
+    <Provider store={store}>
+        <App />
+    </Provider>,
+    document.getElementById('reduxRoot')
+);
+//////////// END REDUX ///////////////////////////////////
 
 
 var Canvas = require('./Canvas.js');
@@ -54,9 +68,3 @@ $('#lesson').click(function(){
 $(document).ready(function() {
     audio = new Audio();  // AudioContext needs DOM (I think)
 });
-
-// render(
-    {/*<Root />,*/}
-    // document.getElementById('root')
-// );
-

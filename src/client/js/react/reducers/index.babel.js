@@ -1,4 +1,6 @@
 import { combineReducers } from 'redux';
+import {reducer as formReducer} from 'redux-form';
+
 import {
     GET_USER_REQUEST,
     GET_USER_SUCCESS,
@@ -46,6 +48,7 @@ export function user(state = initialState, action) {
 
 const rootReducer = combineReducers({
     user,
+    form: formReducer,
 });
 
 export default rootReducer;
