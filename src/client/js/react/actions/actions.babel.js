@@ -8,16 +8,26 @@ export const UPDATE_USER_REQUEST = 'UPDATE_USER_REQUEST';
 export const UPDATE_USER_SUCCESS = 'UPDATE_USER_SUCCESS';
 export const UPDATE_USER_FAILURE = 'UPDATE_USER_FAILURE';
 
+/*
+ MISC
+ */
+function isEmpty(obj) {
+    let anObj = obj;
+    if (obj == null) {
+        anObj = {};
+    }
+    return Object.keys(anObj).length === 0;
+}
+
 
 /*
- *  GET USER
+ GET USER
  */
 function getUserRequest() {
     return {
         type: GET_USER_REQUEST,
     };
 }
-
 
 function receiveUser(user) {
     return {
@@ -46,18 +56,14 @@ function getUser() {
 }
 
 
-function shouldGetUser(state) {
-    return !state.user;
-}
-
-
 export function getUserIfNeeded() {
     return (dispatch, getState) => {
-        if (shouldGetUser(getState())) {
+        if (isEmpty(getState().user)) {
             return dispatch(getUser());
         }
     };
 }
+
 
 /*
  *  UPDATE USER

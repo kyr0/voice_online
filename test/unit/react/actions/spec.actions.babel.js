@@ -12,7 +12,7 @@ import {
     // actionCreators
     getUserIfNeeded,
     updateUserIfNeeded,
-} from '../../../../src/client/js/react/actions/index.babel';
+} from '../../../../src/client/js/react/actions/actions.babel';
 
 const middlewares = [ thunk ];
 const mockStore = configureMockStore(middlewares);
@@ -36,7 +36,7 @@ describe('actions', () => {
 
 
     it('should not dispatch a GET action if user exists', () => {
-        store = mockStore({ user: 'some bogus' });
+        store = mockStore({ user: { notEmpty: null } });
         store.dispatch(getUserIfNeeded());
         expect(store.getActions()).to.eql([]);
     });

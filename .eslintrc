@@ -41,6 +41,9 @@
         "no-unused-vars": [
             "off"
         ],
+        "no-undef": [
+            "warn"
+        ],
         "no-class-assign": [
             "off"
         ],

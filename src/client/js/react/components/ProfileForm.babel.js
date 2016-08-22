@@ -3,10 +3,10 @@ import { reduxForm } from 'redux-form';
 
 class ProfileForm extends Component {
     render() {
-        const { fields: { upper_range, lower_range }, onSubmitClicked } = this.props;
+        const { fields: { upper_range, lower_range }, handleSubmit, onSubmit } = this.props;
 
         return (
-            <form onSubmit={onSubmitClicked}>
+            <form onSubmit={ handleSubmit(onSubmit) }>
                 <label>Upper Range</label>
                 <input
                     type="text"
@@ -22,7 +22,6 @@ class ProfileForm extends Component {
                 <button
                     type="submit"
                     value="Save Changes"
-                    onclick="return false"
                 />
             </form>
         );
@@ -31,7 +30,7 @@ class ProfileForm extends Component {
 
 ProfileForm.propTypes = {
     fields: PropTypes.object.isRequired,
-    onSubmitClicked: PropTypes.func.isRequired,
+    handleSubmit: PropTypes.func.isRequired,
 };
 
 ProfileForm = reduxForm({

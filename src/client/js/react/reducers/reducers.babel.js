@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { reducer as formReducer     } from 'redux-form';
+import { reducer as formReducer } from 'redux-form';
 
 import {
     GET_USER_REQUEST,
@@ -8,12 +8,13 @@ import {
     UPDATE_USER_REQUEST,
     UPDATE_USER_SUCCESS,
     UPDATE_USER_FAILURE,
-} from '../actions/index.babel';
+} from '../actions/actions.babel';
 
 
-const initialState = {};
+export const initialState = { isRequesting: false, user: {} };
 
-export function user(state = initialState, action) {
+
+export function profile(state = initialState, action) {
     switch (action.type) {
     case GET_USER_REQUEST:
         return Object.assign({}, state, {
@@ -47,7 +48,7 @@ export function user(state = initialState, action) {
 }
 
 const rootReducer = combineReducers({
-    user,
+    profile,
     form: formReducer,
 });
 
