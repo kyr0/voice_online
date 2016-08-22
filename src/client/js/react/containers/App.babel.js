@@ -6,8 +6,13 @@ import ProfileForm from '../components/ProfileForm.babel';
 
 class App extends Component {
 
+    constructor(props) {
+        super(props);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
     handleSubmit(new_user_data) {
-        // this.props.dispatch(updateUserIfNeeded(new_user_data));
+        this.props.dispatch(updateUserIfNeeded(new_user_data));
     }
 
     componentDidMount() {
@@ -19,7 +24,9 @@ class App extends Component {
         return (
             <div>
                 <h1>Redux App</h1>
-                {/*<ProfileForm onSubmit={ this.handleSubmit.bind(this) }/>*/}
+                <ProfileForm
+                    doSubmit={ this.handleSubmit }
+                />
             </div>
         );
     }
