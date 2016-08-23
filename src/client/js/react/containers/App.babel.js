@@ -20,9 +20,6 @@ class App extends Component {
 
     componentDidMount() {
         const { dispatch } = this.props;
-        console.log("HAY")
-        console.log(this.props.user);
-        console.log(this.props.isRequesting);
         dispatch(getUserIfNeeded());
         dispatch(getLessons());
     }
@@ -39,17 +36,4 @@ class App extends Component {
     }
 }
 
-
-App.propTypes = {
-    user: PropTypes.object,
-    isRequesting: PropTypes.bool,
-};
-
-const mapStateToProps = (state) => {
-    return {
-        user: state.user,
-        isRequesting: state.isRequesting,
-    };
-};
-
-export default connect(mapStateToProps)(App);
+export default connect()(App);
