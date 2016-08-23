@@ -5,6 +5,7 @@ import { getUserIfNeeded, updateUserIfNeeded } from '../actions/userActions.babe
 import { getLessons } from '../actions/lessonActions.babel';
 
 import ProfileForm from '../components/ProfileForm.babel';
+import LessonList from '../components/LessonList.babel';
 
 
 class App extends Component {
@@ -25,15 +26,28 @@ class App extends Component {
     }
 
     render() {
+        const { user, lessons } = this.props;
         return (
             <div>
                 <h1>Redux App</h1>
-                <ProfileForm
-                    doSubmit={ this.handleSubmit }
-                />
+                <ProfileForm  doSubmit={ this.handleSubmit } />
+                <LessonList user={ user } lessons={ lessons } />
             </div>
         );
     }
 }
 
-export default connect()(App);
+
+App.propTypes = {
+    user: PropTypes.object,
+    lessons: PropTypes.array,
+};
+
+const mapStateToProps = (state) => {
+    return {
+        user: state.profile.user,
+        lessons: state.sing.lessons.results,
+    };
+};
+
+export default connect(mapStateToProps)(App);

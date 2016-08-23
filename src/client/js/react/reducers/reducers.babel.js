@@ -51,7 +51,7 @@ export function profile(state = initialProfileState, action) {
     }
 }
 
-export const initialSingState = { isRequesting: false, lessons: {} };
+export const initialSingState = { isRequesting: false, lessons: { results: [] } };
 export function sing(state = initialSingState, action) {
     switch (action.type) {
     case GET_LESSONS_REQUEST:
