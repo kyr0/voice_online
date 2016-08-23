@@ -1,5 +1,8 @@
 import { axios } from '../../lib/helpers';
 
+import { CURRENT_USER_URL } from '../../constants/constants.babel';
+
+
 export const GET_USER_REQUEST = 'GET_USER_REQUEST';
 export const GET_USER_SUCCESS = 'GET_USER_SUCCESS';
 export const GET_USER_FAILURE = 'GET_USER_FAILURE';
@@ -48,7 +51,7 @@ function getUserError(error) {
 function getUser() {
     return dispatch => {
         dispatch(getUserRequest());
-        return axios('/api/profile/current/')
+        return axios(CURRENT_USER_URL)
             .then(response => response.data)
             .then(user => dispatch(receiveUser(user)))
             .catch(error => dispatch(getUserError(error)));
@@ -95,7 +98,7 @@ function updateUserError(error) {
 function updateUser(new_user_data) {
     return dispatch => {
         dispatch(updateUserRequest(new_user_data));
-        return axios.put('/api/profile/current/', new_user_data)
+        return axios.put(CURRENT_USER_URL, new_user_data)
             .then(response => dispatch(updateUserSuccess(response)))
             .catch(error => dispatch(updateUserError(error)));
     };

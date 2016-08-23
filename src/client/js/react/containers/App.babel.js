@@ -1,6 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { getUserIfNeeded, updateUserIfNeeded } from '../actions/actions.babel';
+
+import { getUserIfNeeded, updateUserIfNeeded } from '../actions/userActions.babel';
+import { getLessons } from '../actions/lessonActions.babel';
+
 import ProfileForm from '../components/ProfileForm.babel';
 
 
@@ -17,7 +20,11 @@ class App extends Component {
 
     componentDidMount() {
         const { dispatch } = this.props;
+        console.log("HAY")
+        console.log(this.props.user);
+        console.log(this.props.isRequesting);
         dispatch(getUserIfNeeded());
+        dispatch(getLessons());
     }
 
     render() {

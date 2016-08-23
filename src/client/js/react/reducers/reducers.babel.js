@@ -8,13 +8,17 @@ import {
     UPDATE_USER_REQUEST,
     UPDATE_USER_SUCCESS,
     UPDATE_USER_FAILURE,
-} from '../actions/actions.babel';
+} from '../actions/userActions.babel';
+
+import {
+    GET_LESSONS_REQUEST,
+    GET_LESSONS_SUCCESS,
+    GET_LESSONS_FAILURE,
+} from '../actions/lessonActions.babel';
 
 
-export const initialState = { isRequesting: false, user: {} };
-
-
-export function profile(state = initialState, action) {
+export const initialProfileState = { isRequesting: false, user: {} };
+export function profile(state = initialProfileState, action) {
     switch (action.type) {
     case GET_USER_REQUEST:
         return Object.assign({}, state, {
@@ -47,8 +51,30 @@ export function profile(state = initialState, action) {
     }
 }
 
+export const initialSingState = { isRequesting: false, lessons: {} };
+export function sing(state = initialSingState, action) {
+    switch (action.type) {
+    case GET_LESSONS_REQUEST:
+        return Object.assign({}, state, {
+            isRequesting: true,
+        });
+    case GET_LESSONS_SUCCESS:
+        return Object.assign({}, state, {
+            isRequesting: false,
+            lessons: action.lessons,
+        });
+    case GET_LESSONS_FAILURE:
+        return Object.assign({}, state, {
+            isRequesting: false,
+        });
+    default:
+        return state;
+    }
+}
+
 const rootReducer = combineReducers({
     profile,
+    sing,
     form: formReducer,
 });
 
