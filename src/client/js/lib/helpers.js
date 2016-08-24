@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var axios = require('axios');
 
 // only get the CSRF token on requests where it is needed

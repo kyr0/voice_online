@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { reduxForm } from 'redux-form';
 
-class ProfileForm extends Component {
+export default class ProfileForm extends Component {
     render() {
         const { fields: { upper_range, lower_range }, handleSubmit, doSubmit } = this.props;
 

@@ -1,23 +1,12 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
 
-import { getUserIfNeeded, updateUserIfNeeded } from '../actions/userActions.babel';
+import { getUserIfNeeded } from '../actions/userActions.babel';
 import { getLessons } from '../actions/lessonActions.babel';
-
-import ProfileForm from '../components/ProfileForm.babel';
-import LessonList from '../components/LessonList.babel';
 
 
 class App extends Component {
-
-    constructor(props) {
-        super(props);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    handleSubmit(new_user_data) {
-        this.props.dispatch(updateUserIfNeeded(new_user_data));
-    }
 
     componentDidMount() {
         const { dispatch } = this.props;
@@ -26,28 +15,17 @@ class App extends Component {
     }
 
     render() {
-        const { user, lessons } = this.props;
         return (
             <div>
-                <h1>Redux App</h1>
-                <ProfileForm  doSubmit={ this.handleSubmit } />
-                <LessonList user={ user } lessons={ lessons } />
+                <h1>Pure Voice</h1>
+                <ul role="nav">
+                    <li><Link to="/sing">Sing</Link></li>
+                    <li><Link to="/profile">Profile</Link></li>
+                </ul>
+                { this.props.children }
             </div>
         );
     }
 }
 
-
-App.propTypes = {
-    user: PropTypes.object,
-    lessons: PropTypes.array,
-};
-
-const mapStateToProps = (state) => {
-    return {
-        user: state.profile.user,
-        lessons: state.sing.lessons.results,
-    };
-};
-
-export default connect(mapStateToProps)(App);
+export default connect()(App);
