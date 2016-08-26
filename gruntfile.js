@@ -149,7 +149,7 @@ module.exports = function(grunt) {
                     // sourceMapFilename: '[name].bundle.js.map'
                 },
                 module: {
-                    loaders: [ custom_babel_loader, 'babel?compact=false' ],
+                    loaders: [ custom_babel_loader ],
                 },
                 resolve: {
                     modulesDirectories: ['node_modules']
