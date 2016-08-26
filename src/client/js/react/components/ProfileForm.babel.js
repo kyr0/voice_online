@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { reduxForm } from 'redux-form';
 
+import { Button } from 'react-bootstrap';
+
 export class ProfileForm extends Component {
     render() {
         const { fields: { upper_range, lower_range }, handleSubmit, doSubmit } = this.props;
@@ -19,13 +21,16 @@ export class ProfileForm extends Component {
                     size="13"
                     { ...lower_range }
                 />
-                <button
+                <Button
+                    bsStyle="info"
                     type="submit"
                     value="Save Changes"
                     onClick={handleSubmit( data => {
                         doSubmit(data);
                     })}
-                />
+                >
+                    Save
+                </Button>
             </form>
         );
     }

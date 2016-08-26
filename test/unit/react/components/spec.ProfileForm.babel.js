@@ -36,7 +36,7 @@ describe('ProfileForm component', () => {
 
     it('calls doSubmit after clicking submit button', () => {
         subject = buildSubject();
-        subject.find('button[type="submit"]').simulate('click');
+        subject.find('Button[type="submit"]').simulate('click');
         expect(doSubmit.callCount).to.equal(1);
     });
 });
