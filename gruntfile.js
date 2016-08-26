@@ -73,13 +73,20 @@ module.exports = function(grunt) {
                     }
                 },
                 webpackMiddleware: {
-                    noInfo: true
+                    noInfo: true,
                 },
                 webpack: {
+                    devtool: 'inline-source-map',
                     module: {
                         loaders: [ custom_babel_loader ],
-                    }
-                }
+                    },
+                    externals: {
+                        'cheerio': 'window',
+                        'react/addons': true,
+                        'react/lib/ExecutionEnvironment': true,
+                        'react/lib/ReactContext': true,
+                    },
+                },
             },
             dev: {
                 preprocessors: karma_preprocessors,
@@ -142,7 +149,7 @@ module.exports = function(grunt) {
                     // sourceMapFilename: '[name].bundle.js.map'
                 },
                 module: {
-                    loaders: [ custom_babel_loader ]
+                    loaders: [ custom_babel_loader, 'babel?compact=false' ],
                 },
                 resolve: {
                     modulesDirectories: ['node_modules']
@@ -234,7 +241,7 @@ module.exports = function(grunt) {
 
     });
     grunt.registerTask('default', ['shell:killall', 'webpack:dev', 'shell:cp_static', 'karma:test', 'shell:be_test', 'concurrent:dev']);
-    grunt.registerTask('fe_unit', ['shell:killall', 'watch:fe_unit']);
+    grunt.registerTask('fe_unit', ['shell:killall', 'karma:test']);
     grunt.registerTask('coverage', ['karma:coverage']);
     grunt.registerTask('build', ['webpack:build', 'shell:cp_static']);
     grunt.registerTask('test', ['karma:test', 'shell:be_test']);
@@ -244,7 +251,7 @@ module.exports = function(grunt) {
 
 // http://jamesknelson.com/using-es6-in-the-browser-with-babel-6-and-webpack
 var custom_babel_loader = {
-    loader: 'babel-loader',
+    loader: 'babel',
     exclude: /node_modules/,
 
     // Only run `babel.js` and `.jsx` files through Babel
@@ -252,17 +259,17 @@ var custom_babel_loader = {
 
     // Options to configure babel with
     query: {
+        compact: false, // TODO this should be removed for production deploys
         plugins: [
             'add-module-exports',
-            'transform-runtime'
+            'transform-runtime',
         ],
         presets: ['es2015', 'react'],
-        cacheDirectory: true
-    }
+    },
 };
 
 var karma_preprocessors = {
-    'test/**/spec.*.babel.js': ['webpack', 'sourcemap', 'babel'],
+    'test/**/spec.*.babel.js': ['webpack', 'sourcemap'],
     'test/**/spec.*.js': ['webpack', 'sourcemap'],
 };
 
