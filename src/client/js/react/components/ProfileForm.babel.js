@@ -1,37 +1,51 @@
 import React, { Component, PropTypes } from 'react';
 import { reduxForm } from 'redux-form';
 
-import { Button } from 'react-bootstrap';
+import { Grid, Row, Col, Button, Form, FormControl, FormGroup, ControlLabel, Panel } from 'react-bootstrap';
 
 export class ProfileForm extends Component {
     render() {
         const { fields: { upper_range, lower_range }, handleSubmit, doSubmit } = this.props;
 
         return (
-            <form>
-                <label>Upper Range</label>
-                <input
-                    type="text"
-                    size="13"
-                    { ...upper_range }
-                />
-                <label>Lower Range</label>
-                <input
-                    type="text"
-                    size="13"
-                    { ...lower_range }
-                />
-                <Button
-                    bsStyle="info"
-                    type="submit"
-                    value="Save Changes"
-                    onClick={handleSubmit( data => {
-                        doSubmit(data);
-                    })}
-                >
-                    Save
-                </Button>
-            </form>
+            <Grid><Row><Col xs={18} md={12}>
+            <Panel header="Vocal range settings">
+                <Form horizontal>
+                    <FormGroup bsSize="large" controlId="formHorizontalUpperRange">
+                        <Col componentClass={ControlLabel} sm={2}>
+                            Upper Range
+                        </Col>
+                        <Col sm={9}>
+                            <FormControl type="text" { ...upper_range } />
+                        </Col>
+                    </FormGroup>
+
+                    <FormGroup bsSize="large" controlId="formHorizontalLowerRange">
+                        <Col componentClass={ControlLabel} sm={2}>
+                            Lower Range
+                        </Col>
+                        <Col sm={9}>
+                            <FormControl type="text" { ...lower_range } />
+                        </Col>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Col smOffset={2} sm={9}>
+                            <Button
+                                bsStyle="info"
+                                type="submit"
+                                value="Save Changes"
+                                onClick={handleSubmit( data => {
+                                    doSubmit(data);
+                                })}
+                            >
+                                Save
+                            </Button>
+                        </Col>
+                    </FormGroup>
+                </Form>
+            </Panel>
+            </Col></Row></Grid>
         );
     }
 }
