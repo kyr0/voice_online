@@ -17,6 +17,20 @@ module.exports = function(grunt) {
         },
 
         watch: {
+            fast: {
+                files: [
+                    './src/client/**/*.js*',
+                    './test/**/*',
+                    '!./test/**/static/js/*',
+                    '!./test/**/index.html',
+                    '!./src/client/js/drawLesson.js',
+                ],
+                tasks: [
+                    'eslint',
+                    'webpack:dev',
+                    'shell:cp_static',
+                ],
+            },
             frontend: {
                 files: [
                     './src/client/**/*.js*',
@@ -30,7 +44,7 @@ module.exports = function(grunt) {
                     'webpack:dev',
                     'shell:cp_static',
                     'karma:test',
-                ]
+                ],
             },
             fe_unit: {
                 files: [
@@ -44,7 +58,7 @@ module.exports = function(grunt) {
                 tasks: [
                     'eslint',
                     'karma:test',
-                ]
+                ],
             },
             static: {
                 files: ['./src/client/js/drawLesson.js', './src/client/index.html'],
@@ -232,7 +246,7 @@ module.exports = function(grunt) {
 
         concurrent: {
             dev: {
-                tasks: ['shell:runserver', 'watch'],
+                tasks: ['shell:runserver', 'watch:fast'],
                 options: {
                     logConcurrentOutput: true
                 }
@@ -241,6 +255,7 @@ module.exports = function(grunt) {
 
     });
     grunt.registerTask('default', ['shell:killall', 'webpack:dev', 'shell:cp_static', 'karma:test', 'shell:be_test', 'concurrent:dev']);
+    grunt.registerTask('dev', ['shell:killall', 'webpack:dev', 'shell:cp_static', 'concurrent:dev']);
     grunt.registerTask('fe_unit', ['shell:killall', 'karma:test']);
     grunt.registerTask('coverage', ['karma:coverage']);
     grunt.registerTask('build', ['webpack:build', 'shell:cp_static']);
