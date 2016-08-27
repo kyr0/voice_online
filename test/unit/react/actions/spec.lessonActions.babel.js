@@ -7,9 +7,11 @@ import {
     GET_LESSONS_REQUEST,
     GET_LESSONS_SUCCESS,
     GET_LESSONS_FAILURE,
+    SET_CURRENT_LESSON,
 
     // actionCreators
     getLessons,
+    setCurrentLesson,
 } from '../../../../src/client/js/react/actions/lessonActions.babel';
 
 
@@ -65,5 +67,22 @@ describe('lessonActions', () => {
                 done();
             })
             .catch(done);
+    });
+});
+
+
+describe('lessonActions', () => {
+    let store;
+    const dummy_data = '{ "any_data": "we want" }';
+
+    beforeEach(() => {
+        store = mockStore({});
+    });
+
+    it('should create an action to set currentLesson', () => {
+        store = mockStore({ currentLesson: { notEmpty: null } });
+        store.dispatch(setCurrentLesson(dummy_data));
+        expect(store.getActions()[0].type).to.eql(SET_CURRENT_LESSON);
+        expect(store.getActions()[0].currentLesson).to.eql(dummy_data);
     });
 });

@@ -19,7 +19,7 @@ class App extends Component {
     render() {
         return (
             <div>
-                <Navbar>
+                <Navbar fluid={true}>
                     <Navbar.Header>
                         <Navbar.Brand>
                             <a href="#">Pure Voice Pro</a>
@@ -33,7 +33,6 @@ class App extends Component {
                         </Nav>
                     </Navbar.Collapse>
                 </Navbar>
-
                 { this.props.children }
             </div>
         );

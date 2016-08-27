@@ -11,6 +11,7 @@ import {
     GET_LESSONS_REQUEST,
     GET_LESSONS_SUCCESS,
     GET_LESSONS_FAILURE,
+    SET_CURRENT_LESSON,
 } from '../../../../src/client/js/react/actions/lessonActions.babel';
 
 import { profile, initialProfileState, sing, initialSingState } from '../../../../src/client/js/react/reducers/reducers.babel';
@@ -95,4 +96,14 @@ describe('sing reducer', () => {
         );
         expect(newState).to.eql({ isRequesting: false, lessons: dummy_data });
     });
+
+    it('should set state for SET_CURRENT_LESSON', () => {
+        const initialState = { currentLesson: {} };
+        const dummy_data = 'some datas';
+        const newState = sing(
+            initialState,
+            { type: SET_CURRENT_LESSON, currentLesson: dummy_data });
+        expect(newState).to.eql({ currentLesson: dummy_data });
+    });
+
 });

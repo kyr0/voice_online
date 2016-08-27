@@ -14,6 +14,7 @@ import {
     GET_LESSONS_REQUEST,
     GET_LESSONS_SUCCESS,
     GET_LESSONS_FAILURE,
+    SET_CURRENT_LESSON,
 } from '../actions/lessonActions.babel';
 
 
@@ -51,7 +52,11 @@ export function profile(state = initialProfileState, action) {
     }
 }
 
-export const initialSingState = { isRequesting: false, lessons: { results: [] } };
+export const initialSingState = {
+    isRequesting: false,
+    lessons: { results: [] },
+    currentLesson: { title: 'Loading...' },
+};
 export function sing(state = initialSingState, action) {
     switch (action.type) {
     case GET_LESSONS_REQUEST:
@@ -66,6 +71,10 @@ export function sing(state = initialSingState, action) {
     case GET_LESSONS_FAILURE:
         return Object.assign({}, state, {
             isRequesting: false,
+        });
+    case SET_CURRENT_LESSON:
+        return Object.assign({}, state, {
+            currentLesson: action.currentLesson,
         });
     default:
         return state;
