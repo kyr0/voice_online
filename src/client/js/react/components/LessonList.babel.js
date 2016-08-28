@@ -1,33 +1,42 @@
 import React, { Component, PropTypes } from 'react';
-import { DropdownButton, MenuItem } from 'react-bootstrap';
+import { Grid, Row, Col, Panel, ListGroup, ListGroupItem } from 'react-bootstrap';
+
+import Canvas from './Canvas.babel';
 
 export default class LessonList extends Component {
 
     constructor(props) {
         super(props);
-        this.handleSelect = this.handleSelect.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
-    handleSelect(eventKey) {
+    handleClick(currentLesson) {
         const { doLessonSelect } = this.props;
-        const currentLesson = this.refs[eventKey].props.lesson;
         doLessonSelect(currentLesson);
     }
 
 
     render() {
         const { user, lessons, currentLesson } = this.props;
-        const refPrefix = 'lesson';
         return (
-            <DropdownButton id='lessons-dropdown' title={currentLesson.title}>
-                    { lessons.map(
-                        (lesson, idx) =>
-                            <MenuItem key={idx} ref={refPrefix + idx} eventKey={refPrefix + idx} lesson={lesson} onSelect={this.handleSelect}>
-                                { lesson.title }
-                            </MenuItem>
-                    )}
-                {/*<span> Upper: { user.upper_range } Lower: { user.lower_range } </span>*/}
-            </DropdownButton>
+            <Grid fluid={true}>
+                <Row><Col xs={12}>
+                    <Panel collapsible ref={this.panelRef} id='lessons-dropdown' header={currentLesson.title}>
+                            <ListGroup fill>
+                            { lessons.map(
+                                (lesson, idx) =>
+                                    <ListGroupItem key={idx} onClick={this.handleClick.bind(this, lesson)}>
+                                        { lesson.title }
+                                    </ListGroupItem>
+                            )}
+                            </ListGroup>
+                            {/*<span> Upper: { user.upper_range } Lower: { user.lower_range } </span>*/}
+                    </Panel>
+                </Col></Row>
+                <Row><Col xs={12}>
+                    <Canvas />
+                </Col></Row>
+            </Grid>
         );
     }
 }
