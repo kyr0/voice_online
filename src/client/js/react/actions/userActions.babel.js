@@ -61,7 +61,7 @@ function getUser() {
 
 export function getUserIfNeeded() {
     return (dispatch, getState) => {
-        if (isEmpty(getState().user)) {
+        if (isEmpty(getState().profile.user)) {
             return dispatch(getUser());
         }
     };
@@ -106,9 +106,21 @@ function updateUser(new_user_data) {
 }
 
 
+function shouldUpdateUser(user, new_user_data) {
+    let should = false;
+    for (let key in new_user_data) {
+        if (new_user_data[key] !== user[key]) {
+            should = true;
+        }
+    }
+    return should;
+}
+
+
 export function updateUserIfNeeded(new_user_data) {
     return (dispatch, getState) =>  {
-        if (getState().user != new_user_data) {  // if there are changes
+        const user = getState().profile.user;
+        if (shouldUpdateUser(user, new_user_data)) {
             return dispatch(updateUser(new_user_data));
         }
     };
