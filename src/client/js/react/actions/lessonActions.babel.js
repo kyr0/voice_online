@@ -37,7 +37,10 @@ export function getLessons() {
         dispatch(getLessonsRequest());
         return axios(LESSONS_URL)
             .then(response => response.data)
-            .then(lessons => dispatch(receiveLessons(lessons)))
+            .then(lessons => {
+                dispatch(setCurrentLesson(lessons.results[0]));
+                dispatch(receiveLessons(lessons));
+            })
             .catch(error => dispatch(getLessonsError(error)));
     };
 }

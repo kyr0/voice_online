@@ -28,7 +28,7 @@ describe('lessonActions', () => {
     let store;
     let state;
     const initialState = { sing: initialSingState };
-    const dummy_data = '{ "any_data": "we want" }';
+    const dummy_data = { results: [{ title: 'dummy title 1' }] };
 
     beforeEach(() => {
         server = sinon.fakeServer.create();
@@ -44,12 +44,13 @@ describe('lessonActions', () => {
         server.respondWith(
             'GET',
             LESSONS_URL,
-            dummy_data
+            JSON.stringify(dummy_data)
         );
         store = mockStore(state);
         const expectedActions = [
             { type: GET_LESSONS_REQUEST },
-            { type: GET_LESSONS_SUCCESS, lessons: JSON.parse(dummy_data) },
+            { type: SET_CURRENT_LESSON, currentLesson: dummy_data.results[0] },
+            { type: GET_LESSONS_SUCCESS, lessons: dummy_data },
         ];
         store.dispatch(getLessons())
             .then(() => {
