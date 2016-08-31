@@ -14,8 +14,7 @@ export default class Canvas extends Component {
      * and hook up the PixiJS renderer
      **/
     componentDidMount() {
-        window.addEventListener('resize', this.updateDimensions);
-        this.updateDimensions();
+        const { user, currentLesson } = this.props;
 
         //Setup PIXI Canvas in componentDidMount
         this.renderer = PIXI.autoDetectRenderer();
@@ -64,11 +63,6 @@ export default class Canvas extends Component {
     }
 
 
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.updateDimensions);
-    }
-
-
     /**
      * Animation loop for updating Pixi Canvas
      **/
@@ -78,28 +72,25 @@ export default class Canvas extends Component {
         this.frame = requestAnimationFrame(this.animate);
     }
 
-    updateDimensions() {
-        let w = window,
-            d = document,
-            documentElement = d.documentElement,
-            body = d.getElementsByTagName('body')[0],
-            width = w.innerWidth || documentElement.clientWidth || body.clientWidth;
-        console.log('Width: ' + width);
-    }
-
 
     /**
      * Render our container that will store our PixiJS game canvas. Store the ref
      **/
     render() {
+        const { user } = this.props;
         return (
             <div className="canvas-container" ref="canvasDiv">
                 {null}
+                {/*{ Upper: { user.upper_range } Lower: { user.lower_range } }*/}
             </div>
         );
     }
 }
 
 
+Canvas.propTypes = {
+    user: PropTypes.object.isRequired,
+    currentLesson: PropTypes.object.isRequired,
+};
 
 

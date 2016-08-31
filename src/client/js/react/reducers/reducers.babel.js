@@ -21,6 +21,7 @@ import {
     SET_GRID_SIZE,
 } from '../actions/windowActions.babel';
 
+
 export const initialProfileState = { isRequesting: false, user: {} };
 export function profile(state = initialProfileState, action) {
     switch (action.type) {
@@ -55,6 +56,7 @@ export function profile(state = initialProfileState, action) {
     }
 }
 
+
 export const initialSingState = {
     isRequesting: false,
     lessons: { results: [] },
@@ -84,7 +86,11 @@ export function sing(state = initialSingState, action) {
     }
 }
 
-export function pvpWindow(state = initialSingState, action) {
+
+export const initialLayoutState = {
+    gridSize: null,
+};
+export function layout(state = initialLayoutState, action) {
     switch (action.type) {
     case SET_GRID_SIZE:
         return Object.assign({}, state, {
@@ -99,6 +105,7 @@ export function pvpWindow(state = initialSingState, action) {
 const rootReducer = combineReducers({
     profile,
     sing,
+    layout,
     form: formReducer,
 });
 

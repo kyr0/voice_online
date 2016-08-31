@@ -1,15 +1,9 @@
-import { GRID_LG, GRID_MD, GRID_SM, GRID_XS } from '../../constants/constants.babel';
+import { GRID_LG, GRID_MD, GRID_SM, GRID_XS, GRID_SIZES } from '../../constants/constants.babel';
 
 export const SET_GRID_SIZE = 'SET_GRID_SIZE';
 
-const GRID_SIZES = {
-    LG: 1200,
-    MD: 992,
-    SM: 768,
-};
 
-
-function getActualGridSize(windowSize) {
+function getProposedGridSize(windowSize) {
     if (windowSize < GRID_SIZES.SM) {
         return GRID_XS;
     } else if (windowSize < GRID_SIZES.MD) {
@@ -24,14 +18,28 @@ function getActualGridSize(windowSize) {
 }
 
 
-export function updateGridSizeIfNeeded(windowSize) {
-    const actualGridSize = getActualGridSize(windowSize);
-    return getState => {
-        if (getState().gridSize != actualGridSize) {
-            return {
-                type: SET_GRID_SIZE,
-                gridSize: actualGridSize,
-            };
+function getWindowWidth() {
+    let w = window,
+        d = document,
+        documentElement = d.documentElement,
+        body = d.getElementsByTagName('body')[0];
+    return w.innerWidth || documentElement.clientWidth || body.clientWidth;
+}
+
+
+function updateGridSize(newGridSize) {
+    return {
+        type: SET_GRID_SIZE,
+        gridSize: newGridSize,
+    };
+}
+
+
+export function updateGridSizeIfNeeded(width = getWindowWidth()) {
+    const newGridSize = getProposedGridSize(width);
+    return (dispatch, getState) =>  {
+        if (getState().layout.gridSize !== newGridSize) {
+            dispatch(updateGridSize(newGridSize));
         }
     };
 }

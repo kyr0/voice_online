@@ -14,7 +14,18 @@ import {
     SET_CURRENT_LESSON,
 } from '../../../../src/client/js/react/actions/lessonActions.babel';
 
-import { profile, initialProfileState, sing, initialSingState } from '../../../../src/client/js/react/reducers/reducers.babel';
+import { SET_GRID_SIZE } from '../../../../src/client/js/react/actions/windowActions.babel';
+
+import {
+    profile,
+    initialProfileState,
+    sing,
+    initialSingState,
+    layout,
+    initialLayoutState,
+} from '../../../../src/client/js/react/reducers/reducers.babel';
+
+import { GRID_MD } from '../../../../src/client/js/constants/constants.babel.js';
 
 
 describe('profile reducer', () => {
@@ -106,4 +117,19 @@ describe('sing reducer', () => {
         expect(newState).to.eql({ currentLesson: dummy_data });
     });
 
+});
+
+describe('layout reducer', () => {
+    it('should return initial state for unknown action', () => {
+        const newState = layout(initialLayoutState, { type: 'BOGUS_REQUEST' });
+        expect(newState).to.eql(initialLayoutState);
+    });
+
+    it('should set state for SET_GRID_SIZE', () => {
+        const newState = layout(
+            initialLayoutState,
+            { type: SET_GRID_SIZE, gridSize: GRID_MD }
+        );
+        expect(newState).to.eql({ gridSize: GRID_MD });
+    });
 });
