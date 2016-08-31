@@ -11,15 +11,22 @@ class Sing extends Component {
 
     constructor(props) {
         super(props);
+        this.handleResize = this.handleResize.bind(this);
         this.handleLessonSelect = this.handleLessonSelect.bind(this);
     }
 
     componentDidMount() {
-        window.addEventListener('resize', updateGridSizeIfNeeded);
+        this.handleResize();
+        window.addEventListener('resize', this.handleResize);
     }
 
     componentWillUnmount() {
-        window.removeEventListener('resize', updateGridSizeIfNeeded);
+        window.removeEventListener('resize', this.handleResize);
+    }
+
+    handleResize() {
+        const { dispatch } = this.props;
+        dispatch(updateGridSizeIfNeeded());
     }
 
     handleLessonSelect(lessonData) {
