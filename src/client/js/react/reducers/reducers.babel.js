@@ -88,7 +88,7 @@ export function sing(state = initialSingState, action) {
 
 
 export const initialLayoutState = {
-    gridSize: null,
+    gridSize: '',
 };
 export function layout(state = initialLayoutState, action) {
     switch (action.type) {
