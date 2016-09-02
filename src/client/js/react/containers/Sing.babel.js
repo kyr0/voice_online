@@ -43,7 +43,7 @@ class Sing extends Component {
                          currentLesson={ currentLesson }
                          doLessonSelect={ this.handleLessonSelect }
                      />
-                </Col></Row><Row><Col xs={12}>
+                </Col></Row><Row><Col>
                      <Canvas
                          user={ user }
                          currentLesson={ currentLesson }

@@ -65,7 +65,7 @@ export default class Canvas extends Component {
         }
 
         // make the new stuff
-        this.renderer = PIXI.autoDetectRenderer(width, (width / 4));
+        this.renderer = PIXI.autoDetectRenderer(width, (width / 3));
         canvasDiv.appendChild(this.renderer.view);
 
         // create the root of the scene graph
