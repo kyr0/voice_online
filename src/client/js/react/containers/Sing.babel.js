@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { Grid, Row, Col } from 'react-bootstrap';
+import { Grid, Row, Col, Image } from 'react-bootstrap';
 
 import { setCurrentLesson } from '../actions/lessonActions.babel';
 import { updateGridSizeIfNeeded } from '../actions/windowActions.babel';
@@ -49,6 +49,11 @@ class Sing extends Component {
                          currentLesson={ currentLesson }
                          gridSize={ gridSize }
                      />
+                </Col></Row><Row><Col>
+                    <Image src="static/assets/placeholder.png" circle /> {/*// previous*/}
+                    <Image src="static/assets/placeholder.png" circle /> {/*// play & stop*/}
+                    <Image src="static/assets/placeholder.png" circle /> {/*// restart*/}
+                    <Image src="static/assets/placeholder.png" circle /> {/*// next*/}
                 </Col></Row>
             </Grid>
         );
