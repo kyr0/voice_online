@@ -13,7 +13,7 @@ module.exports = function(grunt) {
             target: [
                 './src/**/*.babel.js',
                 './test/**/*.babel.js',
-            ]
+            ],
         },
 
         watch: {
@@ -67,7 +67,7 @@ module.exports = function(grunt) {
             backend: {
                 files: ['../source/**/*.py'],
                 tasks: ['shell:be_test'],
-            }
+            },
         },
 
         karma: {
@@ -84,7 +84,7 @@ module.exports = function(grunt) {
                     Chrome_allow_media: {
                         base: 'Chrome',
                         flags: ['--use-fake-ui-for-media-stream'],
-                    }
+                    },
                 },
                 webpackMiddleware: {
                     noInfo: true,
@@ -108,7 +108,7 @@ module.exports = function(grunt) {
                 exclude: ['test/coverage/**/*', '*bundle*'],
                 reporters: ['progress'],
                 background: true,
-                singleRun: false
+                singleRun: false,
             },
             test: {
                 preprocessors: karma_preprocessors,
@@ -133,10 +133,10 @@ module.exports = function(grunt) {
                                 include: path.resolve('src/client/'),
                                 exclude: /(test|node_modules)\//,
                                 loader: 'istanbul-instrumenter',
-                            }
-                        ]
-                    }
-                }
+                            },
+                        ],
+                    },
+                },
             },
         },
 
@@ -166,34 +166,34 @@ module.exports = function(grunt) {
                     loaders: [ custom_babel_loader ],
                 },
                 resolve: {
-                    modulesDirectories: ['node_modules']
+                    modulesDirectories: ['node_modules'],
                 },
                 stats: {
                     modules: false,
                     reasons: false,
                     version: false,
-                    hash: false
+                    hash: false,
                 },
-                progress: true
+                progress: true,
             },
             dev: {
                 failOnError: false, // don't report error to grunt if webpack find errors
                 devtool: 'sourcemap',
-                debug: true
+                debug: true,
             },
             build: {
                 plugins: [
                     new webpack.optimize.DedupePlugin(),
                     new webpack.optimize.OccurenceOrderPlugin(),
                     new webpack.optimize.MinChunkSizePlugin({
-                        minChunkSize: 51200 // ~50kb
+                        minChunkSize: 51200, // ~50kb
                     }),
                     new webpack.optimize.UglifyJsPlugin({
                         mangle: true,
-                    })
+                    }),
                 ],
-                failOnError: true
-            }
+                failOnError: true,
+            },
         },
 
         shell: {
@@ -201,57 +201,60 @@ module.exports = function(grunt) {
                 // NOTE: when tox has multiple test configs, switch to `command: tox`, simple no options necessary
                 command: [
                     'source ../.tox/py34-postgresql/bin/activate',
-                    'python manage.py test'
+                    'python manage.py test',
                 ].join('&&'),
                 options: {
                     execOptions: {
-                        cwd: '../source'
-                    }
-                }
+                        cwd: '../source',
+                    },
+                },
             },
             killall: {
                 // Just in case it is running, wasted lots of time on this
                 command: [
                     'killall -9 node',
-                    'killall -9 python'
+                    'killall -9 python',
                 ].join(';'),
-                options: { failOnError: false }
+                options: { failOnError: false },
             },
             runserver: {
                 command: [
                     'source ../.tox/py34-postgresql/bin/activate',
-                    'python manage.py runserver'
+                    'python manage.py runserver',
                 ].join('&&'),
                 options: {
                     execOptions: {
-                        cwd: '../source'
-                    }
-                }
+                        cwd: '../source',
+                    },
+                },
             },
             cp_static: {  // note that this is not responsible for bundles which are placed in BE by webpack
                 command: [
                     'set -x',  // make the commands echo to stdout
                     'mkdir -p ../source/lesson/static/js',  // for dev server
+                    'mkdir -p ../source/lesson/static/assets',  // for dev server
                     'mkdir -p ./test/integration/fixtures/static/js',  // fixture for test suite
+                    'mkdir -p ./test/integration/fixtures/static/assets',  // fixture for test suite
+                    'cp ./src/client/assets/* ../source/lesson/static/assets/',
+
                     // for test suite
                     'cp ./src/client/index.html ./test/integration/fixtures/index.html',  // in 2 repos
-                    'cp ./src/client/js/drawLesson.js ./test/integration/fixtures/static/js/',
-                    'cp ./src/dependencies/paper-full.min.js ./test/integration/fixtures/static/js/',
+
                     // for dev
-                    'cp ./src/client/index.html ../source/lesson/templates/paper.html',
-                    'cp ./test/integration/fixtures/static/js/* ../source/lesson/static/js/'
-                ].join('&&')
-            }
+                    'cp ./src/client/index.html ../source/lesson/templates/paper.html',  // need to rename from paper
+                    'cp ./test/integration/fixtures/static/js/* ../source/lesson/static/js/',
+                ].join('&&'),
+            },
         },
 
         concurrent: {
             dev: {
                 tasks: ['shell:runserver', 'watch:fast'],
                 options: {
-                    logConcurrentOutput: true
-                }
-            }
-        }
+                    logConcurrentOutput: true,
+                },
+            },
+        },
 
     });
     grunt.registerTask('default', ['shell:killall', 'webpack:dev', 'shell:cp_static', 'karma:test', 'shell:be_test', 'concurrent:dev']);
@@ -289,5 +292,5 @@ var karma_preprocessors = {
 };
 
 var karma_files = [
-    { src: 'test/**/spec.*.js' }
+    { src: 'test/**/spec.*.js' },
 ];
