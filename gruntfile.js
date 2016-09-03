@@ -92,7 +92,7 @@ module.exports = function(grunt) {
                 webpack: {
                     devtool: 'inline-source-map',
                     module: {
-                        loaders: [ custom_babel_loader ],
+                        loaders: [ custom_babel_loader, loaders ],
                     },
                     externals: {
                         'cheerio': 'window',
@@ -126,7 +126,7 @@ module.exports = function(grunt) {
                 browserNoActivityTimeout: 40000,
                 webpack: {
                     module: {
-                        loaders: [ custom_babel_loader ],
+                        loaders: [ custom_babel_loader, loaders ],
                         postLoaders: [
                             {
                                 test: /\.js$/,
@@ -163,7 +163,7 @@ module.exports = function(grunt) {
                     // sourceMapFilename: '[name].bundle.js.map'
                 },
                 module: {
-                    loaders: [ custom_babel_loader ],
+                    loaders: [ custom_babel_loader, loaders ],
                 },
                 resolve: {
                     modulesDirectories: ['node_modules'],
@@ -266,6 +266,37 @@ module.exports = function(grunt) {
 
 };
 
+
+var loaders = [
+    {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader',
+    },
+    {
+        test: /\.png$/,
+        loader: 'url-loader?limit=100000',
+    },
+    {
+        test: /\.jpg$/,
+        loader: 'file-loader',
+    },
+    {
+        test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url?limit=10000&mimetype=application/font-woff',
+    },
+    {
+        test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url?limit=10000&mimetype=application/octet-stream',
+    },
+    {
+        test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'file',
+    },
+    {
+        test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url?limit=10000&mimetype=image/svg+xml',
+    },
+];
 
 // http://jamesknelson.com/using-es6-in-the-browser-with-babel-6-and-webpack
 var custom_babel_loader = {
