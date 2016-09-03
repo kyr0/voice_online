@@ -2,6 +2,13 @@
 
 @text-color: #FFF;
 
+:focus {
+    outline-color: transparent;
+    outline-style: none;
+    outline: none;
+}
+
+
 body {
     min-height: 100vh;
     @list: #726D82, #BAACB5;
@@ -23,6 +30,7 @@ body {
     a:hover,
     a:active {
         color: @text-color;
+        text-decoration: none;
     }
 }
 
