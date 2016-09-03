@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { Grid, Row, Col, Image } from 'react-bootstrap';
+import { Grid, Row, Col, Image, Button } from 'react-bootstrap';
 
-import { setCurrentLesson } from '../actions/lessonActions.babel';
+import { setCurrentLesson, nextLesson, previousLesson } from '../actions/lessonActions.babel';
 import { updateGridSizeIfNeeded } from '../actions/windowActions.babel';
 import LessonList from '../components/LessonList.babel';
 import Canvas from '../components/Canvas.babel';
@@ -33,6 +33,14 @@ class Sing extends Component {
         this.props.dispatch(setCurrentLesson(lessonData));
     }
 
+    handleNextLessonSelect() {
+        this.props.dispatch(nextLesson());
+    }
+
+    handlePreviousLessonSelect() {
+        this.props.dispatch(previousLesson());
+    }
+
     render() {
         const { user, lessons, currentLesson, gridSize } = this.props;
         return (
@@ -50,11 +58,11 @@ class Sing extends Component {
                          gridSize={ gridSize }
                      />
                 </Col></Row><Row><Col>
-                    <Image src="static/assets/placeholder.png" circle /> {/*// previous*/}
+                    <Button onClick={this.handlePreviousLessonSelect.bind(this)}><Image src="static/assets/placeholder.png" circle /></Button>
                     <Image src="static/assets/placeholder.png" circle /> {/*// play & stop*/}
                     <Image src="static/assets/placeholder.png" circle /> {/*// restart*/}
-                    <Image src="static/assets/placeholder.png" circle /> {/*// next*/}
-                </Col></Row>
+                    <Button onClick={this.handleNextLessonSelect.bind(this)}><Image src="static/assets/placeholder.png" circle /></Button>
+            </Col></Row>
             </Grid>
         );
     }

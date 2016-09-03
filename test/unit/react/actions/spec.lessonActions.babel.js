@@ -13,6 +13,8 @@ import {
     // actionCreators
     getLessons,
     setCurrentLesson,
+    nextLesson,
+    previousLesson,
 } from '../../../../src/client/js/react/actions/lessonActions.babel';
 import { initialSingState } from '../../../../src/client/js/react/reducers/reducers.babel';
 
@@ -28,7 +30,13 @@ describe('lessonActions', () => {
     let store;
     let state;
     const initialState = { sing: initialSingState };
-    const dummy_data = { results: [{ title: 'dummy title 1' }] };
+    const dummy_data = {
+        results: [
+            { url: '1', title: 'dummy title 1' },
+            { url: '2', title: 'dummy title 2' },
+            { url: '3', title: 'dummy title 3' },
+        ],
+    };
 
     beforeEach(() => {
         server = sinon.fakeServer.create();
@@ -84,5 +92,39 @@ describe('lessonActions', () => {
         store.dispatch(setCurrentLesson(expected_data));
         expect(store.getActions()[0].type).to.eql(SET_CURRENT_LESSON);
         expect(store.getActions()[0].currentLesson).to.eql(expected_data);
+    });
+
+    it('should create an action to set currentLesson to next item', () => {
+        state.sing.currentLesson = dummy_data.results[1];
+        state.sing.lessons.results = dummy_data.results;
+        store = mockStore(state);
+        store.dispatch(nextLesson());
+        expect(store.getActions()[0].type).to.eql(SET_CURRENT_LESSON);
+        expect(store.getActions()[0].currentLesson).to.eql(dummy_data.results[2]);
+    });
+
+    it('should create an action to set currentLesson to previous item', () => {
+        state.sing.currentLesson = dummy_data.results[1];
+        state.sing.lessons.results = dummy_data.results;
+        store = mockStore(state);
+        store.dispatch(previousLesson());
+        expect(store.getActions()[0].type).to.eql(SET_CURRENT_LESSON);
+        expect(store.getActions()[0].currentLesson).to.eql(dummy_data.results[0]);
+    });
+
+    it('should have nextLesson go to first idx when current is last lesson', () => {
+        state.sing.currentLesson = dummy_data.results[2];
+        state.sing.lessons.results = dummy_data.results;
+        store = mockStore(state);
+        store.dispatch(nextLesson());
+        expect(store.getActions()[0].currentLesson).to.eql(dummy_data.results[0]);
+    });
+
+    it('should have previousLesson go to last idx when current is first lesson', () => {
+        state.sing.currentLesson = dummy_data.results[0];
+        state.sing.lessons.results = dummy_data.results;
+        store = mockStore(state);
+        store.dispatch(previousLesson());
+        expect(store.getActions()[0].currentLesson).to.eql(dummy_data.results[2]);
     });
 });
