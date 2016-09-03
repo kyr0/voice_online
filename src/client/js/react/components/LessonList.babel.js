@@ -14,6 +14,11 @@ export default class LessonList extends Component {
         doLessonSelect(currentLesson);
     }
 
+    isSelected(lesson) {
+        const { currentLesson } = this.props;
+        return lesson.title === currentLesson.title;
+    }
+
 
     render() {
         const { lessons, currentLesson } = this.props;
@@ -22,7 +27,11 @@ export default class LessonList extends Component {
                     <ListGroup fill>
                     { lessons.map(
                         (lesson, idx) =>
-                            <ListGroupItem key={idx} onClick={this.handleClick.bind(this, lesson)}>
+                            <ListGroupItem
+                                key={idx}
+                                onClick={this.handleClick.bind(this, lesson)}
+                                active={this.isSelected(lesson)}
+                            >
                                 { lesson.title }
                             </ListGroupItem>
                     )}
