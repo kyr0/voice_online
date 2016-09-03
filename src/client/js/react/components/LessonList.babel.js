@@ -18,7 +18,7 @@ export default class LessonList extends Component {
     render() {
         const { lessons, currentLesson } = this.props;
         return (
-            <Panel collapsible ref={this.panelRef} id='lessons-dropdown' header={currentLesson.title}>
+            <Panel bsClass="lessons-panel" collapsible ref={this.panelRef} id='lessons-dropdown' header={currentLesson.title}>
                     <ListGroup fill>
                     { lessons.map(
                         (lesson, idx) =>

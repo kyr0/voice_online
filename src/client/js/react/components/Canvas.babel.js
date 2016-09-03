@@ -54,6 +54,7 @@ export default class Canvas extends Component {
 
     canvasInit(width) {
         let canvasDiv = this.refs.canvasDiv;
+        let height = width / 2.2;
 
         // clean up old stuff
         if (this.renderer) {
@@ -65,42 +66,28 @@ export default class Canvas extends Component {
         }
 
         // make the new stuff
-        this.renderer = PIXI.autoDetectRenderer(width, (width / 3));
+        this.renderer = PIXI.autoDetectRenderer(width, height,
+            {
+                transparent: true,
+                clearBeforeRender: false,
+                antialias: true,
+            }
+        );
+        this.renderer.view.style.border = '1px dashed black';
         canvasDiv.appendChild(this.renderer.view);
 
         // create the root of the scene graph
-        this.stage = new PIXI.Container(width, (width / 4));
-        this.stage.width = 1366;
-        this.stage.height = 768;
+        this.stage = new PIXI.Container(width, height);
+        this.stage.width = width;
+        this.stage.height = height;
 
         this.graphics = new PIXI.Graphics();
 
-        // set a fill and line style
-        this.graphics.beginFill(0xFF3300);
-        this.graphics.lineStyle(4, 0xffd900, 1);
-
-        // draw a shape
-        this.graphics.moveTo(50,50);
-        this.graphics.lineTo(250, 50);
-        this.graphics.lineTo(100, 100);
-        this.graphics.lineTo(50, 50);
-        this.graphics.endFill();
-
-        // set a fill and a line style again and draw a rectangle
-        this.graphics.lineStyle(2, 0x0000FF, 1);
-        this.graphics.beginFill(0xFF700B, 1);
-        this.graphics.drawRect(50, 250, 120, 120);
 
         // draw a rounded rectangle
-        this.graphics.lineStyle(2, 0xFF00FF, 1);
-        this.graphics.beginFill(0xFF00BB, 0.25);
-        this.graphics.drawRoundedRect(150, 450, 300, 100, 15);
-        this.graphics.endFill();
-
-        // draw a circle, set the lineStyle to zero so the circle doesn't have an outline
         this.graphics.lineStyle(0);
-        this.graphics.beginFill(0xFFFF0B, 0.5);
-        this.graphics.drawCircle(470, 90,60);
+        this.graphics.beginFill(0x000000);
+        this.graphics.drawRoundedRect(50, 50, (width / 10), (height * (1 / 24)), ((height * (1 / 24) / 2)));
         this.graphics.endFill();
 
 

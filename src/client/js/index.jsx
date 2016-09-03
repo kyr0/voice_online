@@ -7,7 +7,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Router, Route, hashHistory, IndexRoute } from 'react-router';
 import { Provider } from 'react-redux';
-import Bootstrap from 'bootstrap/dist/css/bootstrap.css';
+import Custom from '../custom.less';
 
 import configureStore from './react/store/configureStore.babel';
 import App from './react/containers/App.babel';
@@ -15,7 +15,6 @@ import Sing from './react/containers/Sing.babel';
 import Profile from './react/containers/Profile.babel';
 
 const store = configureStore();
-
 
 render((
     <Provider store={store}>

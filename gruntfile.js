@@ -18,13 +18,7 @@ module.exports = function(grunt) {
 
         watch: {
             fast: {
-                files: [
-                    './src/client/**/*.js*',
-                    './test/**/*',
-                    '!./test/**/static/js/*',
-                    '!./test/**/index.html',
-                    '!./src/client/js/drawLesson.js',
-                ],
+                files: watchFiles,
                 tasks: [
                     'eslint',
                     'webpack:dev',
@@ -32,13 +26,7 @@ module.exports = function(grunt) {
                 ],
             },
             frontend: {
-                files: [
-                    './src/client/**/*.js*',
-                    './test/**/*',
-                    '!./test/**/static/js/*',
-                    '!./test/**/index.html',
-                    '!./src/client/js/drawLesson.js',
-                ],
+                files: watchFiles,
                 tasks: [
                     'eslint',
                     'webpack:dev',
@@ -47,13 +35,7 @@ module.exports = function(grunt) {
                 ],
             },
             fe_unit: {
-                files: [
-                    './src/client/**/*.js*',
-                    './test/**/*',
-                    '!./test/**/static/js/*',
-                    '!./test/**/index.html',
-                    '!./src/client/js/drawLesson.js',
-                ],
+                files: watchFiles,
                 // github.com/karma-runner/grunt-karma#karma-server-with-grunt-watch
                 tasks: [
                     'eslint',
@@ -269,8 +251,8 @@ module.exports = function(grunt) {
 
 var loaders = [
     {
-        test: /\.css$/,
-        loader: 'style-loader!css-loader',
+        test: /\.(less|css)$/,
+        loader: 'style-loader!css-loader!less-loader',
     },
     {
         test: /\.png$/,
@@ -296,6 +278,15 @@ var loaders = [
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
         loader: 'url?limit=10000&mimetype=image/svg+xml',
     },
+];
+
+var watchFiles = [
+    './src/client/**/*.js*',
+    './src/client/**/*.less',
+    './test/**/*',
+    '!./test/**/static/js/*',
+    '!./test/**/index.html',
+    '!./src/client/js/drawLesson.js',
 ];
 
 // http://jamesknelson.com/using-es6-in-the-browser-with-babel-6-and-webpack
