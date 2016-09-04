@@ -1,7 +1,3 @@
-/**
- * Created by jaboing on 2015-08-18.
- */
-
 module.exports.expect = require('chai').expect;
 
 /* A test helper which catches errors and returns the error message.

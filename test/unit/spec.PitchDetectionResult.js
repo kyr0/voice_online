@@ -6,7 +6,7 @@
 var assert = require("assert");
 var PitchDetectionResult = require("../../src/client/js/PitchDetectionResult.js");
 
-var helpers = require("../resources/testHelpers.js");
+var helpers = require("../utils/testHelpers.js");
 for (var key in helpers) {
     global[key] = helpers[key];
 }

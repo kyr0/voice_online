@@ -2,7 +2,7 @@
 
 var assert = require("assert");
 var MPM = require("../../src/client/js/MPM.js");
-var buffer = require("../resources/audioBuffers.js");
+var buffer = require("../fixtures/audioBuffers.js");
 var Note = require("../../src/client/js/Note.js");
 
 /*
