@@ -12,38 +12,18 @@ export default class Canvas {
         this.canvasDiv = canvasDiv;
     }
 
-    initialize(width) {
-        this.width = width;
+    initialize() {
+        this.heightDivisor = 2.2;
+        this.yAnchorCount = 24;
+        this.xAnchorDivisor = 24;  // x anchors (aka beats) are not centered they start at X
 
-        const heightDivisor = 2.2;
-        const yAnchorCount = 24;
-        const xAnchorDivisor = 36;  // x anchors (aka measures) are not centered they start at X
-
-        this.height = this.width / heightDivisor;
+        this.height = this.width / this.heightDivisor;
         this.currentTimeX = this.width / 2;
-        this.yUnitSize = this.height / (yAnchorCount + 1); // y anchors must be centered, so we need to add 1
-        this.xUnitSize = this.width / xAnchorDivisor;
+        this.yUnitSize = this.height / (this.yAnchorCount + 1); // y anchors must be centered, so we need to add 1
+        this.xUnitSize = this.width / this.xAnchorDivisor;
 
         this.resetConnections();
-
-        // draw a rounded rectangle
-        this.graphics = new Graphics();
-        this.graphics.lineStyle(0);
-        this.graphics.beginFill(0x000000);
-        this.graphics.drawRoundedRect(50, 50, (this.width / xAnchorDivisor), (this.height * (1 / yAnchorCount)), ((this.height * (1 / yAnchorCount) / 2)));
-        this.graphics.endFill();
-        this.stage.addChild(this.graphics);
-
-        // some text
-        let labels = new Text(
-            'A A# B C C# D D# E',
-            { font: '32px sans-serif', fill: 'white' }
-        );
-        labels.style = { wordWrap: true, wordWrapWidth: 5 };
-        labels.position.set(10, 10);
-        this.stage.addChild(labels);
-
-        //start animating
+        this.drawLaunchPosition();
         this.animationLoop();
     }
 
@@ -57,22 +37,34 @@ export default class Canvas {
 
     end() {}
 
-    // helper functions
-    setUser(user) {
-        this.user = new User(user.lower_range, user.upper_range);
-    }
 
-    setLesson(lesson) {
-        this.lesson = new Lesson({
-            title: lesson.title,
-            bpm: lesson.bpm,
-            noteList: lesson.notes,
-            captionList: lesson.captions,
-        });
+    // helper functions
+    drawLaunchPosition() {
+        // draw a rounded rectangle
+        this.graphics = new Graphics();
+        this.graphics.lineStyle(0);
+        this.graphics.beginFill(0x000000);
+        this.graphics.drawRoundedRect(50, 50, (this.width / this.xAnchorDivisor), (this.height * (1 / this.yAnchorCount)), ((this.height * (1 / this.yAnchorCount) / 2)));
+        this.graphics.endFill();
+        this.stage.addChild(this.graphics);
+
+        //// some text
+        // let labels = new Text(
+        //     'A A# B C C# D D# E',
+        //     { font: '32px sans-serif', fill: 'white' }
+        // );
+        // labels.style = { wordWrap: true, wordWrapWidth: 5 };
+        // labels.position.set(10, 10);
+        // this.stage.addChild(labels);
     }
 
     resetConnections() {
-        // clean up old stuff
+        this.destroy();
+        this.create();
+    }
+
+    destroy() {
+        // clean up old renderer, stage, and canvases
         if (this.renderer) {
             this.renderer.destroy();
             this.stage.removeChild(this.graphics);
@@ -80,7 +72,9 @@ export default class Canvas {
         while (this.canvasDiv.lastChild) {
             this.canvasDiv.removeChild(this.canvasDiv.lastChild);
         }
+    }
 
+    create() {
         // make the new stuff
         this.renderer = autoDetectRenderer(this.width, this.height,
             {
@@ -94,8 +88,27 @@ export default class Canvas {
 
         // create the root of the scene graph
         this.stage = new Container(this.width, this.height);
-        this.stage.width = this.width;
-        this.stage.height = this.height;
-
     }
+
+    setWidth(width) {
+        this.width = width;
+        this.initialize();
+    }
+
+    setUser(user) {
+        this.user = new User(user.lower_range, user.upper_range);
+        this.initialize();
+    }
+
+    setLesson(lesson) {
+        this.lesson = new Lesson({
+            title: lesson.title,
+            bpm: lesson.bpm,
+            noteList: lesson.notes,
+            captionList: lesson.captions,
+        });
+        this.initialize();
+    }
+
+
 }

@@ -18,7 +18,7 @@ export default class Widget extends Component {
         const { gridSize, user, currentLesson } = nextProps;
         if (gridSize) {
             if (gridSize !== this.props.gridSize) {
-                this.canvas.initialize(GRID_SIZES[gridSize]);
+                this.canvas.setWidth(GRID_SIZES[gridSize]);
             }
         }
 
@@ -34,7 +34,7 @@ export default class Widget extends Component {
     }
 
     render() {
-        const { user, gridSize } = this.props;
+        const { gridSize } = this.props;
         const style = {
             width: GRID_SIZES[gridSize],
             float: 'none',
