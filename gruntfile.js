@@ -139,7 +139,7 @@ module.exports = function(grunt) {
                     './src/client/js/index.jsx',
                 ],
                 output: {
-                    path: './test/integration/fixtures/static/js/',
+                    path: './export/js/',
                     filename: '[name].bundle.js',
                     // serve your source maps from a server that is only accessible to your development team
                     // sourceMapFilename: '[name].bundle.js.map'
@@ -210,21 +210,14 @@ module.exports = function(grunt) {
                     },
                 },
             },
-            cp_static: {  // note that this is not responsible for bundles which are placed in BE by webpack
+            cp_static: {
                 command: [
                     'set -x',  // make the commands echo to stdout
                     'mkdir -p ../source/lesson/static/js',  // for dev server
                     'mkdir -p ../source/lesson/static/assets',  // for dev server
-                    'mkdir -p ./test/integration/fixtures/static/js',  // fixture for test suite
-                    'mkdir -p ./test/integration/fixtures/static/assets',  // fixture for test suite
                     'cp ./src/client/assets/* ../source/lesson/static/assets/',
-
-                    // for test suite
-                    'cp ./src/client/index.html ./test/integration/fixtures/index.html',  // in 2 repos
-
-                    // for dev
                     'cp ./src/client/index.html ../source/lesson/templates/paper.html',  // need to rename from paper
-                    'cp ./test/integration/fixtures/static/js/* ../source/lesson/static/js/',
+                    'cp ./export/js/* ../source/lesson/static/js/',
                 ].join('&&'),
             },
         },

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var Audio = require('../../src/client/js/Audio.js');
 var Lesson = require('../../src/client/js/Lesson.js');
@@ -15,7 +15,7 @@ describe('Audio', function() {
     });
 
 
-    it("should fire onaudioprocess event with user media stream", function (done) {
+    it('should fire onaudioprocess event with user media stream', function (done) {
         // if this doesn't timeout, it's a pass
         var audio = new Audio();
         audio.handleBuffer = function() {
@@ -27,7 +27,7 @@ describe('Audio', function() {
 
     // describe('_processPitchResult', function() {
     //
-    //     it("should ", function (done) {
+    //     it('should ', function (done) {
     //     });
     //
     // });
