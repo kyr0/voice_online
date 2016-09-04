@@ -5,7 +5,7 @@ import { Grid, Row, Col, Image, Button } from 'react-bootstrap';
 import { setCurrentLesson, nextLesson, previousLesson } from '../actions/lessonActions.babel';
 import { updateGridSizeIfNeeded } from '../actions/windowActions.babel';
 import LessonList from '../components/LessonList.babel';
-import Canvas from '../components/Canvas.babel';
+import Widget from '../components/Widget.babel';
 
 class Sing extends Component {
 
@@ -52,7 +52,7 @@ class Sing extends Component {
                          doLessonSelect={ this.handleLessonSelect }
                      />
                 </Col></Row><Row><Col>
-                     <Canvas
+                     <Widget
                          user={ user }
                          currentLesson={ currentLesson }
                          gridSize={ gridSize }
