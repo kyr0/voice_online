@@ -1,6 +1,3 @@
-///**
-// * Created by jaboing on 2015-07-31.
-// */
 "use strict";
 
 var User = require("../../src/client/js/User.js");
