@@ -42,14 +42,8 @@ export default class Widget extends Component {
     }
 
     render() {
-        const { gridSize } = this.props;
-        const style = {
-            width: GRID_SIZES[gridSize],
-            float: 'none',
-            margin: '0 auto',
-        };
         return (
-            <div className="canvas-container" ref="canvasDiv" style={style}>
+            <div className="canvas-container" ref="canvasDiv">
                 {null}
             </div>
         );

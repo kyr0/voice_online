@@ -58,11 +58,18 @@ class Sing extends Component {
                          gridSize={ gridSize }
                      />
                 </Col></Row><Row><Col>
-                    <Button onClick={this.handlePreviousLessonSelect.bind(this)}><Image src="static/assets/placeholder.png" circle /></Button>
-                    <Image src="static/assets/placeholder.png" circle /> {/*// play & stop*/}
-                    <Image src="static/assets/placeholder.png" circle /> {/*// restart*/}
-                    <Button onClick={this.handleNextLessonSelect.bind(this)}><Image src="static/assets/placeholder.png" circle /></Button>
-            </Col></Row>
+                    <div className="sing-btn-group">
+                        <Button bsStyle="transparent" onClick={this.handlePreviousLessonSelect.bind(this)}>
+                            <Image src="static/assets/placeholder.png" circle responsive />
+                        </Button>
+                        <Button bsStyle="transparent">
+                            <Image src="static/assets/placeholder.png" circle responsive />
+                        </Button>
+                        <Button bsStyle="transparent" onClick={this.handleNextLessonSelect.bind(this)}>
+                            <Image src="static/assets/placeholder.png" circle responsive />
+                        </Button>
+                    </div>
+                </Col></Row>
             </Grid>
         );
     }

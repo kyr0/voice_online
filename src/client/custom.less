@@ -4,15 +4,18 @@
 
 :focus {
     outline-color: transparent;
-    outline-style: none;
     outline: none;
 }
-
 
 body {
     min-height: 100vh;
     @list: #726D82, #BAACB5;
     background-image: svg-gradient(to top right, @list);
+}
+
+.nooutline {
+    outline-color: transparent;
+    outline: none;
 }
 
 .noshadow {
@@ -37,4 +40,25 @@ body {
 .navbar {
     border-radius: 0;
     border: 0;
+}
+
+
+// Sing styles
+.sing-btn-group {
+    width: -webkit-max-content;
+    width: -moz-max-content;
+    width: max-content;
+    .center-block;
+}
+
+.btn-transparent {
+    background-color: transparent;
+}
+
+.sing-buttons {
+    .center-block;
+}
+
+.canvas-container canvas {
+    .center-block;
 }
