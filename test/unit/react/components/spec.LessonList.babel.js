@@ -4,7 +4,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import chaiEnzyme from 'chai-enzyme';
 
-import { initialSingState } from '../../../../src/client/js/react/reducers/reducers.babel';
+import { initialSingState, initialProfileState } from '../../../../src/client/js/react/reducers/reducers.babel';
 
 chai.use(chaiEnzyme());
 
@@ -13,7 +13,7 @@ describe('ProfileForm component', () => {
 
     let subject = null;
     let doLessonSelect;
-    let user = {};
+    let user = initialProfileState.user;
     let lessons =  [{ title: 'one' }, { title: 'two' }, { title: 'three' }];
     let currentLesson = initialSingState.currentLesson;
 
