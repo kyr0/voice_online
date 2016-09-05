@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 
 import Canvas from '../../Canvas.babel';
-import { initialSingState } from '../reducers/reducers.babel';
+import { initialLayoutState, initialSingState, initialProfileState } from '../reducers/reducers.babel';
 import { GRID_SIZES } from '../../constants/constants.babel';
 
 export default class Widget extends Component {
@@ -11,25 +11,33 @@ export default class Widget extends Component {
     }
 
     componentDidMount() {
+        const { gridSize, user, currentLesson } = this.props;
         this.canvas = new Canvas(this.refs.canvasDiv);
+        if (gridSize !== initialLayoutState.gridSize) {
+            this.setCanvasWidth(gridSize);
+        }
+
+        if (user !== initialProfileState.user ) {
+            this.setCanvasUser(user);
+        }
+
+        if (currentLesson !== initialSingState.currentLesson) {
+            this.setCanvasLesson(currentLesson);
+        }
     }
 
     componentWillReceiveProps(nextProps) {
         const { gridSize, user, currentLesson } = nextProps;
-        if (gridSize) {
-            if (gridSize !== this.props.gridSize) {
-                this.canvas.setWidth(GRID_SIZES[gridSize]);
-            }
+        if (gridSize !== this.props.gridSize) {
+            this.setCanvasWidth(gridSize);
         }
 
-        if (user) {
-            if (user !== this.props.user) {
-                this.canvas.setUser(user);
-            }
+        if (user !== this.props.user) {
+            this.setCanvasUser(user);
         }
 
-        if (currentLesson !== initialSingState.currentLesson && currentLesson !== this.props.currentLesson) {
-            this.canvas.setLesson(currentLesson);
+        if (currentLesson !== this.props.currentLesson) {
+            this.setCanvasLesson(currentLesson);
         }
     }
 
@@ -46,10 +54,20 @@ export default class Widget extends Component {
             </div>
         );
     }
+
+    setCanvasWidth(gridSize) {
+        this.canvas.setWidth(GRID_SIZES[gridSize]);
+    }
+    setCanvasUser(user) {
+        this.canvas.setUser(user);
+    }
+    setCanvasLesson(currentLesson) {
+        this.canvas.setLesson(currentLesson);
+    }
 }
 
 Widget.propTypes = {
+    gridSize: PropTypes.string.isRequired,
     user: PropTypes.object.isRequired,
     currentLesson: PropTypes.object.isRequired,
-    gridSize: PropTypes.string.isRequired,
 };
