@@ -59,13 +59,13 @@ class Sing extends Component {
                      />
                 </Col></Row><Row><Col>
                     <div className="sing-btn-group">
-                        <Button bsStyle="transparent" onClick={this.handlePreviousLessonSelect.bind(this)}>
+                        <Button bsClass="btn-transparent" onClick={this.handlePreviousLessonSelect.bind(this)}>
                             <Image src="static/assets/placeholder.png" circle responsive />
                         </Button>
-                        <Button bsStyle="transparent">
+                        <Button bsClass="btn-transparent">
                             <Image src="static/assets/placeholder.png" circle responsive />
                         </Button>
-                        <Button bsStyle="transparent" onClick={this.handleNextLessonSelect.bind(this)}>
+                        <Button bsClass="btn-transparent" onClick={this.handleNextLessonSelect.bind(this)}>
                             <Image src="static/assets/placeholder.png" circle responsive />
                         </Button>
                     </div>
