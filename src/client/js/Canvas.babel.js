@@ -13,17 +13,13 @@ export default class Canvas {
     }
 
     initialize() {
-        this.heightDivisor = 2.2;
-        this.yAnchorCount = 24;
-        this.xAnchorDivisor = 24;  // x anchors (aka beats) are not centered they start at X
-
-        this.height = this.width / this.heightDivisor;
-        this.currentTimeX = this.width / 2;
-        this.yUnitSize = this.height / (this.yAnchorCount + 1); // y anchors must be centered, so we need to add 1
-        this.xUnitSize = this.width / this.xAnchorDivisor;
+        if (this.user && this.lesson) {
+            this.player = new Player(this.user, this.lesson);
+            this.set = this.player.getCurrentSet();
+        }
 
         this.resetConnections();
-        this.drawLaunchPosition();
+        this.drawInitialCanvas();
         this.animationLoop();
     }
 
@@ -38,15 +34,42 @@ export default class Canvas {
     end() {}
 
 
-    // helper functions
-    drawLaunchPosition() {
-        // draw a rounded rectangle
-        this.graphics = new Graphics();
-        this.graphics.lineStyle(0);
+    // DRAWING FUNCTIONS
+    drawNotes() {
+        // TODO restrict notes to be no smaller than 1/16 and lessons to be no greater than 2 octaves
+        const duration = this.set.durationInMeasures;
+        const chart = this.set.chart;
+
+        console.log(chart);
+
+        const measureWidth = this.width / this.xAnchorDivisor;
+        const noteHeight = this.height * (1 / this.yAnchorCount);
+        const radius = this.height * (1 / this.yAnchorCount) / 2;
+
+        let consumedX = this.currentTimeX;
         this.graphics.beginFill(0x000000);
-        this.graphics.drawRoundedRect(50, 50, (this.width / this.xAnchorDivisor), (this.height * (1 / this.yAnchorCount)), ((this.height * (1 / this.yAnchorCount) / 2)));
+        this.set.noteList.forEach(note => {
+            let noteWidth = note.durationInMeasures * measureWidth;
+            this.graphics.drawRoundedRect(consumedX, (chart[note.name] * noteHeight), noteWidth, noteHeight, radius);
+            consumedX += noteWidth;
+        });
+
         this.graphics.endFill();
+    }
+
+    // helper functions
+    drawInitialCanvas() {
+        this.graphics = new Graphics();
         this.stage.addChild(this.graphics);
+
+        this.graphics.lineStyle(1, 0xFFFFFF);
+        this.graphics.moveTo(this.currentTimeX, 0);
+        this.graphics.lineTo(this.currentTimeX, this.height);
+        this.graphics.lineStyle(0);
+
+        if (this.set) {
+            this.drawNotes();
+        }
 
         //// some text
         // let labels = new Text(
@@ -92,6 +115,13 @@ export default class Canvas {
 
     setWidth(width) {
         this.width = width;
+        this.heightDivisor = 2.2;
+        this.yAnchorCount = 24;
+        this.xAnchorDivisor = 4;  // x anchors (aka visible measures on screen)
+
+        this.height = this.width / this.heightDivisor;
+        this.currentTimeX = this.width / 2;
+
         this.initialize();
     }
 
