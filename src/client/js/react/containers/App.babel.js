@@ -40,3 +40,27 @@ class App extends Component {
 }
 
 export default connect()(App);
+
+// https://fonts.google.com/specimen/Raleway?selection.family=Raleway:100
+// https://github.com/typekit/webfontloader
+// import WebFont  from 'webfontloader';
+//
+// let isFontLoaded = null;
+// let fontName = null;
+// const WebFontConfig = {
+//     loading: () => {
+//         isFontLoaded = false;
+//     },
+//     active: () => {
+//         isFontLoaded = true;
+//         initialize();
+//     },
+//     inactive: function () {
+//     },
+// };
+//
+// WebFont.load({
+//     google: {
+//         families: ['Raleway:100'],
+//     },
+// });

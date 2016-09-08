@@ -1,6 +1,5 @@
 import { autoDetectRenderer, Container, Graphics, Text } from '../../dependencies/pixi.min.js';
 
-
 import Lesson  from './Lesson';
 import User from './User';
 import Player from './Player';
@@ -35,26 +34,62 @@ export default class Canvas {
 
 
     // DRAWING FUNCTIONS
+
     drawNotes() {
-        // TODO restrict notes to be no smaller than 1/16 and lessons to be no greater than 2 octaves
-        const duration = this.set.durationInMeasures;
-        const chart = this.set.chart;
-
-        console.log(chart);
-
         const measureWidth = this.width / this.xAnchorDivisor;
-        const noteHeight = this.height * (1 / this.yAnchorCount);
-        const radius = this.height * (1 / this.yAnchorCount) / 2;
+        const noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
+        const padding = (this.yAnchorCount - this.lesson.getLessonRange() - 1) * noteHeight / 2;
+        const radius = this.performanceHeight * (1 / this.yAnchorCount) / 2;
 
         let consumedX = this.currentTimeX;
-        this.graphics.beginFill(0x000000);
+
+        this.graphics.beginFill(0xFFFFFF);
         this.set.noteList.forEach(note => {
             let noteWidth = note.durationInMeasures * measureWidth;
-            this.graphics.drawRoundedRect(consumedX, (chart[note.name] * noteHeight), noteWidth, noteHeight, radius);
+            if (note.name !== '-') {
+                // TODO restrict notes to be no smaller than 1/16 and lessons to be no greater than 2 octaves
+                this.graphics.drawRoundedRect(consumedX, (this.set.chart[note.name] * noteHeight) + padding, noteWidth, noteHeight, radius);
+            }
             consumedX += noteWidth;
         });
 
         this.graphics.endFill();
+    }
+
+    drawCaptions() {
+        const measureWidth = this.width / this.xAnchorDivisor;
+        const noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
+
+        let consumedX = this.currentTimeX;
+
+        this.graphics.beginFill(0xFFFFFF);
+        this.lesson.captionList.forEach(caption => {
+            let captionWidth = caption.durationInMeasures * measureWidth;
+            if (caption.text) {
+                console.log(caption.text);
+                let text = new Text(caption.text, { fontSize: noteHeight, fontWeight: 100, fontFamily: 'Helvetica Neue', fill: 'white' });
+                text.position.set(consumedX, this.height - (this.captionHeight * 0.1));
+                text.anchor.set(0, 1);
+                this.stage.addChild(text);
+            }
+            consumedX += captionWidth;
+        });
+
+        this.graphics.endFill();
+    }
+
+    drawLabels() {
+        const noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
+        const padding = (this.yAnchorCount - this.lesson.getLessonRange() - 1) * noteHeight / 2;
+
+        for (const label in this.set.chart) {
+            if (this.set.chart.hasOwnProperty(label)) {
+                // Use 'fontFamily','fontSize',fontStyle','fontVariant' and 'fontWeight' properties
+                let text = new Text(label, { fontSize: noteHeight - (noteHeight * 0.2), fontWeight: 100, fontFamily: 'Helvetica Neue', fill: 'white' });
+                text.position.set(5, (this.set.chart[label] * noteHeight) + padding);
+                this.stage.addChild(text);
+            }
+        }
     }
 
     // helper functions
@@ -62,23 +97,19 @@ export default class Canvas {
         this.graphics = new Graphics();
         this.stage.addChild(this.graphics);
 
-        this.graphics.lineStyle(1, 0xFFFFFF);
+        // const duration = this.set.durationInMeasures;
+
+        // center line
+        this.graphics.lineStyle(2, 0xFFFFFF);
         this.graphics.moveTo(this.currentTimeX, 0);
-        this.graphics.lineTo(this.currentTimeX, this.height);
+        this.graphics.lineTo(this.currentTimeX, this.performanceHeight);
         this.graphics.lineStyle(0);
 
         if (this.set) {
             this.drawNotes();
+            this.drawCaptions();
+            this.drawLabels();
         }
-
-        //// some text
-        // let labels = new Text(
-        //     'A A# B C C# D D# E',
-        //     { font: '32px sans-serif', fill: 'white' }
-        // );
-        // labels.style = { wordWrap: true, wordWrapWidth: 5 };
-        // labels.position.set(10, 10);
-        // this.stage.addChild(labels);
     }
 
     resetConnections() {
@@ -106,7 +137,7 @@ export default class Canvas {
                 antialias: true,
             }
         );
-        this.renderer.view.style.border = '1px dashed black';
+        // this.renderer.view.style.border = '1px dashed white';
         this.canvasDiv.appendChild(this.renderer.view);
 
         // create the root of the scene graph
@@ -116,10 +147,12 @@ export default class Canvas {
     setWidth(width) {
         this.width = width;
         this.heightDivisor = 2.2;
-        this.yAnchorCount = 24;
-        this.xAnchorDivisor = 4;  // x anchors (aka visible measures on screen)
+        this.yAnchorCount = 20;
+        this.xAnchorDivisor = 3;  // x anchors (aka visible measures on screen)
 
         this.height = this.width / this.heightDivisor;
+        this.captionHeight = this.height * 0.1;
+        this.performanceHeight = this.height - this.captionHeight;
         this.currentTimeX = this.width / 2;
 
         this.initialize();
