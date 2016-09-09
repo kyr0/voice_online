@@ -6,8 +6,14 @@ export const GET_LESSONS_REQUEST = 'GET_LESSONS_REQUEST';
 export const GET_LESSONS_SUCCESS = 'GET_LESSONS_SUCCESS';
 export const GET_LESSONS_FAILURE = 'GET_LESSONS_FAILURE';
 export const SET_CURRENT_LESSON = 'SET_CURRENT_LESSON';
+export const SET_IS_PLAYING = 'SET_IS_PLAYING';
+
+import { initialSingState, initialProfileState } from '../reducers/reducers.babel';
 
 
+/*
+ * LESSON API REQUESTS
+ */
 function getLessonsRequest() {
     return {
         type: GET_LESSONS_REQUEST,
@@ -44,6 +50,9 @@ export function getLessons() {
 }
 
 
+/*
+ * CURRENT LESSON RELATED
+ */
 export function setCurrentLesson(currentLesson) {
     return {
         type: SET_CURRENT_LESSON,
@@ -90,3 +99,30 @@ export function previousLesson() {
         }
     };
 }
+
+
+/*
+ * IS WIDGET PLAYING
+ */
+
+function setIsPlaying(isPlaying) {
+    return {
+        type: SET_IS_PLAYING,
+        isPlaying,
+    };
+}
+
+export function setIsPlayingIfReady(isPlaying) {
+    return (dispatch, getState) =>  {
+        if (typeof isPlaying !== 'boolean') throw Error('isPlaying must be boolean.');
+        if (isPlaying) {
+            const state = getState();
+            if (state.sing.currentLesson === initialSingState.currentLesson ||
+                state.profile.user === initialProfileState.user) {
+                return;
+            }
+        }
+        dispatch(setIsPlaying(isPlaying));
+    };
+}
+

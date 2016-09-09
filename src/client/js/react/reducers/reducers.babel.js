@@ -15,6 +15,7 @@ import {
     GET_LESSONS_SUCCESS,
     GET_LESSONS_FAILURE,
     SET_CURRENT_LESSON,
+    SET_IS_PLAYING,
 } from '../actions/singActions.babel';
 
 import {
@@ -58,9 +59,10 @@ export function profile(state = initialProfileState, action) {
 
 
 export const initialSingState = {
+    currentLesson: { title: 'Loading...' },
+    isPlaying: false,
     isRequesting: false,
     lessons: { results: [] },
-    currentLesson: { title: 'Loading...' },
 };
 export function sing(state = initialSingState, action) {
     switch (action.type) {
@@ -80,6 +82,10 @@ export function sing(state = initialSingState, action) {
     case SET_CURRENT_LESSON:
         return Object.assign({}, state, {
             currentLesson: action.currentLesson,
+        });
+    case SET_IS_PLAYING:
+        return Object.assign({}, state, {
+            isPlaying: action.isPlaying,
         });
     default:
         return state;

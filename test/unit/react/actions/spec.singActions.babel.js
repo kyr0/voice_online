@@ -15,21 +15,22 @@ import {
     setCurrentLesson,
     nextLesson,
     previousLesson,
+    setIsPlayingIfReady,
 } from '../../../../src/client/js/react/actions/singActions.babel';
-import { initialSingState } from '../../../../src/client/js/react/reducers/reducers.babel';
+import { initialSingState, initialProfileState } from '../../../../src/client/js/react/reducers/reducers.babel';
 
 
 const middlewares = [ thunk ];
 const mockStore = configureMockStore(middlewares);
 
 
-describe('lessonActions', () => {
+describe('singActions', () => {
 
 
     let server;
     let store;
     let state;
-    const initialState = { sing: initialSingState };
+    const initialState = { sing: initialSingState, profile: initialProfileState };
     const dummy_data = {
         results: [
             { url: '1', title: 'dummy title 1' },
@@ -126,5 +127,11 @@ describe('lessonActions', () => {
         store = mockStore(state);
         store.dispatch(previousLesson());
         expect(store.getActions()[0].currentLesson).to.eql(dummy_data.results[2]);
+    });
+
+    it('should not set isPlaying to true if no user in state', () => {
+        store = mockStore(state);
+        store.dispatch(setIsPlayingIfReady(true));
+        expect(store.getActions()[0].isPlaying).to.eql(false);
     });
 });
