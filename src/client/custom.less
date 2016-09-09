@@ -2,9 +2,9 @@
 
 @text-color: #FFF;
 
-:focus {
+*:focus, *:focus:active {
     outline-color: transparent;
-    outline: none;
+    outline: none !important;
 }
 
 body {
@@ -54,6 +54,13 @@ body {
 .btn-transparent {
     .btn;
     background-color: transparent;
+}
+
+.btn-transparent:active {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -webkit-transition: none;
+    transition: none;
 }
 
 .sing-buttons {
