@@ -15,7 +15,7 @@ import {
     GET_LESSONS_SUCCESS,
     GET_LESSONS_FAILURE,
     SET_CURRENT_LESSON,
-} from '../actions/lessonActions.babel';
+} from '../actions/singActions.babel';
 
 import {
     SET_GRID_SIZE,

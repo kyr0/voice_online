@@ -5,7 +5,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { Navbar, NavItem, Nav } from 'react-bootstrap';
 
 import { getUserIfNeeded } from '../actions/userActions.babel';
-import { getLessons } from '../actions/lessonActions.babel';
+import { getLessons } from '../actions/singActions.babel';
 
 
 class App extends Component {

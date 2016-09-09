@@ -15,7 +15,7 @@ import {
     setCurrentLesson,
     nextLesson,
     previousLesson,
-} from '../../../../src/client/js/react/actions/lessonActions.babel';
+} from '../../../../src/client/js/react/actions/singActions.babel';
 import { initialSingState } from '../../../../src/client/js/react/reducers/reducers.babel';
 
 

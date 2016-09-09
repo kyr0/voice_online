@@ -12,7 +12,7 @@ import {
     GET_LESSONS_SUCCESS,
     GET_LESSONS_FAILURE,
     SET_CURRENT_LESSON,
-} from '../../../../src/client/js/react/actions/lessonActions.babel';
+} from '../../../../src/client/js/react/actions/singActions.babel';
 
 import { SET_GRID_SIZE } from '../../../../src/client/js/react/actions/windowActions.babel';
 

@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Grid, Row, Col, Image, Button } from 'react-bootstrap';
 
-import { setCurrentLesson, nextLesson, previousLesson } from '../actions/lessonActions.babel';
+import { setCurrentLesson, nextLesson, previousLesson } from '../actions/singActions.babel';
 import { updateGridSizeIfNeeded } from '../actions/windowActions.babel';
 import LessonList from '../components/LessonList.babel';
 import Widget from '../components/Widget.babel';
@@ -41,6 +41,7 @@ class Sing extends Component {
         this.props.dispatch(previousLesson());
     }
 
+    // TODO split out the presentation into a component
     render() {
         const { user, lessons, currentLesson, gridSize } = this.props;
         return (
