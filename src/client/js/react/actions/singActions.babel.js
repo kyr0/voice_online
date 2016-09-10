@@ -55,9 +55,12 @@ export function getLessons() {
  * CURRENT LESSON RELATED
  */
 export function setCurrentLesson(currentLesson) {
-    return {
-        type: SET_CURRENT_LESSON,
-        currentLesson,
+    return (dispatch) =>  {
+        dispatch(setIsPlaying(false));
+        dispatch({
+            type: SET_CURRENT_LESSON,
+            currentLesson,
+        });
     };
 }
 
@@ -116,8 +119,9 @@ function setIsPlaying(isPlaying) {
 export function setIsPlayingIfReady(isPlaying) {
     return (dispatch, getState) =>  {
         if (typeof isPlaying !== 'boolean') throw Error('isPlaying must be boolean.');
+        const state = getState();
+        if (isPlaying === state.sing.isPlaying) return;
         if (isPlaying) {
-            const state = getState();
             if (isEqual(state.sing.currentLesson, initialSingState.currentLesson) ||
                 isEqual(state.profile.user, initialProfileState.user)) {
                 return;

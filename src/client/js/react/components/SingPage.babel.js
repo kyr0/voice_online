@@ -34,6 +34,7 @@ export default class Sing extends Component {
                          user={ user }
                          currentLesson={ currentLesson }
                          gridSize={ gridSize }
+                         isPlaying={ isPlaying }
                      />
                 </Col></Row><Row><Col>
                     <div className="sing-btn-group">

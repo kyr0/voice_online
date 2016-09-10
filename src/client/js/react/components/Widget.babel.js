@@ -23,7 +23,7 @@ export default class Widget extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const { gridSize, user, currentLesson } = nextProps;
+        const { gridSize, user, currentLesson, isPlaying } = nextProps;
         if (gridSize !== this.props.gridSize) {
             this.setCanvasWidth(gridSize);
         }
@@ -34,6 +34,13 @@ export default class Widget extends Component {
 
         if (currentLesson !== this.props.currentLesson) {
             this.setCanvasLesson(currentLesson);
+        }
+
+        if (!isPlaying) {
+            // call the start and stop actions from this place
+            // TODO this does not fire when unmounting, will need to define our own componentWillUnmount
+            // do this by making this a container for Widget which defines it only once, remove it from the sing container
+            // remove the unique props from the sing container and put in Widget container
         }
     }
 
@@ -60,4 +67,5 @@ Widget.propTypes = {
     gridSize: PropTypes.string.isRequired,
     user: PropTypes.object.isRequired,
     currentLesson: PropTypes.object.isRequired,
+    isPlaying: PropTypes.bool.isRequired,
 };
