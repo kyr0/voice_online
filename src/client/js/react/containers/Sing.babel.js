@@ -50,13 +50,14 @@ class Sing extends Component {
 
 
     render() {
-        const { user, lessons, currentLesson, gridSize } = this.props;
+        const { user, lessons, currentLesson, gridSize, isPlaying } = this.props;
         return (
             <SingPage
-                user={user}
-                lessons={lessons}
-                currentLesson={currentLesson}
-                gridSize={gridSize}
+                user={ user }
+                lessons={ lessons }
+                currentLesson={ currentLesson }
+                gridSize={ gridSize }
+                isPlaying={ isPlaying }
                 doLessonSelect={ this.handleLessonSelect }
                 doNextLessonSelect={ this.handleNextLessonSelect }
                 doPreviousLessonSelect={ this.handlePreviousLessonSelect }
