@@ -1,10 +1,11 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 
 import Canvas from '../../Canvas.babel';
 import { initialLayoutState, initialSingState, initialProfileState } from '../reducers/reducers.babel';
 import { GRID_SIZES } from '../../constants/constants.babel';
 
-export default class Widget extends Component {
+export class Widget extends Component {
 
     componentDidMount() {
         const { gridSize, user, currentLesson } = this.props;
@@ -69,3 +70,14 @@ Widget.propTypes = {
     currentLesson: PropTypes.object.isRequired,
     isPlaying: PropTypes.bool.isRequired,
 };
+
+const mapStateToProps = (state) => {
+    return {
+        gridSize: state.layout.gridSize,
+        user: state.profile.user,
+        currentLesson: state.sing.currentLesson,
+        isPlaying: state.sing.isPlaying,
+    };
+};
+
+export default connect(mapStateToProps)(Widget);

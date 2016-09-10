@@ -51,13 +51,11 @@ class Sing extends Component {
 
 
     render() {
-        const { user, lessons, currentLesson, gridSize, isPlaying } = this.props;
+        const { lessons, currentLesson, isPlaying } = this.props;
         return (
             <SingPage
-                user={ user }
                 lessons={ lessons }
                 currentLesson={ currentLesson }
-                gridSize={ gridSize }
                 isPlaying={ isPlaying }
                 doLessonSelect={ this.handleLessonSelect }
                 doNextLessonSelect={ this.handleNextLessonSelect }
@@ -70,20 +68,16 @@ class Sing extends Component {
 
 
 Sing.propTypes = {
-    user: PropTypes.object.isRequired,
     lessons: PropTypes.array.isRequired,
     currentLesson: PropTypes.object.isRequired,
-    gridSize: PropTypes.string.isRequired,
     isPlaying: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = (state) => {
     return {
-        user: state.profile.user,
         lessons: state.sing.lessons.results,
         currentLesson: state.sing.currentLesson,
         isPlaying: state.sing.isPlaying,
-        gridSize: state.layout.gridSize,
     };
 };
 

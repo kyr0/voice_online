@@ -2,17 +2,15 @@ import React, { Component, PropTypes } from 'react';
 import { Grid, Row, Col, Image, Button } from 'react-bootstrap';
 
 import LessonList from '../components/LessonList.babel';
-import Widget from '../components/Widget.babel';
+import Widget from '../containers/Widget.babel';
 
 
 export default class Sing extends Component {
 
     render() {
         const {
-            user,
             lessons,
             currentLesson,
-            gridSize,
             isPlaying,
             doLessonSelect,
             doPreviousLessonSelect,
@@ -30,12 +28,7 @@ export default class Sing extends Component {
                          doLessonSelect={ doLessonSelect }
                      />
                 </Col></Row><Row><Col>
-                     <Widget
-                         user={ user }
-                         currentLesson={ currentLesson }
-                         gridSize={ gridSize }
-                         isPlaying={ isPlaying }
-                     />
+                     <Widget />
                 </Col></Row><Row><Col>
                     <div className="sing-btn-group">
                         <Button bsClass="btn-transparent" onClick={ doPreviousLessonSelect }>
@@ -56,10 +49,8 @@ export default class Sing extends Component {
 
 
 Sing.propTypes = {
-    user: PropTypes.object.isRequired,
     lessons: PropTypes.array.isRequired,
     currentLesson: PropTypes.object.isRequired,
-    gridSize: PropTypes.string.isRequired,
     isPlaying: PropTypes.bool.isRequired,
     doLessonSelect: PropTypes.func.isRequired,
     doPreviousLessonSelect: PropTypes.func.isRequired,
