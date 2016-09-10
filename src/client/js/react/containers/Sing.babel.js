@@ -6,7 +6,7 @@ import SingPage from '../components/SingPage.babel';
 import { setCurrentLesson, nextLesson, previousLesson, setIsPlayingIfReady } from '../actions/singActions.babel';
 import { updateGridSizeIfNeeded } from '../actions/windowActions.babel';
 
-class Sing extends Component {
+export class Sing extends Component {
 
     constructor(props) {
         super(props);

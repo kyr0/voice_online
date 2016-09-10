@@ -13,7 +13,7 @@ import {
 chai.use(chaiEnzyme());
 
 
-describe('Widget component', () => {
+describe('Widget container', () => {
 
     let subject = null;
     let sandbox;
