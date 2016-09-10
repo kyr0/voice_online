@@ -12,6 +12,7 @@ import {
     GET_LESSONS_SUCCESS,
     GET_LESSONS_FAILURE,
     SET_CURRENT_LESSON,
+    SET_IS_PLAYING,
 } from '../../../../src/client/js/react/actions/singActions.babel';
 
 import { SET_GRID_SIZE } from '../../../../src/client/js/react/actions/windowActions.babel';
@@ -115,6 +116,12 @@ describe('sing reducer', () => {
             initialState,
             { type: SET_CURRENT_LESSON, currentLesson: dummy_data });
         expect(newState).to.eql({ currentLesson: dummy_data });
+    });
+
+    it('should set state for SET_IS_PLAYING', () => {
+        const initialState = { isPlaying: false };
+        const newState = sing(initialState, { type: SET_IS_PLAYING, isPlaying: true });
+        expect(newState).to.eql({ isPlaying: true });
     });
 
 });

@@ -1,3 +1,4 @@
+import { isEqual } from 'lodash';
 import { axios } from '../../lib/helpers';
 
 import { LESSONS_URL } from '../../constants/constants.babel';
@@ -117,8 +118,8 @@ export function setIsPlayingIfReady(isPlaying) {
         if (typeof isPlaying !== 'boolean') throw Error('isPlaying must be boolean.');
         if (isPlaying) {
             const state = getState();
-            if (state.sing.currentLesson === initialSingState.currentLesson ||
-                state.profile.user === initialProfileState.user) {
+            if (isEqual(state.sing.currentLesson, initialSingState.currentLesson) ||
+                isEqual(state.profile.user, initialProfileState.user)) {
                 return;
             }
         }
