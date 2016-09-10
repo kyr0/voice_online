@@ -66,7 +66,6 @@ export default class Canvas {
         this.lesson.captionList.forEach(caption => {
             let captionWidth = caption.durationInMeasures * measureWidth;
             if (caption.text) {
-                console.log(caption.text);
                 let text = new Text(caption.text, { fontSize: noteHeight, fontWeight: 100, fontFamily: 'Helvetica Neue', fill: 'white' });
                 text.position.set(consumedX, this.height - (this.captionHeight * 0.1));
                 text.anchor.set(0, 1);

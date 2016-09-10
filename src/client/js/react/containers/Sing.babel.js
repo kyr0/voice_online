@@ -1,11 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { Grid, Row, Col, Image, Button } from 'react-bootstrap';
 
-import { setCurrentLesson, nextLesson, previousLesson } from '../actions/singActions.babel';
+import SingPage from '../components/SingPage.babel';
+
+import { setCurrentLesson, nextLesson, previousLesson, setIsPlayingIfReady } from '../actions/singActions.babel';
 import { updateGridSizeIfNeeded } from '../actions/windowActions.babel';
-import LessonList from '../components/LessonList.babel';
-import Widget from '../components/Widget.babel';
 
 class Sing extends Component {
 
@@ -13,6 +12,9 @@ class Sing extends Component {
         super(props);
         this.handleResize = this.handleResize.bind(this);
         this.handleLessonSelect = this.handleLessonSelect.bind(this);
+        this.handlePreviousLessonSelect = this.handlePreviousLessonSelect.bind(this);
+        this.handlePlayLessonSelect = this.handlePlayLessonSelect.bind(this);
+        this.handleNextLessonSelect = this.handleNextLessonSelect.bind(this);
     }
 
     componentWillMount() {
@@ -41,37 +43,25 @@ class Sing extends Component {
         this.props.dispatch(previousLesson());
     }
 
-    // TODO split out the presentation into a component
+    handlePlayLessonSelect() {
+        const { dispatch, isPlaying } = this.props;
+        dispatch(setIsPlayingIfReady(!isPlaying));
+    }
+
+
     render() {
         const { user, lessons, currentLesson, gridSize } = this.props;
         return (
-            <Grid fluid={true}>
-                <Row><Col xs={12}>
-                     <LessonList
-                         lessons={ lessons }
-                         currentLesson={ currentLesson }
-                         doLessonSelect={ this.handleLessonSelect }
-                     />
-                </Col></Row><Row><Col>
-                     <Widget
-                         user={ user }
-                         currentLesson={ currentLesson }
-                         gridSize={ gridSize }
-                     />
-                </Col></Row><Row><Col>
-                    <div className="sing-btn-group">
-                        <Button bsClass="btn-transparent" onClick={this.handlePreviousLessonSelect.bind(this)}>
-                            <Image src="static/assets/play.png" circle responsive />
-                        </Button>
-                        <Button bsClass="btn-transparent">
-                            <Image src="static/assets/play.png" circle responsive />
-                        </Button>
-                        <Button bsClass="btn-transparent" onClick={this.handleNextLessonSelect.bind(this)}>
-                            <Image src="static/assets/play.png" circle responsive />
-                        </Button>
-                    </div>
-                </Col></Row>
-            </Grid>
+            <SingPage
+                user={user}
+                lessons={lessons}
+                currentLesson={currentLesson}
+                gridSize={gridSize}
+                doLessonSelect={ this.handleLessonSelect }
+                doNextLessonSelect={ this.handleNextLessonSelect }
+                doPreviousLessonSelect={ this.handlePreviousLessonSelect }
+                doPlayLessonSelect={ this.handlePlayLessonSelect }
+            />
         );
     }
 }
@@ -82,6 +72,7 @@ Sing.propTypes = {
     lessons: PropTypes.array.isRequired,
     currentLesson: PropTypes.object.isRequired,
     gridSize: PropTypes.string.isRequired,
+    isPlaying: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = (state) => {
@@ -89,6 +80,7 @@ const mapStateToProps = (state) => {
         user: state.profile.user,
         lessons: state.sing.lessons.results,
         currentLesson: state.sing.currentLesson,
+        isPlaying: state.sing.isPlaying,
         gridSize: state.layout.gridSize,
     };
 };

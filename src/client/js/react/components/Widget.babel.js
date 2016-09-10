@@ -6,10 +6,6 @@ import { GRID_SIZES } from '../../constants/constants.babel';
 
 export default class Widget extends Component {
 
-    constructor( props ) {
-        super(props);
-    }
-
     componentDidMount() {
         const { gridSize, user, currentLesson } = this.props;
         this.canvas = new Canvas(this.refs.canvasDiv);
