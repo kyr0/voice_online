@@ -26,7 +26,6 @@ Player.prototype.resetExercise = function() {
         this.timer.stopTimer();
     }
     this.score = new Score(this._exercise);
-    this.isPlaying = false;
     this.curSetIdx = 0;
     this.resetListeners(this.sets[this.curSetIdx]);
 };
@@ -70,10 +69,6 @@ Player.prototype.resetListeners = function(curSet){
 };
 
 Player.prototype.start = function(){
-    if (this.isPlaying){
-        this.stop();
-    }
-    this.isPlaying = true;
     this.emit('startExercise');
     this.timer.startTimer();
 };

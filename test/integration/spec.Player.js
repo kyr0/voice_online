@@ -49,7 +49,6 @@ describe('Player Object', function() {
             expect(that.endSetEvents).to.equal(4);
             expect(that.startNoteEvents).to.equal(10);
             expect(that.endNoteEvents).to.equal(10);
-            expect(that.player.isPlaying).to.equal(false);
             done();
         };
         this.player.on('endExercise', function() {
@@ -69,36 +68,14 @@ describe('Player Object', function() {
         this.player.start();
     });
 
-    it('should correctly set index and isPlaying when stopped', function (done) {
+    it('should correctly set index when stopped', function (done) {
         var that = this;
-        this.player.isPlaying = true;
         this.player.curSetIdx = 3;
-        this.player.on('stopExercise', function() {
-            expect(that.player.isPlaying).to.equal(false);
+        this.player.on('stopExercise', function () {
             expect(that.player.curSetIdx).to.equal(0);
             done();
         });
         this.player.stop();
-    });
-
-    it('should set isPlaying to true on startExercise', function (done) {
-        var that = this;
-        var finish = function(){
-            expect(that.player.isPlaying).to.equal(true);
-            done();
-        };
-        this.player.on('startExercise', function () {
-            finish();
-        });
-        this.player.start();
-    });
-
-    it('should fire a stopExercise event if restarting during play', function (done) {
-        this.player.on('stopExercise', function() {
-            done();  // will timeout if unsuccessful
-        });
-        this.player.start();
-        this.player.start();
     });
 
     it('should reset scores on resetExercise()', function () {
