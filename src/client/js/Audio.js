@@ -4,7 +4,7 @@ var MPM = require('./MPM.js');
 var Note = require('./Note.js');
 
 
-function Audio () {
+function Audio() {
 
     var player = null;
     var audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -29,7 +29,7 @@ function Audio () {
     }.bind(this);
 
 
-    this.handleBuffer = function(buf) {
+    this.handleBuffer = function (buf) {
         var resultObj = mpm.detectPitch(buf);  // this could return an array with frequency and probability, faster
         var pitchFreq = resultObj.getPitchFrequency();
         var probability = resultObj.getProbability();
@@ -37,12 +37,11 @@ function Audio () {
     }.bind(this);
 
 
-    this._processPitchResult = function(pitchFreq, probability) {
+    this._processPitchResult = function (pitchFreq, probability) {
         if (pitchFreq === -1 || probability < 0.95) {
             window.pitchYAxisRatio = null;
             player.pushScore(null);
-        }
-        else {
+        } else {
             var noteObj = new Note(pitchFreq);
             var noteName = noteObj.name;
             // The current chart is  used to show if the note is within
@@ -52,8 +51,7 @@ function Audio () {
                 var offPitchAmt = currentNote.getCentsDiff(pitchFreq);
                 window.pitchYAxisRatio = relativeItvl + (noteObj.getCentsDiff(pitchFreq) / 100);
                 player.pushScore(offPitchAmt);
-            }
-            else {
+            } else {
                 window.pitchYAxisRatio = null;
                 player.pushScore(null);
             }
@@ -67,19 +65,19 @@ function Audio () {
     }
 
 
-    this.startSet = function(curSet) {
+    this.startSet = function (curSet) {
         currentChart = curSet.chart;
     };
 
 
-    this.stopAudio = function() {
+    this.stopAudio = function () {
         accompany.stop();
         accompany.disconnect();
         scriptNode.disconnect();
     };
 
 
-    this.startAudio = function(getSource) {
+    this.startAudio = function (getSource) {
         accompany = audioContext.createOscillator();  // must be new, can't call start 2x on same osc
         accompany.start();
         accompany.connect(audioContext.destination);
@@ -87,7 +85,7 @@ function Audio () {
     };
 
 
-    this.resetAudio = function(getSource, aPlayer) {
+    this.resetAudio = function (getSource, aPlayer) {
         player = aPlayer;
 
         player.on('startNote', function (curNote) {
@@ -108,7 +106,7 @@ function Audio () {
 
         player.on('endExercise', function (aggNoteScore) {
             this.stopAudio();
-            console.log("SCORE: " + aggNoteScore);
+            console.log('SCORE: ' + aggNoteScore);
         }.bind(this));
 
     }.bind(this);
@@ -136,10 +134,10 @@ function Audio () {
                     'googEchoCancellation': 'false',
                     'googAutoGainControl': 'false',
                     'googNoiseSuppression': 'false',
-                    'googHighpassFilter': 'false'
+                    'googHighpassFilter': 'false',
                 },
-                'optional': []
-            }
+                'optional': [],
+            },
         };
 
         function initStream(stream) {
