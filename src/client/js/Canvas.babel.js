@@ -32,6 +32,25 @@ export default class Canvas {
 
     end() {}
 
+    resetPlayerListenersInCanvas() {
+        this.player.on('stopExercise', () => {
+            console.log('stopExercise');
+        });
+
+        this.player.on('endSet', () => {
+            console.log('endSet');
+            // updateSet();
+        });
+
+        this.player.on('endExercise', aggNoteScores => {
+            console.log('endExrecise');
+            // submitScores(aggNoteScores);
+        });
+
+        this.player.on('startExercise', () => {
+            console.log('startExercise');
+        });
+    }
 
     // DRAWING FUNCTIONS
 

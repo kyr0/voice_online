@@ -56,7 +56,7 @@ export function getLessons() {
  */
 export function setCurrentLesson(currentLesson) {
     return (dispatch) =>  {
-        dispatch(setIsPlaying(false));
+        dispatch(setIsPlayingIfReady(false));
         dispatch({
             type: SET_CURRENT_LESSON,
             currentLesson,

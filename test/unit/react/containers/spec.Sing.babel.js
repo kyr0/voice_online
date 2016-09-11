@@ -37,7 +37,6 @@ describe('Sing container', () => {
         lessons = initialSingState.lessons.results;
         currentLesson = initialSingState.currentLesson;
         isPlaying = initialSingState.isPlaying;
-        dispatch = () => {};
         sandbox = sinon.sandbox.create();
         sandbox.stub(window, 'addEventListener');
         sandbox.stub(window, 'removeEventListener');

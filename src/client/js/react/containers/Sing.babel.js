@@ -23,7 +23,6 @@ export class Sing extends Component {
     }
 
     componentWillUnmount() {
-        this.props.dispatch(setIsPlayingIfReady(false));
         window.removeEventListener('resize', this.handleResize);
     }
 

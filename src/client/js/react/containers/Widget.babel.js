@@ -1,15 +1,30 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import Canvas from '../../Canvas.babel';
 import { initialLayoutState, initialSingState, initialProfileState } from '../reducers/reducers.babel';
 import { GRID_SIZES } from '../../constants/constants.babel';
+import { setIsPlayingIfReady } from '../actions/singActions.babel';
+import Canvas from '../../Canvas.babel';
+import Audio from '../../Audio';
+
 
 export class Widget extends Component {
+
+// window.percentComplete = 0;
+// window.pitchFreq = -1;
+//     canvas.initLesson();
+//     if (window.lPlayer) {
+//         audio.resetAudio(audio.getSingleNoteTestInput, window.lPlayer);
+//         // audio.resetAudio(audio.getUserInput);
+//         // audio.resetAudio(audio.getTestInput);
+//         window.lPlayer.start();
+//     }
+
 
     componentDidMount() {
         const { gridSize, user, currentLesson } = this.props;
         this.canvas = new Canvas(this.refs.canvasDiv);
+        this.audio = new Audio();
         if (gridSize !== initialLayoutState.gridSize) {
             this.setCanvasWidth(gridSize);
         }
@@ -37,12 +52,18 @@ export class Widget extends Component {
             this.setCanvasLesson(currentLesson);
         }
 
-        if (!isPlaying) {
-            // call the start and stop actions from this place
-            // TODO this does not fire when unmounting, will need to define our own componentWillUnmount
-            // do this by making this a container for Widget which defines it only once, remove it from the sing container
-            // remove the unique props from the sing container and put in Widget container
+        if (user !== initialProfileState.user && currentLesson !== initialSingState.currentLesson) {
+            // ToDO remove User and Lesson from Canvas, create Player here and inject it into Canvas
+            console.log('HEY OIUOIUAOSIDUOAISAOIUD');
         }
+
+        // if (isPlaying !== this.props.isPlaying) {
+        //     isPlaying ? this.player.start() : this.player.stop();
+        // }
+    }
+
+    componentWillUnmount() {
+        this.props.dispatch(setIsPlayingIfReady(false));
     }
 
     render() {
