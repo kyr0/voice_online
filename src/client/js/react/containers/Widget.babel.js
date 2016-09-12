@@ -6,6 +6,9 @@ import { GRID_SIZES } from '../../constants/constants.babel';
 import { setIsPlayingIfReady } from '../actions/singActions.babel';
 import Canvas from '../../Canvas.babel';
 import Audio from '../../Audio';
+import User from '../../User';
+import Lesson  from '../../Lesson';
+import Player from '../../Player';
 
 
 export class Widget extends Component {
@@ -20,41 +23,30 @@ export class Widget extends Component {
 //         window.lPlayer.start();
 //     }
 
-
     componentDidMount() {
         const { gridSize, user, currentLesson } = this.props;
         this.canvas = new Canvas(this.refs.canvasDiv);
         this.audio = new Audio();
         if (gridSize !== initialLayoutState.gridSize) {
-            this.setCanvasWidth(gridSize);
+            this.setCanvasWidth(GRID_SIZES[gridSize]);
         }
 
-        if (user !== initialProfileState.user ) {
-            this.setCanvasUser(user);
-        }
-
-        if (currentLesson !== initialSingState.currentLesson) {
-            this.setCanvasLesson(currentLesson);
+        if (user !== initialProfileState.user && currentLesson !== initialSingState.currentLesson) {
+            this.createPlayer(user, currentLesson);
         }
     }
 
     componentWillReceiveProps(nextProps) {
         const { gridSize, user, currentLesson, isPlaying } = nextProps;
+
         if (gridSize !== this.props.gridSize) {
-            this.setCanvasWidth(gridSize);
-        }
-
-        if (user !== this.props.user) {
-            this.setCanvasUser(user);
-        }
-
-        if (currentLesson !== this.props.currentLesson) {
-            this.setCanvasLesson(currentLesson);
+            this.setCanvasWidth(GRID_SIZES[gridSize]);
         }
 
         if (user !== initialProfileState.user && currentLesson !== initialSingState.currentLesson) {
-            // ToDO remove User and Lesson from Canvas, create Player here and inject it into Canvas
-            console.log('HEY OIUOIUAOSIDUOAISAOIUD');
+            if (user !== this.props.user || currentLesson !== this.props.currentLesson) {
+                this.createPlayer(user, currentLesson);
+            }
         }
 
         // if (isPlaying !== this.props.isPlaying) {
@@ -74,14 +66,20 @@ export class Widget extends Component {
         );
     }
 
-    setCanvasWidth(gridSize) {
-        this.canvas.setWidth(GRID_SIZES[gridSize]);
+    setCanvasWidth(width) {
+        this.canvas.setWidth(width);
     }
-    setCanvasUser(user) {
-        this.canvas.setUser(user);
-    }
-    setCanvasLesson(currentLesson) {
-        this.canvas.setLesson(currentLesson);
+
+    createPlayer(theUser, currentLesson) {
+        const user = new User(theUser.lower_range, theUser.upper_range);
+        const lesson = new Lesson({
+            title: currentLesson.title,
+            bpm: currentLesson.bpm,
+            noteList: currentLesson.notes,
+            captionList: currentLesson.captions,
+        });
+        this.player = new Player(user, lesson);
+        this.canvas.setPlayer(this.player);
     }
 }
 

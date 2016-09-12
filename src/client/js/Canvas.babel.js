@@ -1,9 +1,5 @@
 import { autoDetectRenderer, Container, Graphics, Text } from '../../dependencies/pixi.min.js';
 
-import Lesson  from './Lesson';
-import User from './User';
-import Player from './Player';
-
 
 export default class Canvas {
     constructor(canvasDiv) {
@@ -12,8 +8,7 @@ export default class Canvas {
     }
 
     initialize() {
-        if (this.user && this.lesson) {
-            this.player = new Player(this.user, this.lesson);
+        if (this.player) {
             this.set = this.player.getCurrentSet();
         }
 
@@ -57,7 +52,7 @@ export default class Canvas {
     drawNotes() {
         const measureWidth = this.width / this.xAnchorDivisor;
         const noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
-        const padding = (this.yAnchorCount - this.lesson.getLessonRange() - 1) * noteHeight / 2;
+        const padding = (this.yAnchorCount - this.set.getLessonRange() - 1) * noteHeight / 2;
         const radius = this.performanceHeight * (1 / this.yAnchorCount) / 2;
 
         let consumedX = this.currentTimeX;
@@ -82,7 +77,7 @@ export default class Canvas {
         let consumedX = this.currentTimeX;
 
         this.graphics.beginFill(0xFFFFFF);
-        this.lesson.captionList.forEach(caption => {
+        this.set.captionList.forEach(caption => {
             let captionWidth = caption.durationInMeasures * measureWidth;
             if (caption.text) {
                 let text = new Text(caption.text, { fontSize: noteHeight, fontWeight: 100, fontFamily: 'Helvetica Neue', fill: 'white' });
@@ -98,7 +93,7 @@ export default class Canvas {
 
     drawLabels() {
         const noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
-        const padding = (this.yAnchorCount - this.lesson.getLessonRange() - 1) * noteHeight / 2;
+        const padding = (this.yAnchorCount - this.set.getLessonRange() - 1) * noteHeight / 2;
 
         for (const label in this.set.chart) {
             if (this.set.chart.hasOwnProperty(label)) {
@@ -176,20 +171,8 @@ export default class Canvas {
         this.initialize();
     }
 
-    setUser(user) {
-        this.user = new User(user.lower_range, user.upper_range);
+    setPlayer(player) {
+        this.player = player;
         this.initialize();
     }
-
-    setLesson(lesson) {
-        this.lesson = new Lesson({
-            title: lesson.title,
-            bpm: lesson.bpm,
-            noteList: lesson.notes,
-            captionList: lesson.captions,
-        });
-        this.initialize();
-    }
-
-
 }

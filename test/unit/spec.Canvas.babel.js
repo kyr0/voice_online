@@ -42,25 +42,10 @@ describe('Canvas', () => {
         expect(canvas.initialize).to.have.been.calledOnce;
     });
 
-    it('should call initialize when setUser() is called', () => {
-        const dummyUser = {
-            lower_range: 'C3',
-            upper_range: 'C4',
-        };
+    it('should call initialize when setPlayer() is called', () => {
+        const dummyPlayer = {};
         canvas.initialize = sinon.stub();
-        canvas.setUser(dummyUser);
-        expect(canvas.initialize).to.have.been.calledOnce;
-    });
-
-    it('should call initialize when setLesson() is called', () => {
-        const dummyLesson = {
-            bpm: 142,
-            title: 'dummy',
-            notes: [['C3', '1/4']],
-            captions: [['-', '1/4']],
-        };
-        canvas.initialize = sinon.stub();
-        canvas.setLesson(dummyLesson);
+        canvas.setPlayer(dummyPlayer);
         expect(canvas.initialize).to.have.been.calledOnce;
     });
 });
