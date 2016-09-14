@@ -43,19 +43,28 @@ export class Widget extends Component {
             this.setCanvasWidth(GRID_SIZES[gridSize]);
         }
 
+        // this must take place before createPlayer call
+        if (isPlaying !== this.props.isPlaying) {
+            isPlaying ? this.player.start() : this.player.stop();
+        }
+
         if (user !== initialProfileState.user && currentLesson !== initialSingState.currentLesson) {
             if (user !== this.props.user || currentLesson !== this.props.currentLesson) {
                 this.createPlayer(user, currentLesson);
             }
         }
-
-        // if (isPlaying !== this.props.isPlaying) {
-        //     isPlaying ? this.player.start() : this.player.stop();
-        // }
     }
 
+    // TODO test changing lesson during play stops Player
+    // TODO test changing page during play stops Player
+    // TODO test that when endExercise happens isPlaying is set to false
+    // TODO perhaps refactor the Player to subscribe to react state isPlaying?
+
     componentWillUnmount() {
-        this.props.dispatch(setIsPlayingIfReady(false));
+        if (this.props.isPlaying) {
+            this.player.stop();
+            this.props.dispatch(setIsPlayingIfReady(false));
+        }
     }
 
     render() {
@@ -80,6 +89,9 @@ export class Widget extends Component {
         });
         this.player = new Player(user, lesson);
         this.canvas.setPlayer(this.player);
+        this.player.on('endExercise', () => {
+            this.props.dispatch(setIsPlayingIfReady(false));
+        });
     }
 }
 

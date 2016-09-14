@@ -10,6 +10,7 @@ export default class Canvas {
     initialize() {
         if (this.player) {
             this.set = this.player.getCurrentSet();
+            this.resetPlayerListenersInCanvas();
         }
 
         this.resetConnections();
@@ -38,7 +39,7 @@ export default class Canvas {
         });
 
         this.player.on('endExercise', aggNoteScores => {
-            console.log('endExrecise');
+            console.log('endExercise');
             // submitScores(aggNoteScores);
         });
 
