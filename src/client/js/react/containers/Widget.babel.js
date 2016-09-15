@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import { initialLayoutState, initialSingState, initialProfileState } from '../reducers/reducers.babel';
 import { GRID_SIZES } from '../../constants/constants.babel';
@@ -55,15 +56,11 @@ export class Widget extends Component {
         }
     }
 
-    // TODO test changing lesson during play stops Player
-    // TODO test changing page during play stops Player
-    // TODO test that when endExercise happens isPlaying is set to false
-    // TODO perhaps refactor the Player to subscribe to react state isPlaying?
-
     componentWillUnmount() {
+        const { setIsPlayingIfReady } = this.props;
         if (this.props.isPlaying) {
             this.player.stop();
-            this.props.dispatch(setIsPlayingIfReady(false));
+            setIsPlayingIfReady(false);
         }
     }
 
@@ -89,8 +86,14 @@ export class Widget extends Component {
         });
         this.player = new Player(user, lesson);
         this.canvas.setPlayer(this.player);
+        // TODO refactor the event strings into constants
+        this.setEndExerciseListener();
+    }
+
+    setEndExerciseListener() {
+        const { setIsPlayingIfReady } = this.props;
         this.player.on('endExercise', () => {
-            this.props.dispatch(setIsPlayingIfReady(false));
+            setIsPlayingIfReady(false);
         });
     }
 }
@@ -100,6 +103,7 @@ Widget.propTypes = {
     user: PropTypes.object.isRequired,
     currentLesson: PropTypes.object.isRequired,
     isPlaying: PropTypes.bool.isRequired,
+    setIsPlayingIfReady: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => {
@@ -111,4 +115,11 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(Widget);
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({ setIsPlayingIfReady }, dispatch);
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Widget);

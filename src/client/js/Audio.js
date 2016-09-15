@@ -3,7 +3,7 @@
 var MPM = require('./MPM.js');
 var Note = require('./Note.js');
 
-
+// TODO make a way to destroy audioContext during tests AudioContext.close()
 function Audio() {
 
     var player = null;

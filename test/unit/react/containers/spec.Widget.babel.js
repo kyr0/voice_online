@@ -2,6 +2,9 @@ import React from 'react';
 import { shallow, mount } from 'enzyme';
 import chaiEnzyme from 'chai-enzyme';
 
+import EventEmitter from 'events';
+
+
 import { Widget } from '../../../../src/client/js/react/containers/Widget.babel';
 import { GRID_LG } from '../../../../src/client/js/constants/constants.babel';
 import {
@@ -21,6 +24,7 @@ describe('Widget container', () => {
     let user;
     let currentLesson;
     let isPlaying;
+    let setIsPlayingIfReady;
     let dummyString;
     let dummyObject;
 
@@ -30,6 +34,7 @@ describe('Widget container', () => {
             user,
             currentLesson,
             isPlaying,
+            setIsPlayingIfReady,
         };
         return shallow(<Widget {...props} />);
     };
@@ -40,6 +45,7 @@ describe('Widget container', () => {
             user,
             currentLesson,
             isPlaying,
+            setIsPlayingIfReady,
         };
         return mount(<Widget {...props} />);
     };
@@ -51,6 +57,7 @@ describe('Widget container', () => {
         user = initialProfileState.user;
         currentLesson = initialSingState.currentLesson;
         isPlaying = initialSingState.isPlaying;
+        setIsPlayingIfReady = sinon.stub();
     });
 
     describe('', () => {
@@ -106,8 +113,48 @@ describe('Widget container', () => {
             expect(Widget.prototype.setCanvasWidth).to.have.been.calledOnce;
             expect(Widget.prototype.createPlayer).to.have.been.calledOnce;
         });
+
+        it('should call player.stop() first, then createPlayer() for new currentLesson', () => {
+            // The order we test here prevents a scenario where the old player
+            // is left playing after the new one is created
+
+            // Arrange
+            isPlaying = true;
+            user = dummyObject;
+            const stubPlayer = { stop: sinon.stub() };
+            subject = buildSubject();
+            subject.instance().player = stubPlayer;
+
+            // Act
+            subject.setProps({ isPlaying: false, currentLesson: dummyObject });
+
+            // Assert
+            expect(Widget.prototype.createPlayer).to.have.been.calledAfter(stubPlayer.stop);
+        });
+
+        it('should set isPlaying to false on endExercise event', () => {
+            // Arrange
+            const fakePlayer = new EventEmitter();
+            subject = buildSubject();
+            subject.instance().player = fakePlayer;
+            subject.instance().setEndExerciseListener();
+            // Act
+            fakePlayer.emit('endExercise');
+            // Assert
+            expect(setIsPlayingIfReady).to.have.been.calledWith(false);
+        });
     });
 
+
+    it('should set isPlaying false and stop the Player on unmount', () => {
+        isPlaying = true;
+        const stubPlayer = { stop: sinon.stub() };
+        subject = mountSubject();
+        subject.instance().player = stubPlayer;
+        subject.unmount();
+        expect(setIsPlayingIfReady).to.have.been.calledAfter(stubPlayer.stop);
+        expect(setIsPlayingIfReady).to.have.been.calledWith(false);
+    });
 
     it('should create canvas if correct data available on componentDidMount()', () => {
         gridSize = GRID_LG;
