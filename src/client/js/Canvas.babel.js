@@ -5,6 +5,7 @@ export default class Canvas {
     constructor(canvasDiv) {
         this.animationLoop = this.animationLoop.bind(this);
         this.canvasDiv = canvasDiv;
+        this.state = this.stopped;
     }
 
     initialize() {
@@ -21,16 +22,31 @@ export default class Canvas {
     animationLoop() {
         // render the stage container
         this.renderer.render(this.stage);
+        this.state();
         this.frame = requestAnimationFrame(this.animationLoop);
     }
 
-    start() {}
+    start() {
+        this.state = this.running;
+    }
 
-    end() {}
+    stop() {
+        this.state = this.stopped;
+    }
+
+    running() {
+        console.log('RUNNING');
+        // console.log(this.notesContainer.width);
+        let pctComplete = this.player.getPctComplete();
+        this.notesContainer.x = 0 - this.notesContainer.width * pctComplete;
+    }
+
+    stopped() {}
 
     resetPlayerListenersInCanvas() {
         this.player.on('stopExercise', () => {
             console.log('stopExercise');
+            this.stop();
         });
 
         this.player.on('endSet', () => {
@@ -45,12 +61,17 @@ export default class Canvas {
 
         this.player.on('startExercise', () => {
             console.log('startExercise');
+            this.start();
         });
     }
 
     // DRAWING FUNCTIONS
 
     drawNotes() {
+        this.notesContainer = new Container();
+        let notesGraphics = new Graphics();
+        this.notesContainer.addChild(notesGraphics);
+
         const measureWidth = this.width / this.xAnchorDivisor;
         const noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
         const padding = (this.yAnchorCount - this.set.getLessonRange() - 1) * noteHeight / 2;
@@ -58,17 +79,18 @@ export default class Canvas {
 
         let consumedX = this.currentTimeX;
 
-        this.graphics.beginFill(0xFFFFFF);
+        notesGraphics.beginFill(0xFFFFFF);
         this.set.noteList.forEach(note => {
             let noteWidth = note.durationInMeasures * measureWidth;
             if (note.name !== '-') {
                 // TODO restrict notes to be no smaller than 1/16 and lessons to be no greater than 2 octaves
-                this.graphics.drawRoundedRect(consumedX, (this.set.chart[note.name] * noteHeight) + padding, noteWidth, noteHeight, radius);
+                notesGraphics.drawRoundedRect(consumedX, (this.set.chart[note.name] * noteHeight) + padding, noteWidth, noteHeight, radius);
             }
             consumedX += noteWidth;
         });
+        notesGraphics.endFill();
 
-        this.graphics.endFill();
+        this.stage.addChild(this.notesContainer);
     }
 
     drawCaptions() {
