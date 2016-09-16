@@ -79,18 +79,22 @@ export default class Canvas {
 
         let consumedX = this.currentTimeX;
 
-        notesGraphics.beginFill(0xFFFFFF);
         this.set.noteList.forEach(note => {
             let noteWidth = note.durationInMeasures * measureWidth;
             if (note.name !== '-') {
                 // TODO restrict notes to be no smaller than 1/16 and lessons to be no greater than 2 octaves
+                notesGraphics.beginFill(0xFFFFFF, 1);
                 notesGraphics.drawRoundedRect(consumedX, (this.set.chart[note.name] * noteHeight) + padding, noteWidth, noteHeight, radius);
+                notesGraphics.endFill();
+            } else {
+                notesGraphics.beginFill(0xFFFFFF, 0);
+                notesGraphics.drawRoundedRect(consumedX, padding, noteWidth, noteHeight, radius);
+                notesGraphics.endFill();
             }
             consumedX += noteWidth;
         });
-        notesGraphics.endFill();
 
-        this.stage.addChild(this.notesContainer);
+        this.setContainer.addChild(this.notesContainer);
     }
 
     drawCaptions() {
@@ -100,9 +104,14 @@ export default class Canvas {
         let consumedX = this.currentTimeX;
 
         this.graphics.beginFill(0xFFFFFF);
+
+        console.log('HEY HEY HEY');
+        console.log(this.set.captionList);
+
         this.set.captionList.forEach(caption => {
             let captionWidth = caption.durationInMeasures * measureWidth;
             if (caption.text) {
+                console.log(caption.text);
                 let text = new Text(caption.text, { fontSize: noteHeight, fontWeight: 100, fontFamily: 'Helvetica Neue', fill: 'white' });
                 text.position.set(consumedX, this.height - (this.captionHeight * 0.1));
                 text.anchor.set(0, 1);
@@ -114,7 +123,7 @@ export default class Canvas {
         this.graphics.endFill();
     }
 
-    drawLabels() {
+    createLabels() {
         const noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
         const padding = (this.yAnchorCount - this.set.getLessonRange() - 1) * noteHeight / 2;
 
@@ -144,7 +153,7 @@ export default class Canvas {
         if (this.set) {
             this.drawNotes();
             this.drawCaptions();
-            this.drawLabels();
+            this.createLabels();
         }
     }
 
@@ -157,7 +166,7 @@ export default class Canvas {
         // clean up old renderer, stage, and canvases
         if (this.renderer) {
             this.renderer.destroy();
-            this.stage.removeChild(this.graphics);
+            this.stage.destroy({ children: true });
         }
         while (this.canvasDiv.lastChild) {
             this.canvasDiv.removeChild(this.canvasDiv.lastChild);
@@ -178,6 +187,8 @@ export default class Canvas {
 
         // create the root of the scene graph
         this.stage = new Container(this.width, this.height);
+        this.setContainer = new Container();
+        this.stage.addChild(this.setContainer);
     }
 
     setWidth(width) {
