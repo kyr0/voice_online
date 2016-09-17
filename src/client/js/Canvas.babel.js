@@ -1,4 +1,4 @@
-import { CanvasRenderer, Container, Sprite, Graphics, Text } from '../../dependencies/pixi.min.js';
+import { CanvasRenderer, Container, Sprite, Graphics, Circle, Text } from '../../dependencies/pixi.min.js';
 
 
 export default class Canvas {
@@ -37,6 +37,14 @@ export default class Canvas {
     running() {
         let pctComplete = this.player.getPctComplete();
         this.setRender.x = 0 - this.performanceWidth * pctComplete;
+        let yRatio = this.player.pitchYAxisRatio;
+        console.log(yRatio);
+        if (yRatio) {
+            this.pitchIndicator.y = this.noteHeight * yRatio + this.padding;
+            this.pitchIndicator.visible = true;
+        } else {
+            this.pitchIndicator.visible = false;
+        }
     }
 
     stopped() {}
@@ -72,8 +80,6 @@ export default class Canvas {
         this.notesContainer.addChild(notesGraphics);
 
         const measureWidth = this.width / this.xAnchorDivisor;
-        const noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
-        const padding = (this.yAnchorCount - this.set.getLessonRange() - 1) * noteHeight / 2;
         const radius = this.performanceHeight * (1 / this.yAnchorCount) / 2;
 
         let consumedX = this.currentTimeX;
@@ -83,11 +89,11 @@ export default class Canvas {
             if (note.name !== '-') {
                 // TODO restrict notes to be no smaller than 1/16 and lessons to be no greater than 2 octaves
                 notesGraphics.beginFill(0xFFFFFF, 1);
-                notesGraphics.drawRoundedRect(consumedX, (this.set.chart[note.name] * noteHeight) + padding, noteWidth, noteHeight, radius);
+                notesGraphics.drawRoundedRect(consumedX, (this.set.chart[note.name] * this.noteHeight) + this.padding, noteWidth, this.noteHeight, radius);
                 notesGraphics.endFill();
             } else {
                 notesGraphics.beginFill(0xFFFFFF, 0);
-                notesGraphics.drawRoundedRect(consumedX, padding, noteWidth, noteHeight, radius);
+                notesGraphics.drawRoundedRect(consumedX, this.padding, noteWidth, this.noteHeight, radius);
                 notesGraphics.endFill();
             }
             consumedX += noteWidth;
@@ -99,7 +105,6 @@ export default class Canvas {
 
     drawCaptions() {
         const measureWidth = this.width / this.xAnchorDivisor;
-        const noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
 
         let captionsGraphics = new Graphics();
         this.setContainer.addChild(captionsGraphics);
@@ -112,7 +117,7 @@ export default class Canvas {
             let captionWidth = caption.durationInMeasures * measureWidth;
             if (caption.text) {
                 let text = new Text(caption.text, {
-                    fontSize: noteHeight,
+                    fontSize: this.noteHeight,
                     fontWeight: 100,
                     fontFamily: 'Helvetica Neue',
                     fill: 'white',
@@ -135,9 +140,6 @@ export default class Canvas {
         }
         this.labelContainer = new Container();
 
-        const noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
-        const padding = (this.yAnchorCount - this.set.getLessonRange() - 1) * noteHeight / 2;
-
         this.labelGraphics = new Graphics();
         this.labelContainer.addChild(this.labelGraphics);
 
@@ -147,13 +149,13 @@ export default class Canvas {
             if (this.set.chart.hasOwnProperty(label)) {
                 // Use 'fontFamily','fontSize',fontStyle','fontVariant' and 'fontWeight' properties
                 let text = new Text(label, {
-                    fontSize: noteHeight - (noteHeight * 0.2),
+                    fontSize: this.noteHeight - (this.noteHeight * 0.2),
                     fontWeight: 100,
                     fontFamily: 'Helvetica Neue',
                     fill: 'white',
                     letterSpacing: 2,
                 });
-                text.position.set(5, (this.set.chart[label] * noteHeight) + padding);
+                text.position.set(5, (this.set.chart[label] * this.noteHeight) + this.padding);
                 this.labelContainer.addChild(text);
             }
         }
@@ -175,7 +177,16 @@ export default class Canvas {
         this.graphics.lineTo(this.currentTimeX, this.performanceHeight);
         this.graphics.lineStyle(0);
 
+        // pitch indicator
+        this.graphics.beginFill(0xFFFFFF);
+        this.pitchIndicator = new Circle(this.currentTimeX, 0, 4);
+        this.pitchIndicator.visible = false;
+        this.graphics.endFill();
+        this.stage.addChild(this.pitchIndicator);
+
         if (this.set) {
+            this.noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
+            this.padding = (this.yAnchorCount - this.set.getLessonRange() - 1) * this.noteHeight / 2;
             this.drawNotes();
             this.drawCaptions();
             this.drawLabels();

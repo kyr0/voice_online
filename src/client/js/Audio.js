@@ -39,7 +39,7 @@ function Audio() {
 
     this._processPitchResult = function (pitchFreq, probability) {
         if (pitchFreq === -1 || probability < 0.95) {
-            window.pitchYAxisRatio = null;
+            player.pitchYAxisRatio = null;
             player.pushScore(null);
         } else {
             var noteObj = new Note(pitchFreq);
@@ -49,10 +49,10 @@ function Audio() {
             var relativeItvl = currentChart[noteName] + 1;
             if (relativeItvl) {
                 var offPitchAmt = currentNote.getCentsDiff(pitchFreq);
-                window.pitchYAxisRatio = relativeItvl + (noteObj.getCentsDiff(pitchFreq) / 100);
+                player.pitchYAxisRatio = relativeItvl + (noteObj.getCentsDiff(pitchFreq) / 100);
                 player.pushScore(offPitchAmt);
             } else {
-                window.pitchYAxisRatio = null;
+                player.pitchYAxisRatio = null;
                 player.pushScore(null);
             }
         }
@@ -85,7 +85,7 @@ function Audio() {
     };
 
 
-    this.resetAudio = function (getSource, aPlayer) {
+    this.setPlayer = function (getSource, aPlayer) {
         player = aPlayer;
 
         player.on('startNote', function (curNote) {
