@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-var Lesson = require("./Lesson.js");
-var InvalidRangeError = require("./customErrors").InvalidRangeError;
+var Lesson = require('./Lesson.js');
+var InvalidRangeError = require('./customErrors').InvalidRangeError;
 
 function Exercise(aUser, aLesson){
 
@@ -20,7 +20,7 @@ function Exercise(aUser, aLesson){
             newNotes.push([newNoteName, noteDuration]);
         }
         var newCaps = [];
-        for(var cap = 0; cap < baseLesson.captionList.duration; cap++) {
+        for(var cap = 0; cap < baseLesson.captionList.length; cap++) {
             var newCapText = baseLesson.captionList[cap].text;
             var newCapDuration = baseLesson.captionList[cap].duration;
             newCaps.push([newCapText, newCapDuration]);
@@ -29,7 +29,7 @@ function Exercise(aUser, aLesson){
             bpm: baseLesson.bpm,
             title: baseLesson.title,
             noteList: newNotes,
-            captionList: newCaps
+            captionList: newCaps,
         };
         return new Lesson(newOptions);
     }
