@@ -40,10 +40,10 @@ export default class Canvas {
         let yRatio = this.player.pitchYAxisRatio;
         console.log(yRatio);
         if (yRatio) {
-            this.pitchIndicator.y = this.noteHeight * yRatio + this.padding;
-            this.pitchIndicator.visible = true;
+            this.pitchContainer.y = this.noteHeight * yRatio + this.padding + (this.noteHeight / 2);
+            this.pitchContainer.visible = true;
         } else {
-            this.pitchIndicator.visible = false;
+            this.pitchContainer.visible = false;
         }
     }
 
@@ -178,11 +178,14 @@ export default class Canvas {
         this.graphics.lineStyle(0);
 
         // pitch indicator
-        this.graphics.beginFill(0xFFFFFF);
-        this.pitchIndicator = new Circle(this.currentTimeX, 0, 4);
-        this.pitchIndicator.visible = false;
-        this.graphics.endFill();
-        this.stage.addChild(this.pitchIndicator);
+        this.pitchContainer = new Container();
+        this.pitchGraphics = new Graphics();
+        this.pitchContainer.addChild(this.pitchGraphics);
+        this.pitchGraphics.beginFill(0xFFFFFF);
+        this.pitchGraphics.drawCircle(this.currentTimeX, 0, 4);
+        // this.pitchIndicator.visible = false;
+        this.pitchGraphics.endFill();
+        this.stage.addChild(this.pitchContainer);
 
         if (this.set) {
             this.noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
