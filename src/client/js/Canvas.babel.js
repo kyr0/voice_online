@@ -110,7 +110,13 @@ export default class Canvas {
         this.set.captionList.forEach(caption => {
             let captionWidth = caption.durationInMeasures * measureWidth;
             if (caption.text) {
-                let text = new Text(caption.text, { fontSize: noteHeight, fontWeight: 100, fontFamily: 'Helvetica Neue', fill: 'white' });
+                let text = new Text(caption.text, {
+                    fontSize: noteHeight,
+                    fontWeight: 100,
+                    fontFamily: 'Helvetica Neue',
+                    fill: 'white',
+                    letterSpacing: 2,
+                });
                 text.position.set(consumedX, this.height - (this.captionHeight * 0.1));
                 text.anchor.set(0, 1);
                 this.setContainer.addChild(text);
@@ -128,7 +134,13 @@ export default class Canvas {
         for (const label in this.set.chart) {
             if (this.set.chart.hasOwnProperty(label)) {
                 // Use 'fontFamily','fontSize',fontStyle','fontVariant' and 'fontWeight' properties
-                let text = new Text(label, { fontSize: noteHeight - (noteHeight * 0.2), fontWeight: 100, fontFamily: 'Helvetica Neue', fill: 'white' });
+                let text = new Text(label, {
+                    fontSize: noteHeight - (noteHeight * 0.2),
+                    fontWeight: 100,
+                    fontFamily: 'Helvetica Neue',
+                    fill: 'white',
+                    letterSpacing: 2,
+                });
                 text.position.set(5, (this.set.chart[label] * noteHeight) + padding);
                 this.stage.addChild(text);
             }
