@@ -15,7 +15,7 @@ describe('Canvas', () => {
             destroy: sinon.stub(),
         };
         const stageMock = {
-            removeChild: sinon.stub(),
+            destroy: sinon.stub(),
         };
         canvas.graphics = 'dummy';
         canvas.renderer = rendererMock;
@@ -30,7 +30,7 @@ describe('Canvas', () => {
         // Act
         canvas.destroy();
 
-        expect(canvas.stage.removeChild.callCount).to.equal(1);
+        expect(canvas.stage.destroy.callCount).to.equal(1);
         expect(canvas.renderer.destroy.callCount).to.equal(1);
         expect(canvas.canvasDiv.children.length).to.equal(0);
     });
