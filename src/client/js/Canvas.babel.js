@@ -1,4 +1,4 @@
-import { autoDetectRenderer, Container, Graphics, Text } from '../../dependencies/pixi.min.js';
+import { CanvasRenderer, Container, Sprite, Graphics, Text } from '../../dependencies/pixi.min.js';
 
 
 export default class Canvas {
@@ -35,10 +35,8 @@ export default class Canvas {
     }
 
     running() {
-        console.log('RUNNING');
-        // console.log(this.notesContainer.width);
         let pctComplete = this.player.getPctComplete();
-        this.notesContainer.x = 0 - this.notesContainer.width * pctComplete;
+        this.setRender.x = 0 - this.performanceWidth * pctComplete;
     }
 
     stopped() {}
@@ -94,6 +92,7 @@ export default class Canvas {
             consumedX += noteWidth;
         });
 
+        this.performanceWidth = this.notesContainer.width;
         this.setContainer.addChild(this.notesContainer);
     }
 
@@ -101,26 +100,25 @@ export default class Canvas {
         const measureWidth = this.width / this.xAnchorDivisor;
         const noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
 
+        let captionsGraphics = new Graphics();
+        this.setContainer.addChild(captionsGraphics);
+
         let consumedX = this.currentTimeX;
 
-        this.graphics.beginFill(0xFFFFFF);
-
-        console.log('HEY HEY HEY');
-        console.log(this.set.captionList);
+        captionsGraphics.beginFill(0xFFFFFF);
 
         this.set.captionList.forEach(caption => {
             let captionWidth = caption.durationInMeasures * measureWidth;
             if (caption.text) {
-                console.log(caption.text);
                 let text = new Text(caption.text, { fontSize: noteHeight, fontWeight: 100, fontFamily: 'Helvetica Neue', fill: 'white' });
                 text.position.set(consumedX, this.height - (this.captionHeight * 0.1));
                 text.anchor.set(0, 1);
-                this.stage.addChild(text);
+                this.setContainer.addChild(text);
             }
             consumedX += captionWidth;
         });
 
-        this.graphics.endFill();
+        captionsGraphics.endFill();
     }
 
     createLabels() {
@@ -154,6 +152,9 @@ export default class Canvas {
             this.drawNotes();
             this.drawCaptions();
             this.createLabels();
+            const texture = this.renderer.generateTexture(this.setContainer);
+            this.setRender = new Sprite(texture);
+            this.stage.addChild(this.setRender);
         }
     }
 
@@ -175,10 +176,9 @@ export default class Canvas {
 
     create() {
         // make the new stuff
-        this.renderer = autoDetectRenderer(this.width, this.height,
+        this.renderer = new CanvasRenderer(this.width, this.height,
             {
                 transparent: true,
-                clearBeforeRender: false,
                 antialias: true,
             }
         );
@@ -188,7 +188,6 @@ export default class Canvas {
         // create the root of the scene graph
         this.stage = new Container(this.width, this.height);
         this.setContainer = new Container();
-        this.stage.addChild(this.setContainer);
     }
 
     setWidth(width) {
