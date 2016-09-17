@@ -49,7 +49,8 @@ export default class Canvas {
 
         this.player.on('endSet', () => {
             console.log('endSet');
-            // updateSet();
+            this.set = this.player.getCurrentSet();
+            this.drawLabels();
         });
 
         this.player.on('endExercise', aggNoteScores => {
@@ -127,9 +128,20 @@ export default class Canvas {
         captionsGraphics.endFill();
     }
 
-    createLabels() {
+    drawLabels() {
+        if (this.labelContainer) {
+            this.stage.removeChild(this.labelContainer);
+            this.labelContainer.destroy({ children: true });
+        }
+        this.labelContainer = new Container();
+
         const noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
         const padding = (this.yAnchorCount - this.set.getLessonRange() - 1) * noteHeight / 2;
+
+        this.labelGraphics = new Graphics();
+        this.labelContainer.addChild(this.labelGraphics);
+
+        this.labelGraphics.beginFill(0xFFFFFF);
 
         for (const label in this.set.chart) {
             if (this.set.chart.hasOwnProperty(label)) {
@@ -142,9 +154,12 @@ export default class Canvas {
                     letterSpacing: 2,
                 });
                 text.position.set(5, (this.set.chart[label] * noteHeight) + padding);
-                this.stage.addChild(text);
+                this.labelContainer.addChild(text);
             }
         }
+
+        this.labelGraphics.endFill();
+        this.stage.addChild(this.labelContainer);
     }
 
     // helper functions
@@ -163,7 +178,7 @@ export default class Canvas {
         if (this.set) {
             this.drawNotes();
             this.drawCaptions();
-            this.createLabels();
+            this.drawLabels();
             const texture = this.renderer.generateTexture(this.setContainer);
             this.setRender = new Sprite(texture);
             this.stage.addChild(this.setRender);
@@ -180,6 +195,8 @@ export default class Canvas {
         if (this.renderer) {
             this.renderer.destroy();
             this.stage.destroy({ children: true });
+            this.labelContainer = null;
+            this.setContainer = null;
         }
         while (this.canvasDiv.lastChild) {
             this.canvasDiv.removeChild(this.canvasDiv.lastChild);
