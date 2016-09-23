@@ -6,6 +6,8 @@ export default class Canvas {
         this.animationLoop = this.animationLoop.bind(this);
         this.canvasDiv = canvasDiv;
         this.state = this.stopped;
+        this.pctComplete = 0;
+        this.yRatio = null;
     }
 
     initialize() {
@@ -19,14 +21,15 @@ export default class Canvas {
         this.animationLoop();
     }
 
-    animationLoop() {
-        // render the stage container
+    animationLoop(elapsedTime) {
+        // elapsed time starts at round 560ms, and increases from there
         this.renderer.render(this.stage);
         this.state();
         this.frame = requestAnimationFrame(this.animationLoop);
     }
 
     start() {
+        this.startTime = Date.now();
         this.state = this.running;
     }
 
@@ -35,12 +38,11 @@ export default class Canvas {
     }
 
     running() {
-        let pctComplete = this.player.getPctComplete();
-        this.setRender.x = 0 - this.performanceWidth * pctComplete;
-        let yRatio = this.player.pitchYAxisRatio;
-        console.log(yRatio);
-        if (yRatio) {
-            this.pitchContainer.y = this.noteHeight * yRatio + this.padding + (this.noteHeight / 2);
+        this.pctComplete = (Date.now() - this.startTime) / this.durationInMilliseconds;
+        this.setRender.x = 0 - this.performanceWidth * this.pctComplete;
+        this.yRatio = this.player.pitchYAxisRatio;
+        if (this.yRatio) {
+            this.pitchContainer.y = this.noteHeight * this.yRatio + this.padding + (this.noteHeight / 2);
             this.pitchContainer.visible = true;
         } else {
             this.pitchContainer.visible = false;
@@ -58,6 +60,7 @@ export default class Canvas {
         this.player.on('endSet', () => {
             console.log('endSet');
             this.set = this.player.getCurrentSet();
+            this.startTime = Date.now();
             this.drawLabels();
         });
 
@@ -183,11 +186,12 @@ export default class Canvas {
         this.pitchContainer.addChild(this.pitchGraphics);
         this.pitchGraphics.beginFill(0xFFFFFF);
         this.pitchGraphics.drawCircle(this.currentTimeX, 0, 4);
-        // this.pitchIndicator.visible = false;
+        this.pitchContainer.visible = false;
         this.pitchGraphics.endFill();
         this.stage.addChild(this.pitchContainer);
 
         if (this.set) {
+            this.durationInMilliseconds = this.set.durationInMilliseconds;
             this.noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
             this.padding = (this.yAnchorCount - this.set.getLessonRange() - 1) * this.noteHeight / 2;
             this.drawNotes();
@@ -195,6 +199,7 @@ export default class Canvas {
             this.drawLabels();
             const texture = this.renderer.generateTexture(this.setContainer);
             this.setRender = new Sprite(texture);
+            this.setRender.cacheAsBitmap = true;
             this.stage.addChild(this.setRender);
         }
     }
@@ -221,7 +226,7 @@ export default class Canvas {
         // make the new stuff
         this.renderer = new CanvasRenderer(this.width, this.height,
             {
-                transparent: true,
+                transparent: false,
                 antialias: true,
             }
         );
