@@ -17,7 +17,7 @@ function LessonTimer(lesson) {
 util.inherits(LessonTimer, EventEmitter);
 
 LessonTimer.prototype.startTimer = function (){
-    this.startTime = new Date().getTime();
+    this.startTime = Date.now();
     this.emit('startSet');
     this.emit('startNote', this.curNote);
     this.curID = setTimeout(this.timerInstance.bind(this), this.curNote.durationInMilliseconds);
@@ -37,7 +37,7 @@ LessonTimer.prototype.timerInstance = function () {
     if (this.curNote) { // solves race condition with endEvent
         this.emit('startNote', this.curNote);
         // the diff resets latency which occurs during timer to keep it on track
-        var diff = (new Date().getTime() - this.startTime) - (expectedNoteEnd * this.durationInMilliseconds);
+        var diff = (Date.now() - this.startTime) - (expectedNoteEnd * this.durationInMilliseconds);
         this.curID = setTimeout(this.timerInstance.bind(this), this.curNote.durationInMilliseconds - diff);
     }
     else {
@@ -47,7 +47,7 @@ LessonTimer.prototype.timerInstance = function () {
 
 LessonTimer.prototype.getPctComplete = function () {
     if (this.startTime){
-        var elapsedTime = (new Date().getTime() - this.startTime);
+        var elapsedTime = (Date.now() - this.startTime);
         return elapsedTime / this.durationInMilliseconds;
     }
     else {
