@@ -18,18 +18,20 @@ function Audio() {
     var currentNote = null;
     var currentChart = null;
 
+    this.audioBuffer = null;
+    this.inputData = null;
 
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function (audioProcessingEvent) {
         // console.log('onaudioprocess');
         // TODO fix the transition detection errors by averaging frames
-        var inputBuffer = audioProcessingEvent.inputBuffer;
-        var inputData = inputBuffer.getChannelData(0);
-        this.handleBuffer(inputData);
+        this.inputBuffer = audioProcessingEvent.inputBuffer;
+        this.inputData = this.inputBuffer.getChannelData(0);
+        this._handleBuffer(this.inputData);
     }.bind(this);
 
 
-    this.handleBuffer = function (buf) {
+    this._handleBuffer = function (buf) {
         var resultObj = mpm.detectPitch(buf);  // this could return an array with frequency and probability, faster
         var pitchFreq = resultObj.getPitchFrequency();
         var probability = resultObj.getProbability();

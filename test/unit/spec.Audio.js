@@ -18,7 +18,7 @@ describe('Audio', function() {
     it('should fire onaudioprocess event with user media stream', function (done) {
         // if this doesn't timeout, it's a pass
         var audio = new Audio();
-        audio.handleBuffer = function() {
+        audio._handleBuffer = function() {
             done();
         };
         audio.getUserInput();
