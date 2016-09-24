@@ -2,6 +2,8 @@
 
 var MPM = require('./MPM.js');
 var Note = require('./Note.js');
+var NoteMaps = require('./NoteMaps.js');
+
 
 // TODO make a way to destroy audioContext during tests AudioContext.close()
 function Audio() {
@@ -11,6 +13,8 @@ function Audio() {
     var bufferLength = 1024;
     var scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
     var mpm = new MPM(audioContext.sampleRate, bufferLength);
+    var note = new Note('-', '1/4');  // these values are not important, only necessary, TODO refactor Note class
+    var nMaps = new NoteMaps();
 
     var accompany = null;
     var audioIn = null;
@@ -18,8 +22,9 @@ function Audio() {
     var currentNote = null;
     var currentChart = null;
 
-    this.audioBuffer = null;
+    this.inputBuffer = null;
     this.inputData = null;
+    this.resultObj = null;
 
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function (audioProcessingEvent) {
@@ -32,9 +37,10 @@ function Audio() {
 
 
     this._handleBuffer = function (buf) {
-        var resultObj = mpm.detectPitch(buf);  // this could return an array with frequency and probability, faster
-        var pitchFreq = resultObj.getPitchFrequency();
-        var probability = resultObj.getProbability();
+        // for speed perhaps mpm could return an array with frequency and probability
+        this.resultObj = mpm.detectPitch(buf);
+        var pitchFreq = this.resultObj.getPitchFrequency();
+        var probability = this.resultObj.getProbability();
         this._processPitchResult(pitchFreq, probability);
     }.bind(this);
 
@@ -42,16 +48,16 @@ function Audio() {
     this._processPitchResult = function (pitchFreq, probability) {
         if (pitchFreq === -1 || probability < 0.95) {
             player.pitchYAxisRatio = null;
-            player.pushScore(null);
+            player.pushScore(null);  // this has 3 layers of depth
         } else {
-            var noteObj = new Note(pitchFreq);
-            var noteName = noteObj.name;
+            var noteName = note.getClosestNoteFromPitch(pitchFreq);
             // The current chart is  used to show if the note is within
             // the visible bounds of the set that is playing.
             var relativeItvl = currentChart[noteName] + 1;
             if (relativeItvl) {
                 var offPitchAmt = currentNote.getCentsDiff(pitchFreq);
-                player.pitchYAxisRatio = relativeItvl + (noteObj.getCentsDiff(pitchFreq) / 100);
+                note.frequency = nMaps.getClosestFreqFromPitch(pitchFreq); // so we don't need a new Note object
+                player.pitchYAxisRatio = relativeItvl + (note.getCentsDiff(pitchFreq) / 100);
                 player.pushScore(offPitchAmt);
             } else {
                 player.pitchYAxisRatio = null;
