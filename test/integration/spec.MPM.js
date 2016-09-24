@@ -19,46 +19,15 @@ describe('detectPitch()', function () {
         expect(errMsg).to.have.string(expectedMsg);
     });
 
-    it('should assign correct frequency to A2 buffer given 512 samples', function() {
+    it('should assign correct frequency to A2 buffer given 512 samples', function () {
         var expectedA2Freq = 110;
         expect(Math.round(this.mpm.detectPitch(buffers.noteBuffers.A2_512))).to.equal(expectedA2Freq);
-    });
-
-    describe('should put expected values in ', function() {
-        beforeEach(function () {
-            this.mpm.detectPitch(buffers.oscBuffer);
-        });
-
-        it('maxPositions[] given known input', function() {
-            var maxValue1 = 0.9998912511141909;
-            var maxValue2 = 0.9995046600818478;
-            var maxIndex1 = 100;
-            var maxIndex2 = 200;
-            expect(this.mpm.__testonly__.nsdf[maxIndex1]).to.equal(maxValue1);
-            expect(this.mpm.__testonly__.nsdf[maxIndex2]).to.equal(maxValue2);
-            expect(MPM.__testonly__.maxPositions.toString()).to.equal(maxIndex1 + ',' + maxIndex2);
-        });
-
-        it('turningPointX/Y given known input', function() {
-            expect(MPM.__testonly__.turningPointX).to.equal(200.46002039225493);
-            expect(MPM.__testonly__.turningPointY).to.equal(1.0000240543039114);
-        });
-
-        it('turningPointX/Y if private function prabolicInterpolation() finds 1 in 3 consecutive index', function() {
-            var tauIndex = 34;
-            this.mpm.__testonly__.nsdf[tauIndex - 1] = 1;   // a
-            this.mpm.__testonly__.nsdf[tauIndex] = 1;       // b, tau index
-            this.mpm.__testonly__.nsdf[tauIndex + 1] = 1;   // c
-            this.mpm.__testonly__.prabolicInterpolation(tauIndex);
-            expect(MPM.__testonly__.turningPointX).to.equal(tauIndex);
-            expect(MPM.__testonly__.turningPointY).to.equal(1);
-        });
     });
 
 });
 
 
-function createMockBufferFullOfNaN(){
+function createMockBufferFullOfNaN() {
     var numFrames = 10;
     var mockBuffer = new Array(numFrames);
     // Fill the mock buffer with NaNs
