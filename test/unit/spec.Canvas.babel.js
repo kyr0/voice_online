@@ -9,7 +9,7 @@ describe('Canvas', () => {
         canvas = new Canvas(document.getElementById('content'));
     });
 
-    it('should have destroy() remove renderer, all child nodes, and stage', () => {
+    it('_destroy() should remove renderer, all child nodes, and stage', () => {
         // Arrange
         const rendererMock = {
             destroy: sinon.stub(),
@@ -28,7 +28,7 @@ describe('Canvas', () => {
         expect(canvas.canvasDiv.children.length).to.equal(2);
 
         // Act
-        canvas.destroy();
+        canvas._destroy();
 
         expect(canvas.stage.destroy.callCount).to.equal(1);
         expect(canvas.renderer.destroy.callCount).to.equal(1);

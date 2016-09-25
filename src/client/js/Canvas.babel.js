@@ -13,7 +13,7 @@ export default class Canvas {
     initialize() {
         if (this.player) {
             this.set = this.player.getCurrentSet();
-            this.resetPlayerListenersInCanvas();
+            this.setPlayerListenersInCanvas();
         }
 
         this.resetConnections();
@@ -41,7 +41,7 @@ export default class Canvas {
         var now = Date.now();
         this.player.checkStatus(now);
         this.pctComplete = (now - this.startTime) / this.durationInMilliseconds;
-        this.setRender.x = 0 - this.performanceWidth * this.pctComplete;
+        this.setContainerRender.x = 0 - this.performanceWidth * this.pctComplete;
         this.yRatio = this.player.pitchYAxisRatio;
         if (this.yRatio) {
             this.pitchContainer.y = this.noteHeight * this.yRatio + this.padding + (this.noteHeight / 2);
@@ -53,7 +53,7 @@ export default class Canvas {
 
     stopped() {}
 
-    resetPlayerListenersInCanvas() {
+    setPlayerListenersInCanvas() {
         this.player.on('stopExercise', () => {
             this.stop();
         });
@@ -73,7 +73,6 @@ export default class Canvas {
         });
     }
 
-    // DRAWING FUNCTIONS
 
     drawNotes() {
         this.notesContainer = new Container();
@@ -103,6 +102,7 @@ export default class Canvas {
         this.performanceWidth = this.notesContainer.width;
         this.setContainer.addChild(this.notesContainer);
     }
+
 
     drawCaptions() {
         const measureWidth = this.width / this.xAnchorDivisor;
@@ -134,10 +134,21 @@ export default class Canvas {
         captionsGraphics.endFill();
     }
 
+
+    renderSetContainer() {
+        this.drawNotes();
+        this.drawCaptions();
+        const setContainerTexture = this.renderer.generateTexture(this.setContainer);
+        this.setContainer.destroy({ children: true });
+        this.setContainerRender = new Sprite(setContainerTexture);
+        this.setContainerRender.cacheAsBitmap = true;
+        this.stage.addChild(this.setContainerRender);
+    }
+
+
     drawLabels() {
-        if (this.labelContainer) {
-            this.stage.removeChild(this.labelContainer);
-            this.labelContainer.destroy({ children: true });
+        if (this.labelContainerRender) {
+            this.stage.removeChild(this.labelContainerRender);
         }
         this.labelContainer = new Container();
 
@@ -162,10 +173,15 @@ export default class Canvas {
         }
 
         this.labelGraphics.endFill();
-        this.stage.addChild(this.labelContainer);
+
+        const labelContainerTexture = this.renderer.generateTexture(this.labelContainer);
+        this.labelContainer.destroy({ children: true });
+        this.labelContainerRender = new Sprite(labelContainerTexture);
+        this.labelContainerRender.cacheAsBitmap = true;
+        this.stage.addChild(this.labelContainerRender);
     }
 
-    // helper functions
+
     drawInitialCanvas() {
         this.graphics = new Graphics();
         this.stage.addChild(this.graphics);
@@ -192,22 +208,17 @@ export default class Canvas {
             this.durationInMilliseconds = this.set.durationInMilliseconds;
             this.noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
             this.padding = (this.yAnchorCount - this.set.getLessonRange() - 1) * this.noteHeight / 2;
-            this.drawNotes();
-            this.drawCaptions();
+            this.renderSetContainer();
             this.drawLabels();
-            const texture = this.renderer.generateTexture(this.setContainer);
-            this.setRender = new Sprite(texture);
-            this.setRender.cacheAsBitmap = true;
-            this.stage.addChild(this.setRender);
         }
     }
 
     resetConnections() {
-        this.destroy();
-        this.create();
+        this._destroy();
+        this._create();
     }
 
-    destroy() {
+    _destroy() {
         // clean up old renderer, stage, and canvases
         if (this.renderer) {
             this.renderer.destroy();
@@ -220,7 +231,7 @@ export default class Canvas {
         }
     }
 
-    create() {
+    _create() {
         // make the new stuff
         this.renderer = new CanvasRenderer(this.width, this.height,
             {
