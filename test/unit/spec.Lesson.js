@@ -59,7 +59,7 @@ describe('Lesson constructor given note list and captions', function() {
 
     it('should throw an error if length of captions exceeds Lesson length', function () {
         var that = this;
-        var fn = function(){
+        var fn = function (){
             that.lesson.addCaptions([['', '1/3']]);
         };
         expect(fn).to.throw(CaptionDurationError);
@@ -73,7 +73,7 @@ describe('Lesson constructor given bpm', function() {
 
         this.lesson = new Lesson({
             noteList: noteList,
-            bpm: 60
+            bpm: 60,
         });
     });
 
@@ -95,7 +95,7 @@ describe('Lesson constructor given bpm', function() {
 });
 
 
-describe('Lesson', function() {
+describe('Lesson', function () {
     beforeEach(function () {
         this.lesson = new Lesson();
     });
@@ -120,10 +120,10 @@ describe('Lesson', function() {
     describe('with multiple notes', function () {
         beforeEach(function () {
             this.newNotes = [
-                {name: 'B2', duration: '3/8'},
-                {name: 'A1', duration: '1/2'},
-                {name: 'Db3', duration: '1/4'},
-                {name: 'B2', duration: '2'}
+                { name: 'B2', duration: '3/8' },
+                { name: 'A1', duration: '1/2' },
+                { name: 'Db3', duration: '1/4' },
+                { name: 'B2', duration: '2' },
             ];
             this.lesson.addNotes(this.newNotes);
             this.lesson.addNotes([['B3', '1/16'], ['C4', '1/32']]);
@@ -162,19 +162,19 @@ describe('Lesson', function() {
             expect(this.lesson.durationInMeasures).to.equal(expectedDuration);
         });
 
-        it('should have notes which are aware of percentOnComplete ', function () {
-            var expectedDuration = (3 / 8) / this.lesson.durationInMeasures;
-            expect(this.lesson.noteList[0].percentOnComplete).to.equal(expectedDuration);
-            expectedDuration = ((3 / 8) + (1 / 2)) / this.lesson.durationInMeasures;
-            expect(this.lesson.noteList[1].percentOnComplete).to.equal(expectedDuration);
-            expectedDuration = ((3 / 8) + (1 / 2) + (1 / 4)) / this.lesson.durationInMeasures;
-            expect(this.lesson.noteList[2].percentOnComplete).to.equal(expectedDuration);
-            expectedDuration = ((3 / 8) + (1 / 2) + (1 / 4) + 2) / this.lesson.durationInMeasures;
-            expect(this.lesson.noteList[3].percentOnComplete).to.equal(expectedDuration);
-            expectedDuration = ((3 / 8) + (1 / 2) + (1 / 4) + 2 + (1 / 16)) / this.lesson.durationInMeasures;
-            expect(this.lesson.noteList[4].percentOnComplete).to.equal(expectedDuration);
-            expectedDuration = ((3 / 8) + (1 / 2) + (1 / 4) + 2 + (1 / 16) + (1 / 32)) / this.lesson.durationInMeasures;
-            expect(this.lesson.noteList[5].percentOnComplete).to.equal(expectedDuration);
+        it('should have notes which are aware of elapsedTimeAtNotesEnd', function () {
+            var expected = this.lesson.noteList[0].durationInMilliseconds;
+            expect(this.lesson.noteList[0].elapsedTimeAtNotesEnd).to.equal(expected);
+            expected += this.lesson.noteList[1].durationInMilliseconds;
+            expect(this.lesson.noteList[1].elapsedTimeAtNotesEnd).to.equal(expected);
+            expected += this.lesson.noteList[2].durationInMilliseconds;
+            expect(this.lesson.noteList[2].elapsedTimeAtNotesEnd).to.equal(expected);
+            expected += this.lesson.noteList[3].durationInMilliseconds;
+            expect(this.lesson.noteList[3].elapsedTimeAtNotesEnd).to.equal(expected);
+            expected += this.lesson.noteList[4].durationInMilliseconds;
+            expect(this.lesson.noteList[4].elapsedTimeAtNotesEnd).to.equal(expected);
+            expected += this.lesson.noteList[5].durationInMilliseconds;
+            expect(this.lesson.noteList[5].elapsedTimeAtNotesEnd).to.equal(expected);
         });
 
         it('should always have the intervals of all the notes it contains', function () {
