@@ -18,70 +18,63 @@ describe('Player Object', function() {
         this.startExerciseEvents = 0;
         this.startNoteEvents = 0;
         this.endNoteEvents = 0;
-        var that = this;
+        this.endExerciseEvents = 0;
+        this.stopExerciseEvents = 0;
 
         this.player.on('startExercise', function () {
-            that.startExerciseEvents++;
-        });
+            this.startExerciseEvents++;
+        }.bind(this));
+
+        this.player.on('endExercise', function () {
+            this.endExerciseEvents++;
+        }.bind(this));
+
+        this.player.on('stopExercise', function () {
+            this.stopExerciseEvents++;
+        }.bind(this));
 
         this.player.on('startSet', function () {
-            that.startSetEvents++;
-        });
+            this.startSetEvents++;
+        }.bind(this));
 
         this.player.on('startNote', function () {
-            that.startNoteEvents++;
-        });
+            this.startNoteEvents++;
+        }.bind(this));
 
         this.player.on('endNote', function () {
-            that.endNoteEvents++;
-        });
+            this.endNoteEvents++;
+        }.bind(this));
 
         this.player.on('endSet', function () {
-            that.endSetEvents++;
-        });
+            this.endSetEvents++;
+        }.bind(this));
     });
 
-    it('should have fired the right events by the time endExercise is fired', function (done) {
-        var that = this;
-        var finish = function(){
-            expect(that.startExerciseEvents).to.equal(1);
-            expect(that.startSetEvents).to.equal(5);
-            expect(that.endSetEvents).to.equal(4);
-            expect(that.startNoteEvents).to.equal(10);
-            expect(that.endNoteEvents).to.equal(10);
-            done();
-        };
-        this.player.on('endExercise', function() {
-            finish();
-        });
+    it('should have fired the right events by the time endExercise is fired', function () {
         this.player.start();
+        var doCheckStatus = function (){
+            this.player.checkStatus(this.player.nextEventTime);
+        }.bind(this);
+        _.times(10, doCheckStatus);
+        expect(this.startExerciseEvents).to.equal(1);
+        expect(this.startSetEvents).to.equal(5);
+        expect(this.endSetEvents).to.equal(5);
+        expect(this.startNoteEvents).to.equal(10);
+        expect(this.endNoteEvents).to.equal(10);
+        expect(this.endExerciseEvents).to.equal(1);
+        expect(this.stopExerciseEvents).to.equal(1);
     });
 
-    it('should pass the current Set when startSet is fired', function (done) {
-        var finish = function(curSet){
+    it('should pass the current Set when startSet is fired', function () {
+        this.player.on('startSet', function (curSet) {
             expect(curSet.chart).to.exist;
-            done();
-        };
-        this.player.on('startSet', function(curSet) {
-            finish(curSet);
         });
         this.player.start();
     });
 
-    it('should correctly set index when stopped', function (done) {
-        var that = this;
+    it('should set index to zero when started', function () {
         this.player.curSetIdx = 3;
-        this.player.on('stopExercise', function () {
-            expect(that.player.curSetIdx).to.equal(0);
-            done();
-        });
-        this.player.stop();
+        this.player.start();
+        expect(this.player.curSetIdx).to.equal(0);
     });
-
-    it('should reset scores on resetExercise()', function () {
-        this.player.score = "dummy";
-        this.player.resetExercise();
-        expect(this.player.score).to.be.an.instanceof(Score);
-    });
-
 });
