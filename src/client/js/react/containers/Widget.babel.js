@@ -14,16 +14,6 @@ import Player from '../../Player';
 
 export class Widget extends Component {
 
-// window.percentComplete = 0;
-// window.pitchFreq = -1;
-//     canvas.initLesson();
-//     if (window.lPlayer) {
-//         audio.resetAudio(audio.getSingleNoteTestInput, window.lPlayer);
-//         // audio.resetAudio(audio.getUserInput);
-//         // audio.resetAudio(audio.getTestInput);
-//         window.lPlayer.start();
-//     }
-
     componentDidMount() {
         const { gridSize, user, currentLesson } = this.props;
         this.canvas = new Canvas(this.refs.canvasDiv);

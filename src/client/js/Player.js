@@ -5,7 +5,6 @@ var EventEmitter = require('events').EventEmitter;
 
 var Score = require('./Score.js');
 var Exercise = require('./Exercise.js');
-var LessonTimer = require('./LessonTimer.js');
 
 
 function Player(aUser, aLesson) {
@@ -13,75 +12,94 @@ function Player(aUser, aLesson) {
     this._exercise = new Exercise(aUser, aLesson);
     this.score = new Score(this._exercise);
     this.sets = this._exercise.sets;
-    this.timer = null;
-    this.resetExercise();
+    this.curSetIdx = 0;
+    this.setListeners();
 }
 
 
 util.inherits(Player, EventEmitter);
 
 
-Player.prototype.resetExercise = function() {
-    this.score = new Score(this._exercise);
-    this.curSetIdx = 0;
-    this.resetListeners(this.sets[this.curSetIdx]);
-};
-
-// resetListeners is necessary here since it is possible to
+// setListeners is necessary here since it is possible to
 //    have different Lessons comprising the set list of an Exercise.
-Player.prototype.resetListeners = function (curSet){
+Player.prototype.setListeners = function () {
     var that = this;
-    this.timer = new LessonTimer(curSet);
 
-    this.timer.on('startSet', function (){
-        that.emit('startSet', that.sets[that.curSetIdx]);
+    this.on('startNote', function (curNote){
+        console.log('startNote: ' + curNote.name);
     });
 
-    this.timer.on('startNote', function (curNote){
-        that.emit('startNote', curNote);
-    });
-
-    this.timer.on('endNote', function (curNote){
+    this.on('endNote', function (){
+        console.log('endNote: ' + that.curNote.name);
         that.score.storeNoteScores();
-        that.emit('endNote', curNote);
+        that.curNoteIdx++;
+        if (that.noteList[that.curNoteIdx]) {
+            that.curNote = that.noteList[that.curNoteIdx];
+            that.nextEventTime = that.startTime + that.curNote.elapsedTimeAtNotesEnd;
+            that.emit('startNote', that.curNote);
+        } else {
+            that.emit('endSet');
+        }
     });
 
-    // not to be confused with 'stop'
-    this.timer.on('endSet', function (){
-        that.score.storeSetScores();
+    this.on('startSet', function () {
+        console.log('startSet');
+        that.curNoteIdx = 0;
+        that.noteList = that.sets[that.curSetIdx].noteList;
+        that.curNote = that.noteList[that.curNoteIdx];
 
+        that.startTime = Date.now();
+        that.nextEventTime = that.startTime + that.curNote.elapsedTimeAtNotesEnd;
+        that.emit('startNote', that.curNote);
+    });
+
+    this.on('endSet', function (){
+        console.log('endSet');
+        that.score.storeSetScores();
         that.curSetIdx++;
         if (that.sets[that.curSetIdx]){
-            that.resetListeners(that.sets[that.curSetIdx]);
-            that.emit('endSet');
-            that.timer.startTimer();
-        }
-        else {
+            that.emit('startSet', that.sets[that.curSetIdx]);
+        } else {
             that.score.evaluateExerciseScores();
             var aggregateNoteScores = that.score.getAggregateNoteScores();
-            that.resetExercise();
             that.emit('endExercise', aggregateNoteScores);
         }
     });
+
+    this.on('startExercise', () => {
+        console.log('startExercise');
+    });
+
+    this.on('stopExercise', () => {
+        console.log('stopExercise');
+    });
+
+    this.on('endExercise', () => {
+        console.log('endExercise');
+        that.score = new Score(that._exercise);
+        that.curSetIdx = 0;
+        that.emit('stopExercise');
+    });
+};
+
+
+Player.prototype.checkStatus = function (now){
+    if (now > this.nextEventTime) {
+        this.emit('endNote');
+    }
 };
 
 Player.prototype.start = function (){
     this.emit('startExercise');
-    this.timer.startTimer();
+    this.emit('startSet', this.sets[this.curSetIdx]);
 };
 
 Player.prototype.stop = function (){
-    this.timer.stopTimer();
-    this.resetExercise();
     this.emit('stopExercise');
 };
 
 Player.prototype.pushScore = function (score){
     this.score.pushScore(score);
-};
-
-Player.prototype.getPctComplete = function (){
-    return this.timer.getPctComplete();
 };
 
 Player.prototype.getCurrentSet= function (){

@@ -29,7 +29,7 @@ export default class Canvas {
     }
 
     start() {
-        this.startTime = Date.now();
+        this.startTime = this.player.startTime;
         this.state = this.running;
     }
 
@@ -38,7 +38,9 @@ export default class Canvas {
     }
 
     running() {
-        this.pctComplete = (Date.now() - this.startTime) / this.durationInMilliseconds;
+        var now = Date.now();
+        this.player.checkStatus(now);
+        this.pctComplete = (now - this.startTime) / this.durationInMilliseconds;
         this.setRender.x = 0 - this.performanceWidth * this.pctComplete;
         this.yRatio = this.player.pitchYAxisRatio;
         if (this.yRatio) {
@@ -53,24 +55,20 @@ export default class Canvas {
 
     resetPlayerListenersInCanvas() {
         this.player.on('stopExercise', () => {
-            console.log('stopExercise');
             this.stop();
         });
 
-        this.player.on('endSet', () => {
-            console.log('endSet');
+        this.player.on('startSet', () => {
             this.set = this.player.getCurrentSet();
-            this.startTime = Date.now();
+            this.startTime = this.player.startTime;
             this.drawLabels();
         });
 
         this.player.on('endExercise', aggNoteScores => {
-            console.log('endExercise');
             // submitScores(aggNoteScores);
         });
 
         this.player.on('startExercise', () => {
-            console.log('startExercise');
             this.start();
         });
     }
