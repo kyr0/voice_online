@@ -77,4 +77,10 @@ describe('Player Object', function() {
         this.player.start();
         expect(this.player.curSetIdx).to.equal(0);
     });
+
+
+    it('should fire stopEexercise when the stop method is called', function() {
+        this.player.stop();
+        expect(this.stopExerciseEvents).to.equal(1);
+    });
 });

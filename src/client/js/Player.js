@@ -77,19 +77,19 @@ Player.prototype.setListeners = function () {
     this.on('endExercise', () => {
         console.log('endExercise');
         that.score = new Score(that._exercise);
-        that.curSetIdx = 0;
         that.emit('stopExercise');
     });
 };
 
 
 Player.prototype.checkStatus = function (now){
-    if (now > this.nextEventTime) {
+    if (now >= this.nextEventTime) {
         this.emit('endNote');
     }
 };
 
 Player.prototype.start = function (){
+    this.curSetIdx = 0;
     this.emit('startExercise');
     this.emit('startSet', this.sets[this.curSetIdx]);
 };
