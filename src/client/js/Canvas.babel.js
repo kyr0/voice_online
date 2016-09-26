@@ -61,8 +61,12 @@ export default class Canvas {
         this.player.on('startSet', () => {
             this.set = this.player.getCurrentSet();
             this.startTime = this.player.startTime;
-            this.drawLabels();
         });
+
+        this.player.on('endSet', () => {
+            this.updateLabel();
+        });
+
 
         this.player.on('endExercise', aggNoteScores => {
             // submitScores(aggNoteScores);
@@ -146,19 +150,15 @@ export default class Canvas {
     }
 
 
-    drawLabels() {
-        if (this.labelContainerRender) {
-            this.stage.removeChild(this.labelContainerRender);
-        }
-        this.labelContainer = new Container();
+    _getLabelTextureForSet(set) {
+        const labelContainer = new Container();
+        const labelGraphics = new Graphics();
 
-        this.labelGraphics = new Graphics();
-        this.labelContainer.addChild(this.labelGraphics);
+        labelContainer.addChild(labelGraphics);
+        labelGraphics.beginFill(0xFFFFFF);
 
-        this.labelGraphics.beginFill(0xFFFFFF);
-
-        for (const label in this.set.chart) {
-            if (this.set.chart.hasOwnProperty(label)) {
+        for (const label in set.chart) {
+            if (set.chart.hasOwnProperty(label)) {
                 // Use 'fontFamily','fontSize',fontStyle','fontVariant' and 'fontWeight' properties
                 let text = new Text(label, {
                     fontSize: this.noteHeight - (this.noteHeight * 0.2),
@@ -167,20 +167,38 @@ export default class Canvas {
                     fill: 'white',
                     letterSpacing: 2,
                 });
-                text.position.set(5, (this.set.chart[label] * this.noteHeight) + this.padding);
-                this.labelContainer.addChild(text);
+                text.position.set(5, (set.chart[label] * this.noteHeight) + this.padding);
+                labelContainer.addChild(text);
             }
         }
 
-        this.labelGraphics.endFill();
+        labelGraphics.endFill();
 
-        const labelContainerTexture = this.renderer.generateTexture(this.labelContainer);
-        this.labelContainer.destroy({ children: true });
-        this.labelContainerRender = new Sprite(labelContainerTexture);
-        this.labelContainerRender.cacheAsBitmap = true;
-        this.stage.addChild(this.labelContainerRender);
+        const labelContainerTexture = this.renderer.generateTexture(labelContainer);
+        labelContainer.destroy({ children: true });
+        let labelContainerRender = new Sprite(labelContainerTexture);
+        labelContainerRender.cacheAsBitmap = true;
+        labelContainerRender.visible = false;
+        this.stage.addChild(labelContainerRender);
+        return labelContainerRender;
     }
 
+    createAllLabels() {
+        this.labels = [];
+        this.curLabelSetIdx = 0;
+        for (let setIdx = 0; setIdx < this.player.sets.length; setIdx++) {
+            this.labels.push(this._getLabelTextureForSet(this.player.sets[setIdx]));
+        }
+        this.labels[this.curLabelSetIdx].visible = true;
+    }
+
+    updateLabel() {
+        this.curSetIdx++;
+        if (this.labels[this.curLabelSetIdx]) {
+            this.labels[this.curLabelSetIdx - 1].visible = false;
+            this.labels[this.curLabelSetIdx].visible = true;
+        }
+    }
 
     drawInitialCanvas() {
         this.graphics = new Graphics();
@@ -209,7 +227,7 @@ export default class Canvas {
             this.noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
             this.padding = (this.yAnchorCount - this.set.getLessonRange() - 1) * this.noteHeight / 2;
             this.renderSetContainer();
-            this.drawLabels();
+            this.createAllLabels();
         }
     }
 
@@ -223,7 +241,6 @@ export default class Canvas {
         if (this.renderer) {
             this.renderer.destroy();
             this.stage.destroy({ children: true });
-            this.labelContainer = null;
             this.setContainer = null;
         }
         while (this.canvasDiv.lastChild) {
