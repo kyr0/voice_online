@@ -1,4 +1,12 @@
-import { CanvasRenderer, Container, Sprite, Graphics, Circle, Text } from '../../dependencies/pixi.min.js';
+import {
+    CanvasRenderer,
+    autoDetectRenderer,
+    Container,
+    Sprite,
+    Graphics,
+    Circle,
+    Text,
+} from '../../dependencies/pixi.min.js';
 
 
 export default class Canvas {
@@ -21,8 +29,7 @@ export default class Canvas {
         this.animationLoop();
     }
 
-    animationLoop(elapsedTime) {
-        // elapsed time starts at round 560ms, and increases from there
+    animationLoop() {
         this.renderer.render(this.stage);
         this.state();
         this.frame = requestAnimationFrame(this.animationLoop);
@@ -38,7 +45,7 @@ export default class Canvas {
     }
 
     running() {
-        var now = Date.now();
+        const now = Date.now();
         this.player.checkStatus(now);
         this.pctComplete = (now - this.startTime) / this.durationInMilliseconds;
         this.setContainerRender.x = 0 - this.performanceWidth * this.pctComplete;
@@ -183,7 +190,7 @@ export default class Canvas {
         return labelContainerRender;
     }
 
-    createAllLabels() {
+    renderAllLabels() {
         this.labels = [];
         this.curLabelSetIdx = 0;
         for (let setIdx = 0; setIdx < this.player.sets.length; setIdx++) {
@@ -227,37 +234,39 @@ export default class Canvas {
             this.noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
             this.padding = (this.yAnchorCount - this.set.getLessonRange() - 1) * this.noteHeight / 2;
             this.renderSetContainer();
-            this.createAllLabels();
+            this.renderAllLabels();
+            this.renderer = this.autoDetectRenderer;
         }
     }
 
     resetConnections() {
-        this._destroy();
-        this._create();
-    }
-
-    _destroy() {
         // clean up old renderer, stage, and canvases
         if (this.renderer) {
-            this.renderer.destroy();
+            this.renderer = null;
+            this.autoDetectRenderer.destroy();
+            this.canvasRenderer.destroy();
             this.stage.destroy({ children: true });
-            this.setContainer = null;
         }
         while (this.canvasDiv.lastChild) {
             this.canvasDiv.removeChild(this.canvasDiv.lastChild);
         }
-    }
 
-    _create() {
         // make the new stuff
-        this.renderer = new CanvasRenderer(this.width, this.height,
+        this.canvasRenderer = new CanvasRenderer(this.width, this.height,
             {
                 transparent: false,
                 antialias: true,
             }
         );
+        this.autoDetectRenderer = autoDetectRenderer(this.width, this.height,
+            {
+                transparent: false,
+                antialias: true,
+            }
+        );
+        this.renderer = this.canvasRenderer;
         // this.renderer.view.style.border = '1px dashed white';
-        this.canvasDiv.appendChild(this.renderer.view);
+        this.canvasDiv.appendChild(this.autoDetectRenderer.view);
 
         // create the root of the scene graph
         this.stage = new Container(this.width, this.height);
