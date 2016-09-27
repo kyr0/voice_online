@@ -193,7 +193,7 @@ export default class Canvas {
     }
 
     updateLabel() {
-        this.curSetIdx++;
+        this.curLabelSetIdx++;
         if (this.labels[this.curLabelSetIdx]) {
             this.labels[this.curLabelSetIdx - 1].visible = false;
             this.labels[this.curLabelSetIdx].visible = true;
