@@ -47,6 +47,10 @@ export default class Canvas {
     running() {
         const now = Date.now();
         this.player.checkStatus(now);
+
+        this.lastPctComplete = this.pctComplete;
+        this.previousY = this.pitchContainer.y;
+
         this.pctComplete = (now - this.startTime) / this.durationInMilliseconds;
         this.setContainerRender.x = 0 - this.performanceWidth * this.pctComplete;
         this.yRatio = this.player.pitchYAxisRatio;
@@ -55,6 +59,18 @@ export default class Canvas {
             this.pitchContainer.visible = true;
         } else {
             this.pitchContainer.visible = false;
+        }
+
+        // ** Draw the user's performance on the grid **
+        this.performanceContainer.x = 0 - this.performanceWidth * this.pctComplete;
+        // To avoid drawing blank space when sound has been recorded at the start
+        if (this.yRatio && this.previousY === 0) {
+            this.previousY = this.pitchContainer.y;
+        }
+        if (this.yRatio && this.previousY && this.lastPctComplete < this.pctComplete) {
+            this.performanceGraphics.lineStyle(3, 0xFFA500);
+            this.performanceGraphics.moveTo(this.currentTimeX + this.performanceWidth * this.lastPctComplete, this.previousY);
+            this.performanceGraphics.lineTo(this.currentTimeX + this.performanceWidth * this.pctComplete, this.pitchContainer.y);
         }
     }
 
@@ -71,7 +87,11 @@ export default class Canvas {
         });
 
         this.player.on('endSet', () => {
-            this.updateLabel();
+            this.curSetIdx++;
+            if (this.player.sets.length > this.curSetIdx) {
+                this.updateLabel();
+                this.updatePerformanceGraphic();
+            }
         });
 
 
@@ -146,6 +166,58 @@ export default class Canvas {
     }
 
 
+    drawInitialCanvas() {
+        this.graphics = new Graphics();
+        this.stage.addChild(this.graphics);
+
+        // const duration = this.set.durationInMeasures;
+
+        // center line
+        this.graphics.lineStyle(2, 0xFFFFFF);
+        this.graphics.moveTo(this.currentTimeX, 0);
+        this.graphics.lineTo(this.currentTimeX, this.performanceHeight);
+        this.graphics.lineStyle(0);
+
+        // pitch indicator
+        this.pitchContainer = new Container();
+        this.pitchGraphics = new Graphics();
+        this.pitchContainer.addChild(this.pitchGraphics);
+        this.pitchGraphics.beginFill(0xFFFFFF);
+        this.pitchGraphics.drawCircle(this.currentTimeX, 0, 4);
+        this.pitchContainer.visible = false;
+        this.pitchGraphics.endFill();
+        this.stage.addChild(this.pitchContainer);
+
+
+
+        if (this.set) {
+            this.curSetIdx = 0;
+            this.durationInMilliseconds = this.set.durationInMilliseconds;
+            this.noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
+            this.padding = (this.yAnchorCount - this.set.getLessonRange() - 1) * this.noteHeight / 2;
+            this.renderSetContainer();
+            this.renderAllLabels();
+            this.prepareAllPerformances();
+            this.renderer = this.autoDetectRenderer;
+        }
+    }
+
+
+    prepareAllPerformances() {
+        // performance history
+        this.performances = [];
+        this.performanceContainer = new Container();
+        for (let setIdx = 0; setIdx < this.player.sets.length; setIdx++) {
+            this.performances.push(new Graphics());
+            this.performanceContainer.addChild(this.performances[setIdx]);
+            this.performances[setIdx].visible = false;
+        }
+        this.performanceGraphics = this.performances[0];
+        this.performanceGraphics.visible = true;
+        this.stage.addChild(this.performanceContainer);
+    }
+
+
     renderSetContainer() {
         this.drawNotes();
         this.drawCaptions();
@@ -192,60 +264,35 @@ export default class Canvas {
 
     renderAllLabels() {
         this.labels = [];
-        this.curLabelSetIdx = 0;
         for (let setIdx = 0; setIdx < this.player.sets.length; setIdx++) {
             this.labels.push(this._getLabelTextureForSet(this.player.sets[setIdx]));
         }
-        this.labels[this.curLabelSetIdx].visible = true;
+        this.labels[this.curSetIdx].visible = true;
     }
 
     updateLabel() {
-        this.curLabelSetIdx++;
-        if (this.labels[this.curLabelSetIdx]) {
-            this.labels[this.curLabelSetIdx - 1].visible = false;
-            this.labels[this.curLabelSetIdx].visible = true;
-        }
+        this.labels[this.curSetIdx - 1].visible = false;
+        this.labels[this.curSetIdx].visible = true;
     }
 
-    drawInitialCanvas() {
-        this.graphics = new Graphics();
-        this.stage.addChild(this.graphics);
-
-        // const duration = this.set.durationInMeasures;
-
-        // center line
-        this.graphics.lineStyle(2, 0xFFFFFF);
-        this.graphics.moveTo(this.currentTimeX, 0);
-        this.graphics.lineTo(this.currentTimeX, this.performanceHeight);
-        this.graphics.lineStyle(0);
-
-        // pitch indicator
-        this.pitchContainer = new Container();
-        this.pitchGraphics = new Graphics();
-        this.pitchContainer.addChild(this.pitchGraphics);
-        this.pitchGraphics.beginFill(0xFFFFFF);
-        this.pitchGraphics.drawCircle(this.currentTimeX, 0, 4);
-        this.pitchContainer.visible = false;
-        this.pitchGraphics.endFill();
-        this.stage.addChild(this.pitchContainer);
-
-        if (this.set) {
-            this.durationInMilliseconds = this.set.durationInMilliseconds;
-            this.noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
-            this.padding = (this.yAnchorCount - this.set.getLessonRange() - 1) * this.noteHeight / 2;
-            this.renderSetContainer();
-            this.renderAllLabels();
-            this.renderer = this.autoDetectRenderer;
-        }
+    updatePerformanceGraphic() {
+        this.performanceGraphics.visible = false;
+        this.performanceGraphics = this.performances[this.curSetIdx];
+        this.performanceGraphics.visible = true;
     }
 
     resetConnections() {
         // clean up old renderer, stage, and canvases
         if (this.renderer) {
+            if (this.performances) {
+                this.performances = null;
+                this.performanceContainer.destroy({ children: true });
+            }
             this.renderer = null;
             this.autoDetectRenderer.destroy();
             this.canvasRenderer.destroy();
             this.stage.destroy({ children: true });
+
         }
         while (this.canvasDiv.lastChild) {
             this.canvasDiv.removeChild(this.canvasDiv.lastChild);
