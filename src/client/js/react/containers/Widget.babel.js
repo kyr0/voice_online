@@ -76,7 +76,7 @@ export class Widget extends Component {
         });
         this.player = new Player(user, lesson);
         this.canvas.setPlayer(this.player);
-        this.audio.setPlayer(this.audio.getSingleNoteTestInput, this.player);
+        this.audio.setPlayer(this.audio.getTestInput, this.player);
         // TODO refactor the event strings into constants
         this.setEndExerciseListener();
     }
