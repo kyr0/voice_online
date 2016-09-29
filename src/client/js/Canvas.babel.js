@@ -68,7 +68,6 @@ export default class Canvas {
             this.previousY = this.pitchContainer.y;
         }
         if (this.yRatio && this.previousY && this.lastPctComplete < this.pctComplete) {
-            this.performanceGraphics.lineStyle(3, 0xFFA500);
             this.performanceGraphics.moveTo(this.currentTimeX + this.performanceWidth * this.lastPctComplete, this.previousY);
             this.performanceGraphics.lineTo(this.currentTimeX + this.performanceWidth * this.pctComplete, this.pitchContainer.y);
         }
@@ -89,8 +88,8 @@ export default class Canvas {
         this.player.on('endSet', () => {
             this.curSetIdx++;
             if (this.player.sets.length > this.curSetIdx) {
-                this.updateLabel();
-                this.updatePerformanceGraphic();
+                this.updateSetLabel();
+                this.updatePerformanceSetGraphic();
             }
         });
 
@@ -100,6 +99,9 @@ export default class Canvas {
         });
 
         this.player.on('startExercise', () => {
+            this.curSetIdx = 0;
+            this.clearAnyPerformances();
+            this.prepareAllPerformances();
             this.start();
         });
     }
@@ -191,13 +193,11 @@ export default class Canvas {
 
 
         if (this.set) {
-            this.curSetIdx = 0;
             this.durationInMilliseconds = this.set.durationInMilliseconds;
             this.noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
             this.padding = (this.yAnchorCount - this.set.getLessonRange() - 1) * this.noteHeight / 2;
             this.renderSetContainer();
             this.renderAllLabels();
-            this.prepareAllPerformances();
             this.renderer = this.autoDetectRenderer;
         }
     }
@@ -211,6 +211,7 @@ export default class Canvas {
             this.performances.push(new Graphics());
             this.performanceContainer.addChild(this.performances[setIdx]);
             this.performances[setIdx].visible = false;
+            this.performances[setIdx].lineStyle(3, 0xFFA500);
         }
         this.performanceGraphics = this.performances[0];
         this.performanceGraphics.visible = true;
@@ -267,33 +268,36 @@ export default class Canvas {
         for (let setIdx = 0; setIdx < this.player.sets.length; setIdx++) {
             this.labels.push(this._getLabelTextureForSet(this.player.sets[setIdx]));
         }
-        this.labels[this.curSetIdx].visible = true;
+        this.labels[0].visible = true;
     }
 
-    updateLabel() {
+    updateSetLabel() {
         this.labels[this.curSetIdx - 1].visible = false;
         this.labels[this.curSetIdx].visible = true;
     }
 
-    updatePerformanceGraphic() {
+    updatePerformanceSetGraphic() {
         this.performanceGraphics.visible = false;
         this.performanceGraphics = this.performances[this.curSetIdx];
         this.performanceGraphics.visible = true;
     }
 
+    clearAnyPerformances() {
+        if (this.performances) {
+            this.performanceContainer.destroy();
+            this.performances = null;
+        }
+    }
+
     resetConnections() {
         // clean up old renderer, stage, and canvases
         if (this.renderer) {
-            if (this.performances) {
-                this.performances = null;
-                this.performanceContainer.destroy({ children: true });
-            }
             this.renderer = null;
             this.autoDetectRenderer.destroy();
             this.canvasRenderer.destroy();
             this.stage.destroy({ children: true });
-
         }
+
         while (this.canvasDiv.lastChild) {
             this.canvasDiv.removeChild(this.canvasDiv.lastChild);
         }
