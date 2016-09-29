@@ -55,7 +55,7 @@ export default class Canvas {
         this.setContainerRender.x = 0 - this.performanceWidth * this.pctComplete;
         this.yRatio = this.player.pitchYAxisRatio;
         if (this.yRatio) {
-            this.pitchContainer.y = this.noteHeight * this.yRatio + this.padding + (this.noteHeight / 2);
+            this.pitchContainer.y = this.noteHeight * this.yRatio + this.padding - (this.noteHeight / 2);
             this.pitchContainer.visible = true;
         } else {
             this.pitchContainer.visible = false;
@@ -180,24 +180,23 @@ export default class Canvas {
         this.graphics.lineTo(this.currentTimeX, this.performanceHeight);
         this.graphics.lineStyle(0);
 
-        // pitch indicator
-        this.pitchContainer = new Container();
-        this.pitchGraphics = new Graphics();
-        this.pitchContainer.addChild(this.pitchGraphics);
-        this.pitchGraphics.beginFill(0xFFFFFF);
-        this.pitchGraphics.drawCircle(this.currentTimeX, 0, 4);
-        this.pitchContainer.visible = false;
-        this.pitchGraphics.endFill();
-        this.stage.addChild(this.pitchContainer);
-
-
-
         if (this.set) {
             this.durationInMilliseconds = this.set.durationInMilliseconds;
             this.noteHeight = this.performanceHeight * (1 / this.yAnchorCount);
             this.padding = (this.yAnchorCount - this.set.getLessonRange() - 1) * this.noteHeight / 2;
             this.renderSetContainer();
             this.renderAllLabels();
+
+            // pitch indicator
+            this.pitchContainer = new Container();
+            this.pitchGraphics = new Graphics();
+            this.pitchContainer.addChild(this.pitchGraphics);
+            this.pitchGraphics.beginFill(0xFFA500);
+            this.pitchGraphics.drawCircle(this.currentTimeX, 0, 4);
+            this.pitchContainer.visible = false;
+            this.pitchGraphics.endFill();
+            this.stage.addChild(this.pitchContainer);
+
             this.renderer = this.autoDetectRenderer;
         }
     }
