@@ -13,7 +13,7 @@ function Audio() {
     var bufferLength = 1024;
     var scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
     var mpm = new MPM(audioContext.sampleRate, bufferLength);
-    var note = new Note('-', '1/4');  // these values are not important, only necessary, TODO refactor Note class
+    var note = new Note('A4', '1/4');  // these values are not important, only necessary // TODO refactor Note class
     var nMaps = new NoteMaps();
 
     var accompany = null;
@@ -55,9 +55,12 @@ function Audio() {
             // the visible bounds of the set that is playing.
             var relativeItvl = currentChart[noteName] + 1;
             if (relativeItvl) {
-                var offPitchAmt = currentNote.getCentsDiff(pitchFreq);
                 note.frequency = nMaps.getClosestFreqFromPitch(pitchFreq); // so we don't need a new Note object
-                player.pitchYAxisRatio = relativeItvl + (note.getCentsDiff(pitchFreq) / 100);
+                var centsDiff = note.getCentsDiff(pitchFreq) / 100; // must be done after frequency is set on Note object
+                var offPitchAmt = currentNote.getCentsDiff(pitchFreq);
+                // console.log('Closest Note Freq: ' + note.frequency + ' OffBy: ' + centsDiff + ' Inc Pitch: ' + pitchFreq + ' Name: ' + noteName);
+                // console.log('Pitch Axis Ratio: ' + (relativeItvl + (centsDiff * -1)) + ' Rl Itv: ' + relativeItvl + ' Off: ' + centsDiff);
+                player.pitchYAxisRatio = relativeItvl + (centsDiff * -1);
                 player.pushScore(offPitchAmt);
             } else {
                 player.pitchYAxisRatio = null;

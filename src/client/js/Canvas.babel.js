@@ -53,12 +53,15 @@ export default class Canvas {
 
         this.pctComplete = (now - this.startTime) / this.durationInMilliseconds;
         this.setContainerRender.x = 0 - this.performanceWidth * this.pctComplete;
-        this.yRatio = this.player.pitchYAxisRatio;
-        if (this.yRatio) {
-            this.pitchContainer.y = this.noteHeight * this.yRatio + this.padding - (this.noteHeight / 2);
-            this.pitchContainer.visible = true;
-        } else {
-            this.pitchContainer.visible = false;
+
+        if (this.yRatio !== this.player.pitchYAxisRatio) {
+            this.yRatio = this.player.pitchYAxisRatio;
+            if (this.yRatio) {
+                this.pitchContainer.y = this.noteHeight * this.yRatio + this.padding - (this.noteHeight / 2);
+                this.pitchContainer.visible = true;
+            } else {
+                this.pitchContainer.visible = false;
+            }
         }
 
         // ** Draw the user's performance on the grid **
