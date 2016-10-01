@@ -46,10 +46,12 @@ export default class Canvas {
 
     running() {
         const now = Date.now();
+        this.lastPctComplete = this.pctComplete;
+
         this.player.checkStatus(now);
 
-        this.lastPctComplete = this.pctComplete;
         this.previousY = this.pitchContainer.y;
+        this.previousYRatio = this.yRatio;
 
         this.pctComplete = (now - this.startTime) / this.durationInMilliseconds;
         this.setContainerRender.x = 0 - this.performanceWidth * this.pctComplete;
@@ -64,14 +66,16 @@ export default class Canvas {
             }
         }
 
+        // To avoid drawing blank space when sound has been recorded at the start
+        // console.log('Y Ratio:' + this.yRatio + ' Previous Y Ratio: ' + this.previousYRatio);
+        if (this.yRatio && !this.previousYRatio && this.lastPctComplete < this.pctComplete) {
+            this.previousY = this.pitchContainer.y;
+            this.performanceGraphics.moveTo(this.currentTimeX + this.performanceWidth * this.lastPctComplete, this.previousY);
+        }
+
         // ** Draw the user's performance on the grid **
         this.performanceContainer.x = 0 - this.performanceWidth * this.pctComplete;
-        // To avoid drawing blank space when sound has been recorded at the start
-        if (this.yRatio && this.previousY === 0) {
-            this.previousY = this.pitchContainer.y;
-        }
         if (this.yRatio && this.previousY && this.lastPctComplete < this.pctComplete) {
-            this.performanceGraphics.moveTo(this.currentTimeX + this.performanceWidth * this.lastPctComplete, this.previousY);
             this.performanceGraphics.lineTo(this.currentTimeX + this.performanceWidth * this.pctComplete, this.pitchContainer.y);
         }
     }
@@ -282,6 +286,7 @@ export default class Canvas {
         this.performanceGraphics.visible = false;
         this.performanceGraphics = this.performances[this.curSetIdx];
         this.performanceGraphics.visible = true;
+        this.performanceGraphics.moveTo(this.currentTimeX, this.previousY);
     }
 
     clearAnyPerformances() {
