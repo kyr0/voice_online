@@ -6,6 +6,7 @@ import {
     Graphics,
     Circle,
     Text,
+    Point,
 } from '../../dependencies/pixi.min.js';
 
 
@@ -50,11 +51,15 @@ export default class Canvas {
 
         this.player.checkStatus(now);
 
-        this.previousY = this.pitchContainer.y;
-        this.previousYRatio = this.yRatio;
-
         this.pctComplete = (now - this.startTime) / this.durationInMilliseconds;
         this.setContainerRender.x = 0 - this.performanceWidth * this.pctComplete;
+        this.performanceContainer.x = 0 - this.performanceWidth * this.pctComplete;
+        this.drawPerformance();
+    }
+
+    drawPerformance() {
+        this.previousY = this.pitchContainer.y;
+        this.previousYRatio = this.yRatio;
 
         if (this.yRatio !== this.player.pitchYAxisRatio) {
             this.yRatio = this.player.pitchYAxisRatio;
@@ -66,17 +71,50 @@ export default class Canvas {
             }
         }
 
+        if (this.isFirstAudioEvent) {
+            this.performanceGraphics.moveTo(this.currentTimeX, this.previousY);
+            this.performanceGraphicsTip.moveTo(this.currentTimeX, this.previousY);
+            this.isFirstAudioEvent = false;
+            this.bezierCount = 0;
+        }
+
         // To avoid drawing blank space when sound has been recorded at the start
-        // console.log('Y Ratio:' + this.yRatio + ' Previous Y Ratio: ' + this.previousYRatio);
         if (this.yRatio && !this.previousYRatio && this.lastPctComplete < this.pctComplete) {
             this.previousY = this.pitchContainer.y;
             this.performanceGraphics.moveTo(this.currentTimeX + this.performanceWidth * this.lastPctComplete, this.previousY);
+            this.performanceGraphicsTip.moveTo(this.currentTimeX + this.performanceWidth * this.lastPctComplete, this.previousY);
+            // console.log('MOVE TIP & MAIN: ' + (this.currentTimeX + this.performanceWidth * this.lastPctComplete) + ', ' + this.previousY);
+            // console.log('Curnt Time X: ' + this.currentTimeX + ' - Perf Width: ' + this.performanceWidth+ ' - Last %: ' + this.lastPctComplete + ' - First: ' + this.isFirstAudioEvent);
+            this.bezierCount = 0;
+            // console.log('RESET');
+            // console.log('Y Ratio:' + this.yRatio + ' - Previous Y Ratio: ' + this.previousYRatio + ' - Last %: ' + this.lastPctComplete + ' - % Comp: ' + this.pctComplete);
         }
 
         // ** Draw the user's performance on the grid **
-        this.performanceContainer.x = 0 - this.performanceWidth * this.pctComplete;
         if (this.yRatio && this.previousY && this.lastPctComplete < this.pctComplete) {
-            this.performanceGraphics.lineTo(this.currentTimeX + this.performanceWidth * this.pctComplete, this.pitchContainer.y);
+            // if (this.isFirstAudioEvent) {
+            //     console.log('MY FIRST TIME');
+            //     console.log('Y Ratio:' + this.yRatio + ' - Previous Y Ratio: ' + this.previousYRatio + ' - Last %: ' + this.lastPctComplete + ' - % Comp: ' + this.pctComplete);
+            // }
+            this.points[this.bezierCount] = [this.currentTimeX + this.performanceWidth * this.pctComplete, this.pitchContainer.y];
+            this.bezierCount++;
+            if (this.bezierCount < 3) {
+                // console.log('LINE TO, TIP ONLY');
+                // console.log(this.points[this.bezierCount - 1]);
+                this.performanceGraphicsTip.lineTo(this.points[this.bezierCount - 1]);
+            } else {
+                // console.log('BEZIER DRAW, TIP & MAIN');
+                // console.log(this.points);
+                // the bezier coords are full, so we draw it permanently to the performanceGraphics
+                this.bezierCount = 0;
+                this.performanceGraphics.bezierCurveTo(
+                    this.points[0][0], this.points[0][1],
+                    this.points[1][0], this.points[1][1],
+                    this.points[2][0], this.points[2][1]
+                );
+                this.performanceGraphicsTip.clear();
+                this.performanceGraphicsTip.moveTo(this.points[2][0], this.points[2][1]);
+            }
         }
     }
 
@@ -108,7 +146,7 @@ export default class Canvas {
         this.player.on('startExercise', () => {
             this.curSetIdx = 0;
             this.clearAnyPerformances();
-            this.prepareAllPerformances();
+            this.prepareForPerformance();
             this.start();
         });
     }
@@ -204,24 +242,34 @@ export default class Canvas {
             this.pitchGraphics.endFill();
             this.stage.addChild(this.pitchContainer);
 
-            this.renderer = this.autoDetectRenderer;
+            // this.renderer = this.autoDetectRenderer;
         }
     }
 
 
-    prepareAllPerformances() {
-        // performance history
+    prepareForPerformance() {
         this.performances = [];
+        this.isFirstAudioEvent = true;
+        this.points = [[this.currentTimeX, 0], [this.currentTimeX, 0], [this.currentTimeX, 0]];  // prepare the blank points for bezier curve
         this.performanceContainer = new Container();
+        this.bezierCount = 0;
+
+        // create a graphics object for each set in the exercise
         for (let setIdx = 0; setIdx < this.player.sets.length; setIdx++) {
             this.performances.push(new Graphics());
             this.performanceContainer.addChild(this.performances[setIdx]);
             this.performances[setIdx].visible = false;
-            this.performances[setIdx].lineStyle(3, 0xFFA500);
+            this.performances[setIdx].lineStyle(4, 0xFFA500);
         }
+        // Activate the 1st set
         this.performanceGraphics = this.performances[0];
         this.performanceGraphics.visible = true;
+
+        this.performanceGraphicsTip = new Graphics();  // the tip of the performance before bezier curve drawn
+        this.performanceContainer.addChild(this.performanceGraphicsTip);
+
         this.stage.addChild(this.performanceContainer);
+
     }
 
 
@@ -287,6 +335,9 @@ export default class Canvas {
         this.performanceGraphics = this.performances[this.curSetIdx];
         this.performanceGraphics.visible = true;
         this.performanceGraphics.moveTo(this.currentTimeX, this.previousY);
+        this.performanceGraphicsTip.moveTo(this.currentTimeX, this.previousY);
+        console.log('MOVE TIP & MAIN: ' + this.currentTimeX + ', ' + this.previousY);
+        this.bezierCount = 0;
     }
 
     clearAnyPerformances() {
@@ -324,7 +375,7 @@ export default class Canvas {
         );
         this.renderer = this.canvasRenderer;
         // this.renderer.view.style.border = '1px dashed white';
-        this.canvasDiv.appendChild(this.autoDetectRenderer.view);
+        this.canvasDiv.appendChild(this.canvasRenderer.view);
 
         // create the root of the scene graph
         this.stage = new Container(this.width, this.height);
