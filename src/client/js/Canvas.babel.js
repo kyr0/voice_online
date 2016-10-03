@@ -78,42 +78,41 @@ export default class Canvas {
             this.bezierCount = 0;
         }
 
-        // To avoid drawing blank space when sound has been recorded at the start
-        if (this.yRatio && !this.previousYRatio && this.lastPctComplete < this.pctComplete) {
-            this.previousY = this.pitchContainer.y;
-            this.performanceGraphics.moveTo(this.currentTimeX + this.performanceWidth * this.lastPctComplete, this.previousY);
-            this.performanceGraphicsTip.moveTo(this.currentTimeX + this.performanceWidth * this.lastPctComplete, this.previousY);
-            // console.log('MOVE TIP & MAIN: ' + (this.currentTimeX + this.performanceWidth * this.lastPctComplete) + ', ' + this.previousY);
-            // console.log('Curnt Time X: ' + this.currentTimeX + ' - Perf Width: ' + this.performanceWidth+ ' - Last %: ' + this.lastPctComplete + ' - First: ' + this.isFirstAudioEvent);
-            this.bezierCount = 0;
-            // console.log('RESET');
-            // console.log('Y Ratio:' + this.yRatio + ' - Previous Y Ratio: ' + this.previousYRatio + ' - Last %: ' + this.lastPctComplete + ' - % Comp: ' + this.pctComplete);
-        }
+        if (this.yRatio) {
+            if (this.lastPctComplete <= this.pctComplete) {
+                // To avoid drawing blank space when sound has been recorded at the start
+                if (!this.previousYRatio) {
+                    this.previousY = this.pitchContainer.y;
+                    this.performanceGraphics.moveTo(this.currentTimeX + this.performanceWidth * this.lastPctComplete, this.previousY);
+                    this.performanceGraphicsTip.moveTo(this.currentTimeX + this.performanceWidth * this.lastPctComplete, this.previousY);
+                    // console.log('MOVE TIP & MAIN: ' + (this.currentTimeX + this.performanceWidth * this.lastPctComplete) + ', ' + this.previousY);
+                    // console.log('Curnt Time X: ' + this.currentTimeX + ' - Perf Width: ' + this.performanceWidth+ ' - Last %: ' + this.lastPctComplete + ' - First: ' + this.isFirstAudioEvent);
+                    this.bezierCount = 0;
+                    // console.log('RESET');
+                    // console.log('Y Ratio:' + this.yRatio + ' - Previous Y Ratio: ' + this.previousYRatio + ' - Last %: ' + this.lastPctComplete + ' - % Comp: ' + this.pctComplete);
+                }
 
-        // ** Draw the user's performance on the grid **
-        if (this.yRatio && this.previousY && this.lastPctComplete < this.pctComplete) {
-            // if (this.isFirstAudioEvent) {
-            //     console.log('MY FIRST TIME');
-            //     console.log('Y Ratio:' + this.yRatio + ' - Previous Y Ratio: ' + this.previousYRatio + ' - Last %: ' + this.lastPctComplete + ' - % Comp: ' + this.pctComplete);
-            // }
-            this.points[this.bezierCount] = [this.currentTimeX + this.performanceWidth * this.pctComplete, this.pitchContainer.y];
-            this.bezierCount++;
-            if (this.bezierCount < 3) {
-                // console.log('LINE TO, TIP ONLY');
-                // console.log(this.points[this.bezierCount - 1]);
-                this.performanceGraphicsTip.lineTo(this.points[this.bezierCount - 1]);
-            } else {
-                // console.log('BEZIER DRAW, TIP & MAIN');
-                // console.log(this.points);
-                // the bezier coords are full, so we draw it permanently to the performanceGraphics
-                this.bezierCount = 0;
-                this.performanceGraphics.bezierCurveTo(
-                    this.points[0][0], this.points[0][1],
-                    this.points[1][0], this.points[1][1],
-                    this.points[2][0], this.points[2][1]
-                );
-                this.performanceGraphicsTip.clear();
-                this.performanceGraphicsTip.moveTo(this.points[2][0], this.points[2][1]);
+                if (this.previousY) {
+                    this.points[this.bezierCount] = [this.currentTimeX + this.performanceWidth * this.pctComplete, this.pitchContainer.y];
+                    this.bezierCount++;
+                    if (this.bezierCount < 3) {
+                        // console.log('LINE TO, TIP ONLY');
+                        // console.log(this.points[this.bezierCount - 1]);
+                        this.performanceGraphicsTip.lineTo(this.points[this.bezierCount - 1]);
+                    } else {
+                        // console.log('BEZIER DRAW, TIP & MAIN');
+                        // console.log(this.points);
+                        // the bezier coords are full, so we draw it permanently to the performanceGraphics
+                        this.bezierCount = 0;
+                        this.performanceGraphics.bezierCurveTo(
+                            this.points[0][0], this.points[0][1],
+                            this.points[1][0], this.points[1][1],
+                            this.points[2][0], this.points[2][1]
+                        );
+                        this.performanceGraphicsTip.clear();
+                        this.performanceGraphicsTip.moveTo(this.points[2][0], this.points[2][1]);
+                    }
+                }
             }
         }
     }
