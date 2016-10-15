@@ -74,10 +74,8 @@ export default class Canvas {
         }
 
         if (this.isFirstAudioEvent) {
-            this.performanceGraphics.moveTo(this.startTimeX, this.previousY);
-            this.performanceGraphicsTip.moveTo(this.startTimeX, this.previousY);
+            this.doMultiGraphicMove(this.startTimeX, this.previousY);
             this.isFirstAudioEvent = false;
-            this.bezierCount = 0;
             this.performanceDirection = null;
         }
 
@@ -86,9 +84,7 @@ export default class Canvas {
                 // To avoid drawing blank space when sound has been recorded at the start
                 if (!this.previousYRatio) {
                     this.previousY = this.pitchContainer.y;
-                    this.performanceGraphics.moveTo(this.startTimeX + this.performanceWidth * this.lastPctComplete, this.previousY);
-                    this.performanceGraphicsTip.moveTo(this.startTimeX + this.performanceWidth * this.lastPctComplete, this.previousY);
-                    this.bezierCount = 0;
+                    this.doMultiGraphicMove(this.startTimeX + this.performanceWidth * this.lastPctComplete, this.previousY);
                     this.performanceDirection = null;
                 }
 
@@ -98,7 +94,6 @@ export default class Canvas {
                         this.performanceGraphicsTip.lineTo(this.startTimeX + this.performanceWidth * this.pctComplete, this.pitchContainer.y);
                     } else {
                         // the bezier coords are full, so we draw it permanently to the performanceGraphics
-                        this.bezierCount = 0;
                         this.performanceGraphics.bezierCurveTo(
                             this.points[0][0], this.points[0][1],
                             this.points[1][0], this.points[1][1],
@@ -107,11 +102,20 @@ export default class Canvas {
                         this.performanceGraphicsTip.clear();
                         this.performanceGraphicsTip.lineStyle(2, 0xFFA500);
                         this.performanceGraphicsTip.moveTo(this.points[2][0], this.points[2][1]);
+                        this.bezierCount = 0;
                     }
                 }
             }
         }
     }
+
+
+    doMultiGraphicMove(x, y) {
+        this.performanceGraphics.moveTo(x, y);
+        this.performanceGraphicsTip.moveTo(x, y);
+        this.bezierCount = 0;
+    }
+
 
     checkForBezierPoint(x, y) {
 
@@ -356,9 +360,7 @@ export default class Canvas {
         this.performanceGraphics.visible = false;
         this.performanceGraphics = this.performances[this.curSetIdx];
         this.performanceGraphics.visible = true;
-        this.performanceGraphics.moveTo(this.startTimeX, this.previousY);
-        this.performanceGraphicsTip.moveTo(this.startTimeX, this.previousY);
-        this.bezierCount = 0;
+        this.doMultiGraphicMove(this.startTimeX, this.previousY);
         this.performanceDirection = null;
     }
 
