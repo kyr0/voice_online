@@ -17,6 +17,9 @@ export default class Canvas {
         this.state = this.stopped;
         this.pctComplete = 0;
         this.yRatio = null;
+        // this.bezierTimeInterval = 33.33;  // milliseconds
+        this.bezierTimeInterval = 33.33;  // milliseconds
+        this.performanceLineWidth = 3;
     }
 
     initialize() {
@@ -90,30 +93,58 @@ export default class Canvas {
 
                 if (this.previousY) {
                     this.checkForBezierPoint(this.startTimeX + this.performanceWidth * this.pctComplete, this.pitchContainer.y);
-                    if (this.bezierCount < 3) {
+                    if (this.bezierPointCount < 2) {
                         this.performanceGraphicsTip.lineTo(this.startTimeX + this.performanceWidth * this.pctComplete, this.pitchContainer.y);
                     } else {
-                        // the bezier coords are full, so we draw it permanently to the performanceGraphics
+                        this.setControlPoints(this.currentX, this.currentY, this.points[0][0], this.points[0][1], this.points[1][0], this.points[1][1]);
+                        // The bezier coords are full, so we draw it permanently to the performanceGraphics
                         this.performanceGraphics.bezierCurveTo(
-                            this.points[0][0], this.points[0][1],
-                            this.points[1][0], this.points[1][1],
-                            this.points[2][0], this.points[2][1]
+                            this.cp1x, this.cp1y,
+                            this.cp2x, this.cp2y,
+                            this.points[0][0], this.points[0][1]
                         );
+                        // Smooth out the bezier curve 'joints'
+                        this.performanceGraphics.beginFill(0xFFA500);
+                        this.performanceGraphics.lineStyle(0);
+                        this.performanceGraphics.drawCircle(this.points[0][0], this.points[0][1], this.performanceLineWidth / 2.2);
+                        this.performanceGraphics.endFill(0xFFA500);
+                        this.performanceGraphics.lineStyle(this.performanceLineWidth, 0xFFA500);
+
+                        // Clear the old 'tip' which has been replaced by a bezier curve
                         this.performanceGraphicsTip.clear();
-                        this.performanceGraphicsTip.lineStyle(2, 0xFFA500);
-                        this.performanceGraphicsTip.moveTo(this.points[2][0], this.points[2][1]);
-                        this.bezierCount = 0;
+                        this.performanceGraphicsTip.lineStyle(this.performanceLineWidth, 0xFFA500);
+
+                        // After drawing the 'joint' circle it is necessary to move the main graphics
+                        // back in place with the tip
+                        this.doMultiGraphicMove(this.points[0][0], this.points[0][1]);
                     }
                 }
             }
         }
     }
 
+    setControlPoints(x0, y0, x1, y1, x2, y2){
+        // thanks to Rob Spencer - http://scaledinnovation.com/analytics/splines/aboutSplines.html
+        const t = 0;
+        const d01 = Math.sqrt(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2));
+        const d12= Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        const fa = t * d01 / (d01 + d12);     // scaling factor for triangle Ta
+        const fb = t - fa;                    // ditto for Tb, could be 't * d12 / (d01 + d12)'
+        this.cp1x = x1 - fa * (x2 - x0);      // x2 - x0 is the width of triangle T
+        this.cp1y = y1 - fa * (y2 - y0);      // y2 - y0 is the height of T
+        this.cp2x = x1 + fb * (x2 - x0);
+        this.cp2y = y1 + fb * (y2 - y0);
+    }
 
-    doMultiGraphicMove(x, y) {
-        this.performanceGraphics.moveTo(x, y);
+    doMultiGraphicMove(x, y, noMoveMain) {
+        if (!noMoveMain) {
+            this.performanceGraphics.moveTo(x, y);
+        }
         this.performanceGraphicsTip.moveTo(x, y);
-        this.bezierCount = 0;
+        this.currentX = x;
+        this.currentY = y;
+        this.bezierPointCount = 0;
+        this.lastBezierTime = this.now;
     }
 
 
@@ -130,15 +161,14 @@ export default class Canvas {
             this.performanceDirection = 'up';
         } else if (y - this.previousY < 0) {
             this.performanceDirection = 'down';
-        } else {
-            this.performanceDirection = null;
         }
 
-        // mark a bezier point if direction has changed
-        if (this.previousDirection !== this.performanceDirection) {
-            this.points[this.bezierCount][0] = this.previousX;
-            this.points[this.bezierCount][1] = this.previousY;
-            this.bezierCount++;
+        // mark a bezier point if direction has changed or if it's past time for a new one
+        if (this.previousDirection !== this.performanceDirection ||
+            this.bezierTimeInterval <= this.now - this.lastBezierTime) {
+            this.points[this.bezierPointCount][0] = x;
+            this.points[this.bezierPointCount][1] = y;
+            this.bezierPointCount++;
         }
     }
 
@@ -274,9 +304,9 @@ export default class Canvas {
     prepareForPerformance() {
         this.performances = [];
         this.isFirstAudioEvent = true;
-        this.points = [[0, 0], [0, 0], [0, 0]];  // prepare the blank points for bezier curve
+        this.points = [[0, 0], [0, 0]];  // prepare the blank points for bezier curve
         this.performanceContainer = new Container();
-        this.bezierCount = 0;
+        this.bezierPointCount = 0;
         this.performanceDirection = null;
 
         // create a graphics object for each set in the exercise
@@ -284,7 +314,7 @@ export default class Canvas {
             this.performances.push(new Graphics());
             this.performanceContainer.addChild(this.performances[setIdx]);
             this.performances[setIdx].visible = false;
-            this.performances[setIdx].lineStyle(2, 0xFFA500);
+            this.performances[setIdx].lineStyle(this.performanceLineWidth, 0xFFA500);
         }
         // Activate the 1st set
         this.performanceGraphics = this.performances[0];
@@ -292,7 +322,7 @@ export default class Canvas {
 
         this.performanceGraphicsTip = new Graphics();  // the tip of the performance before bezier curve drawn
         this.performanceContainer.addChild(this.performanceGraphicsTip);
-        this.performanceGraphicsTip.lineStyle(2, 0xFFA500);
+        this.performanceGraphicsTip.lineStyle(this.performanceLineWidth, 0xFFA500);
 
         this.stage.addChild(this.performanceContainer);
 
