@@ -1,4 +1,5 @@
 'use strict';
+var Tone = require('tone');
 
 var MPM = require('./MPM.js');
 var Note = require('./Note.js');
@@ -72,7 +73,11 @@ function Audio() {
 
     function startNote(curNote) {
         currentNote = curNote;
-        accompany.frequency.value = currentNote.frequency;
+        if (currentNote.name === '-') {
+            accompany.triggerRelease();
+        } else {
+            accompany.triggerAttack(currentNote.name);
+        }
     }
 
 
@@ -82,16 +87,26 @@ function Audio() {
 
 
     this.stopAudio = function () {
-        accompany.stop();
-        accompany.disconnect();
+        accompany.triggerRelease();
         scriptNode.disconnect();
     };
 
 
     this.startAudio = function (getSource) {
-        accompany = audioContext.createOscillator();  // must be new, can't call start 2x on same osc
-        accompany.start();
-        accompany.connect(audioContext.destination);
+        Tone.setContext(audioContext);
+        accompany = new Tone.Synth({
+            'oscillator' : {
+                'type' : 'sine2',
+                // 'type' : 'pwm',
+            },
+            'envelope' : {
+                'attack' : 0.015,
+                'decay' : 0.25,
+                'sustain' : 0.08,
+                'release' : 0.001,
+            },
+        });
+        accompany.toMaster();
         getSource();
     };
 
@@ -116,7 +131,6 @@ function Audio() {
         }.bind(this));
 
         player.on('endExercise', function (aggNoteScore) {
-            this.stopAudio();
             console.log('SCORE: ' + aggNoteScore);
         }.bind(this));
 
