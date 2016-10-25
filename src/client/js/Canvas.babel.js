@@ -13,11 +13,24 @@ import {
 export default class Canvas {
     constructor(canvasDiv) {
         this.animationLoop = this.animationLoop.bind(this);
-        this.canvasDiv = canvasDiv;
+
         this.state = this.stopped;
+        this.canvasDiv = canvasDiv;
+
+        this.player = null;                 // once this is in place, we're ready to practice
+        this.yRatio = null;                 // controls the placement of the incoming pitch indicator
+        this.set = null;                    // the current set in practice
+        this.renderer = null;               // a pixi object, either auto, canvas, or WebGL
+        this.stage = null;                  // the master container of all graphics objects
+        this.frame = null;                  // used with requestAnimationFrame only
+        this.startTime = null;              // the starting time of the set, as determined by the Player
+        this.now = null;                    // Date.now() updated in the animation loop
+        this.lastPctComplete = null;        // TODO: check it out - used to tell when it's time to update scene after set completes
+        this.durationInMilliseconds = null; // from the current set, duration of the set
+        this.setContainerRender = null;     // the set container (notes, labels etc) is rendered to reduce # of objects moving at once
+        this.performanceContainer = null;   // contains the active user performance represented as a line
+
         this.pctComplete = 0;
-        this.yRatio = null;
-        // this.bezierTimeInterval = 33.33;  // milliseconds
         this.bezierTimeInterval = 33.33;  // milliseconds
         this.performanceLineWidth = 3;
     }
@@ -50,7 +63,6 @@ export default class Canvas {
 
     running() {
         this.now = Date.now();
-        this.previousX = this.startTimeX + this.performanceWidth * this.lastPctComplete;
         this.lastPctComplete = this.pctComplete;
 
         this.player.checkStatus(this.now);
@@ -61,6 +73,8 @@ export default class Canvas {
 
         this.drawPerformance();
     }
+
+    stopped() {}
 
     drawPerformance() {
         this.previousY = this.pitchContainer.y;
@@ -73,10 +87,11 @@ export default class Canvas {
                 this.pitchContainer.visible = true;
             } else {
                 this.pitchContainer.visible = false;
+                this.drawTmpPoints();
             }
         }
 
-        if (this.isFirstAudioEvent) {
+        if (this.isFirstAudioEvent && this.previousY) {
             this.doMultiGraphicMove(this.startTimeX, this.previousY);
             this.isFirstAudioEvent = false;
             this.performanceDirection = null;
@@ -84,7 +99,7 @@ export default class Canvas {
 
         if (this.yRatio) {
             if (this.lastPctComplete <= this.pctComplete) {
-                // To avoid drawing blank space when sound has been recorded at the start
+                // To avoid drawing blank space when sound has been recorded for the first audio event
                 if (!this.previousYRatio) {
                     this.previousY = this.pitchContainer.y;
                     this.doMultiGraphicMove(this.startTimeX + this.performanceWidth * this.lastPctComplete, this.previousY);
@@ -94,6 +109,12 @@ export default class Canvas {
                 if (this.previousY) {
                     this.checkForBezierPoint(this.startTimeX + this.performanceWidth * this.pctComplete, this.pitchContainer.y);
                     if (this.bezierPointCount < 2) {
+                        if (this.tmpPoints.length <= this.tmpPointCount) {
+                            this.tmpPoints.push([0, 0]);
+                        }
+                        this.tmpPoints[this.tmpPointCount][0] = this.startTimeX + this.performanceWidth * this.pctComplete;  // x
+                        this.tmpPoints[this.tmpPointCount][1] = this.pitchContainer.y;  // y
+                        this.tmpPointCount++;
                         this.performanceGraphicsTip.lineTo(this.startTimeX + this.performanceWidth * this.pctComplete, this.pitchContainer.y);
                     } else {
                         this.setControlPoints(this.currentX, this.currentY, this.points[0][0], this.points[0][1], this.points[1][0], this.points[1][1]);
@@ -103,7 +124,7 @@ export default class Canvas {
                             this.cp2x, this.cp2y,
                             this.points[0][0], this.points[0][1]
                         );
-                        // Smooth out the bezier curve 'joints'
+                        // Smooth out the bezier curve 'joints' by drawing a circle
                         this.performanceGraphics.beginFill(0xFFA500);
                         this.performanceGraphics.lineStyle(0);
                         this.performanceGraphics.drawCircle(this.points[0][0], this.points[0][1], this.performanceLineWidth / 2.2);
@@ -112,6 +133,7 @@ export default class Canvas {
 
                         // Clear the old 'tip' which has been replaced by a bezier curve
                         this.performanceGraphicsTip.clear();
+                        // this.performanceGraphicsTip.lineStyle(this.performanceLineWidth, 0x33A500); // test green color
                         this.performanceGraphicsTip.lineStyle(this.performanceLineWidth, 0xFFA500);
 
                         // After drawing the 'joint' circle it is necessary to move the main graphics
@@ -124,36 +146,45 @@ export default class Canvas {
     }
 
     setControlPoints(x0, y0, x1, y1, x2, y2){
-        // thanks to Rob Spencer - http://scaledinnovation.com/analytics/splines/aboutSplines.html
         const t = 0;
         const d01 = Math.sqrt(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2));
         const d12= Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
         const fa = t * d01 / (d01 + d12);     // scaling factor for triangle Ta
-        const fb = t - fa;                    // ditto for Tb, could be 't * d12 / (d01 + d12)'
+        const fb = t - fa;                    // ditto for Tb, expands to 't * d12 / (d01 + d12)'
         this.cp1x = x1 - fa * (x2 - x0);      // x2 - x0 is the width of triangle T
         this.cp1y = y1 - fa * (y2 - y0);      // y2 - y0 is the height of T
         this.cp2x = x1 + fb * (x2 - x0);
         this.cp2y = y1 + fb * (y2 - y0);
     }
 
-    doMultiGraphicMove(x, y, noMoveMain) {
-        if (!noMoveMain) {
-            this.performanceGraphics.moveTo(x, y);
+    doMultiGraphicMove(x, y) {
+        // this first branch happens after a drawBezierCurve, else happens after a null audio event
+        if (this.bezierPointCount === 2 && this.previousY) {
+            this.points[0][0] = this.points[1][0];
+            this.points[0][1] = this.points[1][1];
+            this.tmpPointCount = 0;
+            this.bezierPointCount = 1;
+        } else {
+            this.tmpPointCount = 0;
+            this.bezierPointCount = 0;
         }
+        this.performanceGraphics.moveTo(x, y);
         this.performanceGraphicsTip.moveTo(x, y);
         this.currentX = x;
         this.currentY = y;
-        this.bezierPointCount = 0;
         this.lastBezierTime = this.now;
     }
 
+    drawTmpPoints() {
+        // permanently draw the tmp tip lines
+        for (let i = 0; i < this.tmpPointCount; i++) {
+            this.performanceGraphics.lineTo(this.tmpPoints[i][0], this.tmpPoints[i][1]);
+        }
+        this.tmpPointCount = 0;
+        this.bezierPointCount = 0;
+    }
 
     checkForBezierPoint(x, y) {
-
-        // default
-        // this.points[this.bezierCount] = [x, y];
-        // this.bezierCount++;
-
         this.previousDirection = this.performanceDirection;
 
         // determine the current direction of the audio
@@ -172,7 +203,6 @@ export default class Canvas {
         }
     }
 
-    stopped() {}
 
     setPlayerListenersInCanvas() {
         this.player.on('stopExercise', () => {
@@ -181,6 +211,8 @@ export default class Canvas {
 
         this.player.on('startSet', () => {
             this.set = this.player.getCurrentSet();
+            this.tmpPointCount = 0;
+            this.bezierPointCount = 0;
             this.startTime = this.player.startTime;
         });
 
@@ -295,8 +327,6 @@ export default class Canvas {
             this.pitchContainer.visible = false;
             this.pitchGraphics.endFill();
             this.stage.addChild(this.pitchContainer);
-
-            // this.renderer = this.autoDetectRenderer;
         }
     }
 
@@ -305,8 +335,10 @@ export default class Canvas {
         this.performances = [];
         this.isFirstAudioEvent = true;
         this.points = [[0, 0], [0, 0]];  // prepare the blank points for bezier curve
+        this.tmpPoints = [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]];  // prepare the blank points for non-curve when null
         this.performanceContainer = new Container();
         this.bezierPointCount = 0;
+        this.tmpPointCount = 0;
         this.performanceDirection = null;
 
         // create a graphics object for each set in the exercise
