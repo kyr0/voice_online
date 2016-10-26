@@ -16,11 +16,8 @@ export class Widget extends Component {
 
     componentDidMount() {
         const { gridSize, user, currentLesson } = this.props;
-        this.canvas = new Canvas(this.refs.canvasDiv);
         this.audio = new Audio();
-        if (gridSize !== initialLayoutState.gridSize) {
-            this.setCanvasWidth(GRID_SIZES[gridSize]);
-        }
+        this.createCanvas(gridSize);
 
         if (user !== initialProfileState.user && currentLesson !== initialSingState.currentLesson) {
             this.createPlayer(user, currentLesson);
@@ -36,11 +33,18 @@ export class Widget extends Component {
 
         // this must take place before createPlayer call
         if (isPlaying !== this.props.isPlaying) {
-            isPlaying ? this.player.start() : this.player.stop();
+            if (isPlaying) {
+                this.player.start();
+            } else {
+                this.player.stop();
+                this.createCanvas(this.props.gridSize);
+                this.createPlayer(this.props.user, this.props.currentLesson);
+            }
         }
 
         if (user !== initialProfileState.user && currentLesson !== initialSingState.currentLesson) {
             if (user !== this.props.user || currentLesson !== this.props.currentLesson) {
+                this.createCanvas(gridSize);
                 this.createPlayer(user, currentLesson);
             }
         }
@@ -62,8 +66,11 @@ export class Widget extends Component {
         );
     }
 
-    setCanvasWidth(width) {
-        this.canvas.setWidth(width);
+    createCanvas(gridSize) {
+        this.canvas = new Canvas(this.refs.canvasDiv);
+        if (gridSize !== initialLayoutState.gridSize) {
+            this.canvas.setWidth(GRID_SIZES[gridSize]);
+        }
     }
 
     createPlayer(theUser, currentLesson) {
