@@ -99,13 +99,6 @@ export default class Canvas {
 
         if (this.yRatio) {
             if (this.lastPctComplete <= this.pctComplete) {
-                // To avoid drawing blank space when sound has been recorded for the first audio event
-                if (!this.previousYRatio) {
-                    this.previousY = this.pitchContainer.y;
-                    this.doMultiGraphicMove(this.startTimeX + this.performanceWidth * this.lastPctComplete, this.previousY);
-                    this.performanceDirection = null;
-                }
-
                 if (this.previousY) {
                     this.checkForBezierPoint(this.startTimeX + this.performanceWidth * this.pctComplete, this.pitchContainer.y);
                     if (this.bezierPointCount < 2) {
@@ -479,7 +472,7 @@ export default class Canvas {
         this.performanceHeight = this.height - this.captionHeight;
         this.startTimeX = this.width / 2;
 
-        this.initialize();
+        this.initialize();  // draw it asap even though the player may not be ready, also if screen resizes
     }
 
     setPlayer(player) {
