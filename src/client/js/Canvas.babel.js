@@ -77,9 +77,7 @@ export default class Canvas {
     stopped() {}
 
     drawPerformance() {
-        this.previousY = this.pitchContainer.y;
-        this.previousYRatio = this.yRatio;
-
+        // TODO pitchcontainer.y needs to go into a variable
         if (this.yRatio !== this.player.pitchYAxisRatio) {
             this.yRatio = this.player.pitchYAxisRatio;
             if (this.yRatio) {
@@ -91,15 +89,14 @@ export default class Canvas {
             }
         }
 
-        if (this.isFirstAudioEvent && this.previousY) {
-            this.doMultiGraphicMove(this.startTimeX, this.previousY);
-            this.isFirstAudioEvent = false;
+        if (this.yRatio && !this.previousYRatio) {
+            this.doMultiGraphicMove(this.startTimeX + this.performanceWidth * this.pctComplete, this.pitchContainer.y);
             this.performanceDirection = null;
         }
 
         if (this.yRatio) {
             if (this.lastPctComplete <= this.pctComplete) {
-                if (this.previousY) {
+                if (this.pitchContainer.y) {
                     this.checkForBezierPoint(this.startTimeX + this.performanceWidth * this.pctComplete, this.pitchContainer.y);
                     if (this.bezierPointCount < 2) {
                         if (this.tmpPoints.length <= this.tmpPointCount) {
@@ -136,6 +133,10 @@ export default class Canvas {
                 }
             }
         }
+
+        this.previousYRatio = this.yRatio;
+        this.previousY = this.pitchContainer.y;
+
     }
 
     setControlPoints(x0, y0, x1, y1, x2, y2){
@@ -326,7 +327,6 @@ export default class Canvas {
 
     prepareForPerformance() {
         this.performances = [];
-        this.isFirstAudioEvent = true;
         this.points = [[0, 0], [0, 0]];  // prepare the blank points for bezier curve
         this.tmpPoints = [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]];  // prepare the blank points for non-curve when null
         this.performanceContainer = new Container();
