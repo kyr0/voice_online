@@ -16,7 +16,7 @@ export class Widget extends Component {
 
     componentDidMount() {
         const { gridSize, user, currentLesson } = this.props;
-        this.audio = new Audio();
+        this.audio = this.props.audio || new Audio();
         this.createCanvas(gridSize);
 
         if (user !== initialProfileState.user && currentLesson !== initialSingState.currentLesson) {
@@ -28,7 +28,7 @@ export class Widget extends Component {
         const { gridSize, user, currentLesson, isPlaying } = nextProps;
 
         if (gridSize !== this.props.gridSize) {
-            this.setCanvasWidth(GRID_SIZES[gridSize]);
+            this.createCanvas(gridSize);
         }
 
         // this must take place before createPlayer call
@@ -102,6 +102,7 @@ Widget.propTypes = {
     currentLesson: PropTypes.object.isRequired,
     isPlaying: PropTypes.bool.isRequired,
     setIsPlayingIfReady: PropTypes.func.isRequired,
+    audio: PropTypes.object,   // allows for dependency injection, useful for testing
 };
 
 const mapStateToProps = (state) => {

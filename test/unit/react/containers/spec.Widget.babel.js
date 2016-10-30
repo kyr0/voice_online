@@ -27,6 +27,7 @@ describe('Widget container', () => {
     let setIsPlayingIfReady;
     let dummyString;
     let dummyObject;
+    let audio;
 
     const buildSubject = () => {
         const props = {
@@ -35,6 +36,7 @@ describe('Widget container', () => {
             currentLesson,
             isPlaying,
             setIsPlayingIfReady,
+            audio,
         };
         return shallow(<Widget {...props} />);
     };
@@ -46,6 +48,7 @@ describe('Widget container', () => {
             currentLesson,
             isPlaying,
             setIsPlayingIfReady,
+            audio,
         };
         return mount(<Widget {...props} />);
     };
@@ -58,13 +61,14 @@ describe('Widget container', () => {
         currentLesson = initialSingState.currentLesson;
         isPlaying = initialSingState.isPlaying;
         setIsPlayingIfReady = sinon.stub();
+        audio = dummyObject;
     });
 
     describe('', () => {
 
         beforeEach(() => {
             sandbox = sinon.sandbox.create();
-            sandbox.stub(Widget.prototype, 'setCanvasWidth');
+            sandbox.stub(Widget.prototype, 'createCanvas');
             sandbox.stub(Widget.prototype, 'createPlayer');
         });
 
@@ -75,21 +79,21 @@ describe('Widget container', () => {
         it('should update canvas.width when appropriate nextProp', () => {
             subject = buildSubject();
             subject.setProps({ gridSize: dummyString });
-            expect(Widget.prototype.setCanvasWidth).to.have.been.calledOnce;
+            expect(Widget.prototype.createCanvas).to.have.been.calledOnce;
             expect(Widget.prototype.createPlayer).not.to.have.been.called;
         });
 
-        it('should not cal createPlayer or setCanvasWidth on user update only', () => {
+        it('should not call createPlayer or createCanvas on user update only', () => {
             subject = buildSubject();
             subject.setProps({ user: dummyObject });
-            expect(Widget.prototype.setCanvasWidth).not.to.have.been.called;
+            expect(Widget.prototype.createCanvas).not.to.have.been.called;
             expect(Widget.prototype.createPlayer).not.to.have.been.called;
         });
 
-        it('should not cal createPlayer or setCanvasWidth on lesson update only', () => {
+        it('should not call createPlayer or createCanvas on lesson update only', () => {
             subject = buildSubject();
             subject.setProps({ currentLesson: dummyObject });
-            expect(Widget.prototype.setCanvasWidth).not.to.have.been.called;
+            expect(Widget.prototype.createCanvas).not.to.have.been.called;
             expect(Widget.prototype.createPlayer).not.to.have.been.called;
         });
 
@@ -99,9 +103,9 @@ describe('Widget container', () => {
             expect(Widget.prototype.createPlayer).to.have.been.calledOnce;
         });
 
-        it('should not call canvas updates with initial state on componentDidMount', () => {
+        it('should call createCanvas but not createPlayer with initial state on componentDidMount', () => {
             subject = mountSubject();
-            expect(Widget.prototype.setCanvasWidth).not.to.have.been.called;
+            expect(Widget.prototype.createCanvas).to.have.been.calledOnce;
             expect(Widget.prototype.createPlayer).not.to.have.been.called;
         });
 
@@ -110,7 +114,7 @@ describe('Widget container', () => {
             user = dummyObject;
             currentLesson = dummyObject;
             subject = mountSubject();
-            expect(Widget.prototype.setCanvasWidth).to.have.been.calledOnce;
+            expect(Widget.prototype.createCanvas).to.have.been.calledOnce;
             expect(Widget.prototype.createPlayer).to.have.been.calledOnce;
         });
 

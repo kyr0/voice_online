@@ -1,6 +1,5 @@
 import {
     CanvasRenderer,
-    autoDetectRenderer,
     Container,
     Sprite,
     Graphics,
@@ -429,9 +428,8 @@ export default class Canvas {
     resetConnections() {
         // clean up old renderer, stage, and canvases
         if (this.renderer) {
+            this.renderer.destroy();
             this.renderer = null;
-            this.autoDetectRenderer.destroy();
-            this.canvasRenderer.destroy();
             this.stage.destroy({ children: true });
         }
 
@@ -440,21 +438,14 @@ export default class Canvas {
         }
 
         // make the new stuff
-        this.canvasRenderer = new CanvasRenderer(this.width, this.height,
+        this.renderer = new CanvasRenderer(this.width, this.height,
             {
                 transparent: false,
                 antialias: true,
             }
         );
-        this.autoDetectRenderer = autoDetectRenderer(this.width, this.height,
-            {
-                transparent: false,
-                antialias: true,
-            }
-        );
-        this.renderer = this.canvasRenderer;
         // this.renderer.view.style.border = '1px dashed white';
-        this.canvasDiv.appendChild(this.canvasRenderer.view);
+        this.canvasDiv.appendChild(this.renderer.view);
 
         // create the root of the scene graph
         this.stage = new Container(this.width, this.height);

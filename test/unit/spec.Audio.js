@@ -6,12 +6,12 @@ var User = require('../../src/client/js/User.js');
 var Player = require('../../src/client/js/Player.js');
 
 
-describe('Audio', function() {
+describe('Audio', function () {
 
-    beforeEach(function() {
-        var lesson = new Lesson({ noteList: [['B3', '1/2'], ['A3', '1/2']]});
+    beforeEach(function () {
+        var lesson = new Lesson({ noteList: [['B3', '1/2'], ['A3', '1/2']] });
         var user = new User('C4', 'C5');
-        window.lPlayer = new Player(user, lesson);
+        this.player = new Player(user, lesson);
     });
 
 
@@ -22,17 +22,7 @@ describe('Audio', function() {
             done();
         };
         audio.getUserInput();
-        audio.startSet(window.lPlayer.getCurrentSet());
+        audio.startSet(this.player.getCurrentSet());
     });
-
-    // describe('_processPitchResult', function() {
-    //
-    //     it('should ', function (done) {
-    //     });
-    //
-    // });
-
-
-
 
 });

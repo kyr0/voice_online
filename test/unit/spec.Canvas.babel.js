@@ -9,7 +9,7 @@ describe('Canvas', () => {
         canvas = new Canvas(document.getElementById('content'));
     });
 
-    it('_destroy() should remove renderer, all child nodes, and stage', () => {
+    it('resetConnections() should remove renderer, child nodes, and stage', () => {
         // Arrange
         const rendererMock = {
             destroy: sinon.stub(),
@@ -28,11 +28,11 @@ describe('Canvas', () => {
         expect(canvas.canvasDiv.children.length).to.equal(2);
 
         // Act
-        canvas._destroy();
+        canvas.resetConnections();
 
-        expect(canvas.stage.destroy.callCount).to.equal(1);
-        expect(canvas.renderer.destroy.callCount).to.equal(1);
-        expect(canvas.canvasDiv.children.length).to.equal(0);
+        expect(stageMock.destroy.callCount).to.equal(1);
+        expect(rendererMock.destroy.callCount).to.equal(1);
+        expect(canvas.canvasDiv.children.length).to.equal(1);  // removes 2 children, then adds 1
     });
 
     it('should call initialize when setWidth() is called', () => {
