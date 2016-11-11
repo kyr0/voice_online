@@ -16,7 +16,7 @@ export class Widget extends Component {
 
     componentDidMount() {
         const { gridSize, user, currentLesson } = this.props;
-        this.audio = this.props.audio || new Audio();
+        this.audio = this.props.Audio ? new this.props.Audio() : new Audio();
         this.createCanvas(gridSize);
 
         if (user !== initialProfileState.user && currentLesson !== initialSingState.currentLesson) {
@@ -26,33 +26,40 @@ export class Widget extends Component {
 
     componentWillReceiveProps(nextProps) {
         const { gridSize, user, currentLesson, isPlaying } = nextProps;
+        const gridSizeProp = this.props.gridSize;
+        const userProp = this.props.user;
+        const currentLessonProp = this.props.currentLesson;
+        const isPlayingProp = this.props.isPlaying;
 
-        if (gridSize !== this.props.gridSize) {
+        if (gridSize !== gridSizeProp) {
+            // Stop playing if size changes during session
+            if (isPlayingProp) {
+                this.player.stop();
+                this.props.setIsPlayingIfReady(false);
+            }
             this.createCanvas(gridSize);
+            this.createPlayer(user, currentLesson);
         }
 
-        // this must take place before createPlayer call
-        if (isPlaying !== this.props.isPlaying) {
+        if (isPlaying !== isPlayingProp) {
             if (isPlaying) {
                 this.player.start();
             } else {
                 this.player.stop();
-                this.createCanvas(this.props.gridSize);
-                this.createPlayer(this.props.user, this.props.currentLesson);
+                this.createCanvas(gridSizeProp);
+                this.createPlayer(userProp, currentLessonProp);
             }
         }
 
-        if (user !== initialProfileState.user && currentLesson !== initialSingState.currentLesson) {
-            if (user !== this.props.user || currentLesson !== this.props.currentLesson) {
-                this.createCanvas(gridSize);
-                this.createPlayer(user, currentLesson);
-            }
+        if (user !== userProp || currentLesson !== currentLessonProp) {
+            this.createCanvas(gridSize);
+            this.createPlayer(user, currentLesson);
         }
     }
 
     componentWillUnmount() {
-        const { setIsPlayingIfReady } = this.props;
-        if (this.props.isPlaying) {
+        const { isPlaying, setIsPlayingIfReady } = this.props;
+        if (isPlaying) {
             this.player.stop();
             setIsPlayingIfReady(false);
         }
@@ -67,25 +74,27 @@ export class Widget extends Component {
     }
 
     createCanvas(gridSize) {
-        this.canvas = new Canvas(this.refs.canvasDiv);
+        this.canvas = this.props.Canvas ? new this.props.Canvas() : new Canvas(this.refs.canvasDiv);
         if (gridSize !== initialLayoutState.gridSize) {
             this.canvas.setWidth(GRID_SIZES[gridSize]);
         }
     }
 
-    createPlayer(theUser, currentLesson) {
-        const user = new User(theUser.lower_range, theUser.upper_range);
-        const lesson = new Lesson({
-            title: currentLesson.title,
-            bpm: currentLesson.bpm,
-            noteList: currentLesson.notes,
-            captionList: currentLesson.captions,
-        });
-        this.player = new Player(user, lesson);
-        this.canvas.setPlayer(this.player);
-        this.audio.setPlayer(this.audio.getTestInput, this.player);
-        // TODO refactor the event strings into constants
-        this.setEndExerciseListener();
+    createPlayer(userData, currentLessonData) {
+        if (userData !== initialProfileState.user && currentLessonData !== initialSingState.currentLesson) {
+            const user = this.props.User ? new this.props.User() : new User(userData.lower_range, userData.upper_range);
+            const lesson = this.props.Lesson ? new this.props.Lesson() : new Lesson({
+                title: currentLessonData.title,
+                bpm: currentLessonData.bpm,
+                noteList: currentLessonData.notes,
+                captionList: currentLessonData.captions,
+            });
+            this.player = this.props.Player ? new this.props.Player() : new Player(user, lesson);
+            this.canvas.setPlayer(this.player);
+            this.audio.setPlayer(this.audio.getTestInput, this.player);
+            // TODO refactor the event strings into constants
+            this.setEndExerciseListener();
+        }
     }
 
     setEndExerciseListener() {
@@ -102,7 +111,12 @@ Widget.propTypes = {
     currentLesson: PropTypes.object.isRequired,
     isPlaying: PropTypes.bool.isRequired,
     setIsPlayingIfReady: PropTypes.func.isRequired,
-    audio: PropTypes.object,   // allows for dependency injection, useful for testing
+    // the following allow for dependency injection, useful for testing
+    Canvas: PropTypes.func,
+    Audio: PropTypes.func,
+    User: PropTypes.func,
+    Lesson: PropTypes.func,
+    Player: PropTypes.func,
 };
 
 const mapStateToProps = (state) => {

@@ -5,6 +5,7 @@ import chaiEnzyme from 'chai-enzyme';
 import EventEmitter from 'events';
 
 
+import { Canvas as CanvasClass } from '../../../../src/client/js/Canvas.babel';
 import { Widget } from '../../../../src/client/js/react/containers/Widget.babel';
 import { GRID_LG } from '../../../../src/client/js/constants/constants.babel';
 import {
@@ -27,7 +28,11 @@ describe('Widget container', () => {
     let setIsPlayingIfReady;
     let dummyString;
     let dummyObject;
-    let audio;
+    let Canvas;
+    let Audio;
+    let User;
+    let Lesson;
+    let Player;
 
     const buildSubject = () => {
         const props = {
@@ -36,7 +41,11 @@ describe('Widget container', () => {
             currentLesson,
             isPlaying,
             setIsPlayingIfReady,
-            audio,
+            Canvas,
+            Audio,
+            User,
+            Lesson,
+            Player,
         };
         return shallow(<Widget {...props} />);
     };
@@ -48,7 +57,11 @@ describe('Widget container', () => {
             currentLesson,
             isPlaying,
             setIsPlayingIfReady,
-            audio,
+            Canvas,
+            Audio,
+            User,
+            Lesson,
+            Player,
         };
         return mount(<Widget {...props} />);
     };
@@ -61,7 +74,16 @@ describe('Widget container', () => {
         currentLesson = initialSingState.currentLesson;
         isPlaying = initialSingState.isPlaying;
         setIsPlayingIfReady = sinon.stub();
-        audio = dummyObject;
+        Canvas = function () {
+            this.setWidth = function () {};
+            this.setPlayer = function () {};
+        };
+        Audio = function () {
+            this.setPlayer = function () {};
+        };
+        User = function () {};
+        Lesson = function () {};
+        Player = function () {};
     });
 
     describe('', () => {
@@ -70,6 +92,7 @@ describe('Widget container', () => {
             sandbox = sinon.sandbox.create();
             sandbox.stub(Widget.prototype, 'createCanvas');
             sandbox.stub(Widget.prototype, 'createPlayer');
+            sandbox.stub(Widget.prototype, 'setEndExerciseListener');
         });
 
         afterEach(() => {
@@ -80,27 +103,33 @@ describe('Widget container', () => {
             subject = buildSubject();
             subject.setProps({ gridSize: dummyString });
             expect(Widget.prototype.createCanvas).to.have.been.calledOnce;
-            expect(Widget.prototype.createPlayer).not.to.have.been.called;
+            expect(Widget.prototype.createPlayer).to.have.been.calledWith(initialProfileState.user, initialSingState.currentLesson);
         });
 
-        it('should not call createPlayer or createCanvas on user update only', () => {
+        it('should not call setEndExerciseListener on user update only', () => {
+            Widget.prototype.createCanvas.restore();
+            Widget.prototype.createPlayer.restore();
             subject = buildSubject();
             subject.setProps({ user: dummyObject });
-            expect(Widget.prototype.createCanvas).not.to.have.been.called;
-            expect(Widget.prototype.createPlayer).not.to.have.been.called;
+            expect(Widget.prototype.setEndExerciseListener).not.to.have.been.called;
         });
 
-        it('should not call createPlayer or createCanvas on lesson update only', () => {
+        it('should not call setEndExerciseListener on lesson update only', () => {
+            Widget.prototype.createCanvas.restore();
+            Widget.prototype.createPlayer.restore();
             subject = buildSubject();
             subject.setProps({ currentLesson: dummyObject });
-            expect(Widget.prototype.createCanvas).not.to.have.been.called;
-            expect(Widget.prototype.createPlayer).not.to.have.been.called;
+            expect(Widget.prototype.setEndExerciseListener).not.to.have.been.called;
         });
 
-        it('should call createPlayer when user and currentLesson have both been updated', () => {
-            subject = buildSubject();
-            subject.setProps({ user: dummyObject, currentLesson: dummyObject });
-            expect(Widget.prototype.createPlayer).to.have.been.calledOnce;
+        it('should call setEndExerciseListener when user and currentLesson have both been updated', () => {
+            Widget.prototype.createCanvas.restore();
+            Widget.prototype.createPlayer.restore();
+            let dummyLesson = { notes: [{ duration: '1/8', name: 'A4' }] };
+            subject = mountSubject();
+            subject.setProps({ currentLesson: dummyLesson });
+            subject.setProps({ user: { lower_range: 'A4', upper_range: 'A5' } });
+            expect(Widget.prototype.setEndExerciseListener).to.have.been.calledOnce;
         });
 
         it('should call createCanvas but not createPlayer with initial state on componentDidMount', () => {
@@ -116,6 +145,15 @@ describe('Widget container', () => {
             subject = mountSubject();
             expect(Widget.prototype.createCanvas).to.have.been.calledOnce;
             expect(Widget.prototype.createPlayer).to.have.been.calledOnce;
+        });
+
+        it('should both resize and redraw lesson if user and lesson present during resize', () => {
+            user = dummyObject;
+            currentLesson = dummyObject;
+            subject = mountSubject();  // spies are called during mount
+            subject.setProps({ gridSize: dummyString });
+            expect(Widget.prototype.createCanvas).to.have.been.calledTwice;
+            expect(Widget.prototype.createPlayer).to.have.been.calledTwice;
         });
 
         it('should call player.stop() first, then createPlayer() for new currentLesson', () => {
@@ -138,6 +176,7 @@ describe('Widget container', () => {
 
         it('should set isPlaying to false on endExercise event', () => {
             // Arrange
+            Widget.prototype.setEndExerciseListener.restore();
             const fakePlayer = new EventEmitter();
             subject = buildSubject();
             subject.instance().player = fakePlayer;
@@ -161,12 +200,14 @@ describe('Widget container', () => {
     });
 
     it('should create canvas if correct data available on componentDidMount()', () => {
+        Canvas = CanvasClass;
         gridSize = GRID_LG;
         subject = mountSubject();
         expect(subject.html()).to.contain('<canvas');
     });
 
     it('should create canvas if correct data comes into componentReceiveProps()', () => {
+        Canvas = CanvasClass;
         subject = mountSubject();
         subject.setProps({ gridSize: GRID_LG });
         expect(subject.html()).to.contain('<canvas');
