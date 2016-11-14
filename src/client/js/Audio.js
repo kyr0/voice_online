@@ -1,5 +1,6 @@
 'use strict';
 var Tone = require('tone');
+var Soundfont = require('soundfont-player');
 
 var MPM = require('./MPM.js');
 var Note = require('./Note.js');
@@ -93,11 +94,15 @@ function Audio() {
 
 
     this.startAudio = function (getSource) {
+        Soundfont.instrument(audioContext, '/static/assets/acoustic_grand_piano.js').then(function (piano) {
+            piano.play('C4');
+        });
         Tone.setContext(audioContext);
         accompany = new Tone.Synth({
             'oscillator' : {
                 'type' : 'sine2',
                 // 'type' : 'pwm',
+                // 'detune': 10,
             },
             'envelope' : {
                 'attack' : 0.015,
