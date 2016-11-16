@@ -1,11 +1,15 @@
 import { isEqual } from 'lodash';
 import { axios } from '../../lib/helpers';
 
+
 import { LESSONS_URL } from '../../constants/constants.babel';
 
 export const GET_LESSONS_REQUEST = 'GET_LESSONS_REQUEST';
 export const GET_LESSONS_SUCCESS = 'GET_LESSONS_SUCCESS';
 export const GET_LESSONS_FAILURE = 'GET_LESSONS_FAILURE';
+export const GET_INSTRUMENT_REQUEST = 'GET_INSTRUMENT_REQUEST';
+export const GET_INSTRUMENT_SUCCESS= 'GET_INSTRUMENT_SUCCESS';
+export const GET_INSTRUMENT_FAILURE = 'GET_INSTRUMENT_FAILURE';
 export const SET_CURRENT_LESSON = 'SET_CURRENT_LESSON';
 export const SET_IS_PLAYING = 'SET_IS_PLAYING';
 
@@ -47,6 +51,42 @@ export function getLessons() {
                 dispatch(receiveLessons(lessons));
             })
             .catch(error => dispatch(getLessonsError(error)));
+    };
+}
+
+
+/*
+ * INSTRUMENT ASSET REQUEST
+ */
+function getInstrumentRequest() {
+    return {
+        type: GET_INSTRUMENT_REQUEST,
+    };
+}
+
+
+function receiveInstrumentBuffers(instrumentBuffers) {
+    return {
+        type: GET_INSTRUMENT_SUCCESS,
+        instrumentBuffers,
+    };
+}
+
+
+function getInstrumentError(error) {
+    return {
+        type: GET_INSTRUMENT_FAILURE,
+        error,
+    };
+}
+
+
+export function getInstrument(load) {
+    return dispatch => {
+        dispatch(getInstrumentRequest());
+        return load('/static/assets/acoustic_grand_piano.js')
+            .then(instrumentBuffers => dispatch(receiveInstrumentBuffers(instrumentBuffers)))
+            .catch(error => dispatch(getInstrumentError(error)));
     };
 }
 

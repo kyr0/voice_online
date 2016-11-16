@@ -14,6 +14,9 @@ import {
     GET_LESSONS_REQUEST,
     GET_LESSONS_SUCCESS,
     GET_LESSONS_FAILURE,
+    GET_INSTRUMENT_REQUEST,
+    GET_INSTRUMENT_SUCCESS,
+    GET_INSTRUMENT_FAILURE,
     SET_CURRENT_LESSON,
     SET_IS_PLAYING,
 } from '../actions/singActions.babel';
@@ -63,6 +66,8 @@ export const initialSingState = {
     isPlaying: false,
     isRequesting: false,
     lessons: { results: [] },
+    isRequestingInstrument: false,
+    instrumentBuffers: null,
 };
 export function sing(state = initialSingState, action) {
     switch (action.type) {
@@ -78,6 +83,19 @@ export function sing(state = initialSingState, action) {
     case GET_LESSONS_FAILURE:
         return Object.assign({}, state, {
             isRequesting: false,
+        });
+    case GET_INSTRUMENT_REQUEST:
+        return Object.assign({}, state, {
+            isRequestingInstrument: true,
+        });
+    case GET_INSTRUMENT_SUCCESS:
+        return Object.assign({}, state, {
+            isRequestingInstrument: false,
+            instrumentBuffers: action.instrumentBuffers,
+        });
+    case GET_INSTRUMENT_FAILURE:
+        return Object.assign({}, state, {
+            isRequestingInstrument: false,
         });
     case SET_CURRENT_LESSON:
         return Object.assign({}, state, {

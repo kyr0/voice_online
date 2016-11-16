@@ -8,11 +8,15 @@ import {
     GET_LESSONS_REQUEST,
     GET_LESSONS_SUCCESS,
     GET_LESSONS_FAILURE,
+    GET_INSTRUMENT_REQUEST,
+    GET_INSTRUMENT_SUCCESS,
+    GET_INSTRUMENT_FAILURE,
     SET_CURRENT_LESSON,
     SET_IS_PLAYING,
 
     // actionCreators
     getLessons,
+    getInstrument,
     setCurrentLesson,
     nextLesson,
     previousLesson,
@@ -25,8 +29,50 @@ const middlewares = [ thunk ];
 const mockStore = configureMockStore(middlewares);
 
 
-describe('singActions', () => {
+describe('getInstrument', () => {
 
+    let store;
+    let state;
+    const initialState = { sing: initialSingState };
+    const dummy_resolve = 'resolve';
+    const dummy_reject = 'reject';
+
+    beforeEach(() => {
+        state = cloneDeep(initialState);
+    });
+
+
+    it('should resolve with expected actions', (done) => {
+        store = mockStore(state);
+        let fakeLoad = () => new Promise((resolve, reject) => resolve(dummy_resolve));
+        const expectedActions = [
+            { type: GET_INSTRUMENT_REQUEST },
+            { type: GET_INSTRUMENT_SUCCESS, instrumentBuffers: dummy_resolve },
+        ];
+        store.dispatch(getInstrument(fakeLoad))
+            .then(() => {
+                expect(store.getActions()).to.eql(expectedActions);
+                done();
+            });
+    });
+
+    it('should reject with expected actions', (done) => {
+        store = mockStore(state);
+        let fakeLoad = () => new Promise((resolve, reject) => reject(dummy_reject));
+        const expectedActions = [
+            { type: GET_INSTRUMENT_REQUEST },
+            { type: GET_INSTRUMENT_FAILURE, error: dummy_reject },
+        ];
+        store.dispatch(getInstrument(fakeLoad))
+            .then(() => {
+                expect(store.getActions()).to.eql(expectedActions);
+                done();
+            });
+    });
+});
+
+
+describe('singActions', () => {
 
     let server;
     let store;

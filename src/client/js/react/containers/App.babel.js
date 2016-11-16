@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import load  from 'audio-loader';
 
 import { LinkContainer } from 'react-router-bootstrap';
 import { Navbar, NavItem, Nav } from 'react-bootstrap';
 
 import { getUserIfNeeded } from '../actions/userActions.babel';
 import { getLessons } from '../actions/singActions.babel';
+import { getInstrument, getLessons } from '../actions/singActions.babel';
 
 
 class App extends Component {
@@ -14,6 +16,7 @@ class App extends Component {
         const { dispatch } = this.props;
         dispatch(getUserIfNeeded());
         dispatch(getLessons());
+        dispatch(getInstrument(load));
     }
 
     render() {
@@ -40,27 +43,3 @@ class App extends Component {
 }
 
 export default connect()(App);
-
-// https://fonts.google.com/specimen/Raleway?selection.family=Raleway:100
-// https://github.com/typekit/webfontloader
-// import WebFont  from 'webfontloader';
-//
-// let isFontLoaded = null;
-// let fontName = null;
-// const WebFontConfig = {
-//     loading: () => {
-//         isFontLoaded = false;
-//     },
-//     active: () => {
-//         isFontLoaded = true;
-//         initialize();
-//     },
-//     inactive: function () {
-//     },
-// };
-//
-// WebFont.load({
-//     google: {
-//         families: ['Raleway:100'],
-//     },
-// });
