@@ -163,6 +163,7 @@ export function setIsPlayingIfReady(isPlaying) {
         if (isPlaying === state.sing.isPlaying) return;
         if (isPlaying) {
             if (isEqual(state.sing.currentLesson, initialSingState.currentLesson) ||
+                isEqual(state.sing.instrumentBuffers, initialSingState.instrumentBuffers) ||
                 isEqual(state.profile.user, initialProfileState.user)) {
                 return;
             }

@@ -25,6 +25,7 @@ describe('Widget container', () => {
     let user;
     let currentLesson;
     let isPlaying;
+    let instrumentBuffers;
     let setIsPlayingIfReady;
     let dummyString;
     let dummyObject;
@@ -40,6 +41,7 @@ describe('Widget container', () => {
             user,
             currentLesson,
             isPlaying,
+            instrumentBuffers,
             setIsPlayingIfReady,
             Canvas,
             Audio,
@@ -56,6 +58,7 @@ describe('Widget container', () => {
             user,
             currentLesson,
             isPlaying,
+            instrumentBuffers,
             setIsPlayingIfReady,
             Canvas,
             Audio,
@@ -73,6 +76,7 @@ describe('Widget container', () => {
         user = initialProfileState.user;
         currentLesson = initialSingState.currentLesson;
         isPlaying = initialSingState.isPlaying;
+        instrumentBuffers = initialSingState.instrumentBuffers;
         setIsPlayingIfReady = sinon.stub();
         Canvas = function () {
             this.setWidth = function () {};

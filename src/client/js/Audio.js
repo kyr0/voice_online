@@ -1,6 +1,6 @@
 'use strict';
 var Tone = require('tone');
-var Soundfont = require('soundfont-player');
+var samplePlayer = require('sample-player');
 
 var MPM = require('./MPM.js');
 var Note = require('./Note.js');
@@ -11,6 +11,7 @@ var NoteMaps = require('./NoteMaps.js');
 function Audio() {
 
     var player = null;
+    var instrumentBuffers = null;
     var audioContext = new (window.AudioContext || window.webkitAudioContext)();
     var bufferLength = 1024;
     var scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
@@ -75,9 +76,9 @@ function Audio() {
     function startNote(curNote) {
         currentNote = curNote;
         if (currentNote.name === '-') {
-            accompany.triggerRelease();
+            accompany.stop();
         } else {
-            accompany.triggerAttack(currentNote.name);
+            accompany.start(currentNote.name);
         }
     }
 
@@ -88,31 +89,34 @@ function Audio() {
 
 
     this.stopAudio = function () {
-        accompany.triggerRelease();
+        accompany.stop();
         scriptNode.disconnect();
     };
 
 
     this.startAudio = function (getSource) {
-        Soundfont.instrument(audioContext, '/static/assets/acoustic_grand_piano.js').then(function (piano) {
-            piano.play('C4');
-        });
-        Tone.setContext(audioContext);
-        accompany = new Tone.Synth({
-            'oscillator' : {
-                'type' : 'sine2',
-                // 'type' : 'pwm',
-                // 'detune': 10,
-            },
-            'envelope' : {
-                'attack' : 0.015,
-                'decay' : 0.25,
-                'sustain' : 0.08,
-                'release' : 0.001,
-            },
-        });
-        accompany.toMaster();
+        accompany = samplePlayer(audioContext, instrumentBuffers, { gain: 1 }).connect(audioContext.destination);
+        // Tone.setContext(audioContext);
+        // accompany = new Tone.Synth({
+        //     'oscillator' : {
+        //         'type' : 'sine2',
+        //         // 'type' : 'pwm',
+        //         // 'detune': 10,
+        //     },
+        //     'envelope' : {
+        //         'attack' : 0.015,
+        //         'decay' : 0.25,
+        //         'sustain' : 0.08,
+        //         'release' : 0.001,
+        //     },
+        // });
+        // accompany.toMaster();
         getSource();
+    };
+
+
+    this.setInstrumentBuffers = function (buffers) {
+        instrumentBuffers = buffers;
     };
 
 

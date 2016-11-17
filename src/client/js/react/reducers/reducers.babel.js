@@ -67,7 +67,7 @@ export const initialSingState = {
     isRequesting: false,
     lessons: { results: [] },
     isRequestingInstrument: false,
-    instrumentBuffers: null,
+    instrumentBuffers: {},
 };
 export function sing(state = initialSingState, action) {
     switch (action.type) {

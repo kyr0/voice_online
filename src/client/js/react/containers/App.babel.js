@@ -6,7 +6,6 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { Navbar, NavItem, Nav } from 'react-bootstrap';
 
 import { getUserIfNeeded } from '../actions/userActions.babel';
-import { getLessons } from '../actions/singActions.babel';
 import { getInstrument, getLessons } from '../actions/singActions.babel';
 
 

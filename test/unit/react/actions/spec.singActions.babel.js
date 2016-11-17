@@ -188,12 +188,22 @@ describe('singActions', () => {
 
     it('should not set isPlaying if no user in state', () => {
         state.sing.currentLesson = dummy_lesson_data.results[0];
+        state.sing.instrumentBuffers = 'dummy';
         store = mockStore(state);
         store.dispatch(setIsPlayingIfReady(true));
         expect(store.getActions()).to.eql([]);
     });
 
     it('should not set isPlaying if no currentLesson in state', () => {
+        state.profile.user = dummy_profile_data;
+        state.sing.instrumentBuffers = 'dummy';
+        store = mockStore(state);
+        store.dispatch(setIsPlayingIfReady(true));
+        expect(store.getActions()).to.eql([]);
+    });
+
+    it('should not set isPlaying if no instrumentBuffers in state', () => {
+        state.sing.currentLesson = dummy_lesson_data.results[0];
         state.profile.user = dummy_profile_data;
         store = mockStore(state);
         store.dispatch(setIsPlayingIfReady(true));
@@ -203,6 +213,7 @@ describe('singActions', () => {
     it('should set isPlaying true if user and currentLesson are set', () => {
         state.sing.currentLesson = dummy_lesson_data.results[0];
         state.profile.user = dummy_profile_data;
+        state.sing.instrumentBuffers = 'dummy';
         store = mockStore(state);
         store.dispatch(setIsPlayingIfReady(true));
         expect(store.getActions()[0].isPlaying).to.eql(true);

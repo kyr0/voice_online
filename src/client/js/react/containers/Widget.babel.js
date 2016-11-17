@@ -25,11 +25,17 @@ export class Widget extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const { gridSize, user, currentLesson, isPlaying } = nextProps;
+        const { gridSize, user, currentLesson, isPlaying, instrumentBuffers } = nextProps;
         const gridSizeProp = this.props.gridSize;
         const userProp = this.props.user;
         const currentLessonProp = this.props.currentLesson;
         const isPlayingProp = this.props.isPlaying;
+        const instrumentBuffersProp = this.props.instrumentBuffers;
+
+        // TODO add test for this condition
+        if (instrumentBuffers !== instrumentBuffersProp) {
+            this.audio.setInstrumentBuffers(instrumentBuffers);
+        }
 
         if (gridSize !== gridSizeProp) {
             // Stop playing if size changes during session
@@ -110,8 +116,9 @@ Widget.propTypes = {
     user: PropTypes.object.isRequired,
     currentLesson: PropTypes.object.isRequired,
     isPlaying: PropTypes.bool.isRequired,
+    instrumentBuffers: PropTypes.object.isRequired,
     setIsPlayingIfReady: PropTypes.func.isRequired,
-    // the following allow for dependency injection, useful for testing
+    // the following optional allow for dependency injection, useful for testing
     Canvas: PropTypes.func,
     Audio: PropTypes.func,
     User: PropTypes.func,
@@ -125,6 +132,7 @@ const mapStateToProps = (state) => {
         user: state.profile.user,
         currentLesson: state.sing.currentLesson,
         isPlaying: state.sing.isPlaying,
+        instrumentBuffers: state.sing.instrumentBuffers,
     };
 };
 
