@@ -1,6 +1,5 @@
 'use strict';
-var Tone = require('tone');
-var samplePlayer = require('sample-player');
+// var Tone = require('tone');
 
 var MPM = require('./MPM.js');
 var Note = require('./Note.js');
@@ -8,6 +7,14 @@ var NoteMaps = require('./NoteMaps.js');
 
 
 // TODO make a way to destroy audioContext during tests AudioContext.close()
+/* TODO -- "An important point to note is that on iOS, Apple currently mutes
+   all sound output until the first time a sound is played during a user interaction event -
+   for example, calling playSound() inside a touch event handler. You may struggle with Web Audio
+   on iOS "not working" unless you circumvent this - in order to avoid problems like this, just
+   play a sound (it can even be muted by connecting to a Gain Node with zero gain) inside an early
+   UI event - e.g. "touch here to play"."
+*/
+
 function Audio() {
 
     var player = null;
@@ -75,11 +82,32 @@ function Audio() {
 
     function startNote(curNote) {
         currentNote = curNote;
+
+        accompany.stop();
+        accompany.disconnect();
+
         if (currentNote.name === '-') {
-            accompany.stop();
+            stopNote();
         } else {
-            accompany.start(currentNote.name);
+            accompany = audioContext.createBufferSource();
+            accompany.volume = audioContext.createGain();
+            accompany.volume.connect(audioContext.destination);
+
+            // DELETE
+            // audioIn = accompany; // always do this directly before osc.start()
+            // audioIn.connect(scriptNode);
+            // scriptNode.connect(audioContext.destination);
+
+            accompany.buffer = instrumentBuffers[currentNote.name];
+            accompany.connect(accompany.volume);
+            accompany.start(0);  // note: on older systems, may have to use deprecated noteOn(time)
         }
+    }
+
+    function stopNote() {
+        // accompany.stop();
+        // accompany.disconnect();
+        // accompany.volume.gain.value = 0;
     }
 
 
@@ -89,13 +117,14 @@ function Audio() {
 
 
     this.stopAudio = function () {
-        accompany.stop();
+        stopNote();
         scriptNode.disconnect();
     };
 
 
     this.startAudio = function (getSource) {
-        accompany = samplePlayer(audioContext, instrumentBuffers, { gain: 1 }).connect(audioContext.destination);
+        accompany = audioContext.createBufferSource();
+        accompany.start();
         // Tone.setContext(audioContext);
         // accompany = new Tone.Synth({
         //     'oscillator' : {
@@ -127,6 +156,10 @@ function Audio() {
             startNote(curNote);
         });
 
+        player.on('endNote', function () {
+            stopNote();
+        });
+
         player.on('startSet', function (curSet) {
             this.startSet(curSet);
         }.bind(this));
@@ -147,9 +180,9 @@ function Audio() {
 
 
     this.getTestInput = function () {
-        audioIn = accompany; // always do this directly before osc.start()
-        audioIn.connect(scriptNode);
-        scriptNode.connect(audioContext.destination);
+        // audioIn = accompany; // always do this directly before osc.start()
+        // audioIn.connect(scriptNode);
+        // scriptNode.connect(audioContext.destination);
     };
 
     this.getSingleNoteTestInput = function () {
