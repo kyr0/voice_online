@@ -1,5 +1,4 @@
 'use strict';
-// var Tone = require('tone');
 
 var MPM = require('./MPM.js');
 var Note = require('./Note.js');
@@ -83,8 +82,7 @@ function Audio() {
     function startNote(curNote) {
         currentNote = curNote;
 
-        accompany.stop();
-        accompany.disconnect();
+        stopNote();
 
         if (currentNote.name === '-') {
             stopNote();
@@ -94,9 +92,9 @@ function Audio() {
             accompany.volume.connect(audioContext.destination);
 
             // DELETE
-            // audioIn = accompany; // always do this directly before osc.start()
-            // audioIn.connect(scriptNode);
-            // scriptNode.connect(audioContext.destination);
+            audioIn = accompany; // always do this directly before osc.start()
+            audioIn.connect(scriptNode);
+            scriptNode.connect(audioContext.destination);
 
             accompany.buffer = instrumentBuffers[currentNote.name];
             accompany.connect(accompany.volume);
@@ -105,9 +103,8 @@ function Audio() {
     }
 
     function stopNote() {
-        // accompany.stop();
-        // accompany.disconnect();
-        // accompany.volume.gain.value = 0;
+        accompany.stop();
+        accompany.disconnect();
     }
 
 
@@ -125,21 +122,6 @@ function Audio() {
     this.startAudio = function (getSource) {
         accompany = audioContext.createBufferSource();
         accompany.start();
-        // Tone.setContext(audioContext);
-        // accompany = new Tone.Synth({
-        //     'oscillator' : {
-        //         'type' : 'sine2',
-        //         // 'type' : 'pwm',
-        //         // 'detune': 10,
-        //     },
-        //     'envelope' : {
-        //         'attack' : 0.015,
-        //         'decay' : 0.25,
-        //         'sustain' : 0.08,
-        //         'release' : 0.001,
-        //     },
-        // });
-        // accompany.toMaster();
         getSource();
     };
 
@@ -154,10 +136,6 @@ function Audio() {
 
         player.on('startNote', function (curNote) {
             startNote(curNote);
-        });
-
-        player.on('endNote', function () {
-            stopNote();
         });
 
         player.on('startSet', function (curSet) {
