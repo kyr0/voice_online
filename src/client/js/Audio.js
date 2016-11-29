@@ -4,7 +4,7 @@ var MPM = require('./MPM.js');
 var Note = require('./Note.js');
 var NoteMaps = require('./NoteMaps.js');
 
-
+// TODO figure out "as needed" audio buffers, for instance buffers longer than 2 seconds
 // TODO make a way to destroy audioContext during tests AudioContext.close()
 /* TODO -- "An important point to note is that on iOS, Apple currently mutes
    all sound output until the first time a sound is played during a user interaction event -
@@ -82,11 +82,7 @@ function Audio() {
     function startNote(curNote) {
         currentNote = curNote;
 
-        stopNote();
-
-        if (currentNote.name === '-') {
-            stopNote();
-        } else {
+        if (currentNote.name !== '-') {
             accompany = audioContext.createBufferSource();
             accompany.volume = audioContext.createGain();
             accompany.volume.connect(audioContext.destination);
@@ -98,11 +94,30 @@ function Audio() {
 
             accompany.buffer = instrumentBuffers[currentNote.name];
             accompany.connect(accompany.volume);
+
+            // This will be removed once we have samples longer than 2 seconds
+            var getDuration = function () {
+                if (currentNote.durationInMilliseconds >= 2000) {
+                    return 2000 * 0.95;
+                } else {
+                    return currentNote.durationInMilliseconds;
+                }
+            };
+
+            var rampGainDownTime = (getDuration() * 0.05) / 1000;
+            setTimeout(rampGainDown.bind(null, rampGainDownTime, accompany), getDuration());
+
             accompany.start(0);  // note: on older systems, may have to use deprecated noteOn(time)
         }
     }
 
-    function stopNote() {
+    function rampGainDown(durationInSeconds, accompany) {
+        var gainValue = 0.001;
+        accompany.volume.gain.exponentialRampToValueAtTime(gainValue, audioContext.currentTime + durationInSeconds);
+        setTimeout(stopNote.bind(null, accompany), audioContext.currentTime + durationInSeconds);
+    }
+
+    function stopNote(accompany) {
         accompany.stop();
         accompany.disconnect();
     }
@@ -114,7 +129,7 @@ function Audio() {
 
 
     this.stopAudio = function () {
-        stopNote();
+        stopNote(accompany);
         scriptNode.disconnect();
     };
 
