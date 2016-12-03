@@ -17,7 +17,9 @@ var NoteMaps = require('./NoteMaps.js');
 function Audio() {
 
     var player = null;
-    var instrumentBuffers = null;
+    var pianoBufferList = [];  // will host all the piano sound buffers that will be used in this lesson
+    var pianoBufferIdx = 0;
+    var instrumentBuffers = null;  //
     var audioContext = new (window.AudioContext || window.webkitAudioContext)();
     var bufferLength = 1024;
     var scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
@@ -38,7 +40,7 @@ function Audio() {
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function (audioProcessingEvent) {
         // console.log('onaudioprocess');
-        // TODO fix the transition detection errors by averaging frames
+        // TODO fix the note transition pitch detection errors by averaging frames
         this.inputBuffer = audioProcessingEvent.inputBuffer;
         this.inputData = this.inputBuffer.getChannelData(0);
         this._handleBuffer(this.inputData);
@@ -46,11 +48,9 @@ function Audio() {
 
 
     this._handleBuffer = function (buf) {
-        // for speed perhaps mpm could return an array with frequency and probability
+        // for speed perhaps mpm could return an array with pitch result, frequency, and probability
         this.resultObj = mpm.detectPitch(buf);
-        var pitchFreq = this.resultObj.getPitchFrequency();
-        var probability = this.resultObj.getProbability();
-        this._processPitchResult(pitchFreq, probability);
+        this._processPitchResult(this.resultObj.getPitchFrequency(), this.resultObj.getProbability());
     }.bind(this);
 
 
@@ -67,8 +67,6 @@ function Audio() {
                 note.frequency = nMaps.getClosestFreqFromPitch(pitchFreq); // so we don't need a new Note object
                 var centsDiff = note.getCentsDiff(pitchFreq) / 100; // must be done after frequency is set on Note object
                 var offPitchAmt = currentNote.getCentsDiff(pitchFreq);
-                // console.log('Closest Note Freq: ' + note.frequency + ' OffBy: ' + centsDiff + ' Inc Pitch: ' + pitchFreq + ' Name: ' + noteName);
-                // console.log('Pitch Axis Ratio: ' + (relativeItvl + (centsDiff * -1)) + ' Rl Itv: ' + relativeItvl + ' Off: ' + centsDiff);
                 player.pitchYAxisRatio = relativeItvl + (centsDiff * -1);
                 player.pushScore(offPitchAmt);
             } else {
@@ -79,43 +77,64 @@ function Audio() {
     };
 
 
+    // XXX This should be removed once we have samples longer than 2 seconds
+    function getDuration() {
+        if (currentNote.durationInMilliseconds >= 2000) {
+            return 2000 * 0.95;
+        } else {
+            return currentNote.durationInMilliseconds;
+        }
+    }
+
+
     function startNote(curNote) {
         currentNote = curNote;
 
         if (currentNote.name !== '-') {
-            accompany = audioContext.createBufferSource();
-            accompany.volume = audioContext.createGain();
+            accompany = getNextPianoBuffer();
             accompany.volume.connect(audioContext.destination);
 
             // DELETE
-            audioIn = accompany; // always do this directly before osc.start()
+            audioIn = accompany;
             audioIn.connect(scriptNode);
             scriptNode.connect(audioContext.destination);
 
-            accompany.buffer = instrumentBuffers[currentNote.name];
-            accompany.connect(accompany.volume);
+            // On the following line `getDuration() * 0.05) / 1000` represents rampDownGainTime
+            setTimeout(rampGainDown.bind(null, ((getDuration() * 0.05) / 1000), accompany), getDuration());
 
-            // This will be removed once we have samples longer than 2 seconds
-            var getDuration = function () {
-                if (currentNote.durationInMilliseconds >= 2000) {
-                    return 2000 * 0.95;
-                } else {
-                    return currentNote.durationInMilliseconds;
-                }
-            };
-
-            var rampGainDownTime = (getDuration() * 0.05) / 1000;
-            setTimeout(rampGainDown.bind(null, rampGainDownTime, accompany), getDuration());
-
-            accompany.start(0);  // note: on older systems, may have to use deprecated noteOn(time)
+            accompany.start(0);  // note: on older systems, may have to use deprecated noteOn()
         }
     }
+
+
+    function getNextPianoBuffer() {
+        pianoBufferIdx++;
+        return pianoBufferList[pianoBufferIdx - 1];
+    }
+
+
+    function createPianoBufferList(thePlayer) {
+        for (var setIdx = 0; setIdx < thePlayer.sets.length; setIdx++) {
+            for (var ntIdx = 0; ntIdx < thePlayer.sets[setIdx].noteList.length; ntIdx++) {
+                var ntName = thePlayer.sets[setIdx].noteList[ntIdx].name;
+                if (ntName !== '-') {
+                    pianoBufferList.push(audioContext.createBufferSource());
+                    var thisBuffer = pianoBufferList[pianoBufferList.length - 1];
+                    thisBuffer.buffer = instrumentBuffers[ntName];
+                    thisBuffer.volume = audioContext.createGain();
+                    thisBuffer.connect(thisBuffer.volume);
+                }
+            }
+        }
+    }
+
 
     function rampGainDown(durationInSeconds, accompany) {
         var gainValue = 0.001;
         accompany.volume.gain.exponentialRampToValueAtTime(gainValue, audioContext.currentTime + durationInSeconds);
         setTimeout(stopNote.bind(null, accompany), audioContext.currentTime + durationInSeconds);
     }
+
 
     function stopNote(accompany) {
         accompany.stop();
@@ -135,8 +154,10 @@ function Audio() {
 
 
     this.startAudio = function (getSource) {
-        accompany = audioContext.createBufferSource();
-        accompany.start();
+        // It's worth mentioning that startAudio() cannot be called unless
+        //  both this.player and this.instrumentBuffers have been set.
+        //  For more information see action - `setIsPlayingIfReady()`
+        createPianoBufferList(player);
         getSource();
     };
 
@@ -177,6 +198,7 @@ function Audio() {
         // audioIn.connect(scriptNode);
         // scriptNode.connect(audioContext.destination);
     };
+
 
     this.getSingleNoteTestInput = function () {
         audioIn = audioContext.createOscillator(); // always do this directly before osc.start()
