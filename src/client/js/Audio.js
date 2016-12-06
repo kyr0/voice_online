@@ -17,9 +17,8 @@ var NoteMaps = require('./NoteMaps.js');
 function Audio() {
 
     var player = null;
-    var pianoBufferList = [];  // will host all the piano sound buffers that will be used in this lesson
     var pianoBufferIdx = 0;
-    var instrumentBuffers = null;  //
+    var instrumentBuffers = null;
     var audioContext = new (window.AudioContext || window.webkitAudioContext)();
     var bufferLength = 1024;
     var scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
@@ -33,6 +32,7 @@ function Audio() {
     var currentNote = null;
     var currentChart = null;
 
+    this.pianoBufferList = [];  // will host all the piano sound buffers that will be used in this lesson
     this.inputBuffer = null;
     this.inputData = null;
     this.resultObj = null;
@@ -87,11 +87,11 @@ function Audio() {
     }
 
 
-    function startNote(curNote) {
+    this.startNote = function (curNote) {
         currentNote = curNote;
 
         if (currentNote.name !== '-') {
-            accompany = getNextPianoBuffer();
+            accompany = this.getNextPianoBuffer();
             accompany.volume.connect(audioContext.destination);
 
             // DELETE
@@ -100,46 +100,48 @@ function Audio() {
             scriptNode.connect(audioContext.destination);
 
             // On the following line `getDuration() * 0.05) / 1000` represents rampDownGainTime
-            setTimeout(rampGainDown.bind(null, ((getDuration() * 0.05) / 1000), accompany), getDuration());
+            setTimeout(this.rampGainDown.bind(null, ((getDuration() * 0.05) / 1000), accompany), getDuration());
 
             accompany.start(0);  // note: on older systems, may have to use deprecated noteOn()
         }
-    }
+    }.bind(this);
 
 
-    function getNextPianoBuffer() {
+    this.getNextPianoBuffer = function () {
         pianoBufferIdx++;
-        return pianoBufferList[pianoBufferIdx - 1];
-    }
+        console.log('Index: ' + pianoBufferIdx);
+        return this.pianoBufferList[pianoBufferIdx - 1];
+    }.bind(this);
 
 
-    function createPianoBufferList(thePlayer) {
+    this.createPianoBufferList = function (thePlayer) {
+        pianoBufferIdx = 0;
         for (var setIdx = 0; setIdx < thePlayer.sets.length; setIdx++) {
             for (var ntIdx = 0; ntIdx < thePlayer.sets[setIdx].noteList.length; ntIdx++) {
                 var ntName = thePlayer.sets[setIdx].noteList[ntIdx].name;
                 if (ntName !== '-') {
-                    pianoBufferList.push(audioContext.createBufferSource());
-                    var thisBuffer = pianoBufferList[pianoBufferList.length - 1];
+                    this.pianoBufferList.push(audioContext.createBufferSource());
+                    var thisBuffer = this.pianoBufferList[this.pianoBufferList.length - 1];
                     thisBuffer.buffer = instrumentBuffers[ntName];
                     thisBuffer.volume = audioContext.createGain();
                     thisBuffer.connect(thisBuffer.volume);
                 }
             }
         }
-    }
+    }.bind(this);
 
 
-    function rampGainDown(durationInSeconds, accompany) {
+    this.rampGainDown = function (durationInSeconds, accompany) {
         var gainValue = 0.001;
         accompany.volume.gain.exponentialRampToValueAtTime(gainValue, audioContext.currentTime + durationInSeconds);
-        setTimeout(stopNote.bind(null, accompany), audioContext.currentTime + durationInSeconds);
-    }
+        setTimeout(this.stopNote.bind(null, accompany), audioContext.currentTime + durationInSeconds);
+    }.bind(this);
 
 
-    function stopNote(accompany) {
+    this.stopNote = function (accompany) {
         accompany.stop();
         accompany.disconnect();
-    }
+    };
 
 
     this.startSet = function (curSet) {
@@ -148,8 +150,9 @@ function Audio() {
 
 
     this.stopAudio = function () {
-        stopNote(accompany);
+        this.stopNote(accompany);
         scriptNode.disconnect();
+        this.pianoBufferList = [];
     };
 
 
@@ -157,7 +160,7 @@ function Audio() {
         // It's worth mentioning that startAudio() cannot be called unless
         //  both this.player and this.instrumentBuffers have been set.
         //  For more information see action - `setIsPlayingIfReady()`
-        createPianoBufferList(player);
+        this.createPianoBufferList(player);
         getSource();
     };
 
@@ -171,8 +174,8 @@ function Audio() {
         player = aPlayer;
 
         player.on('startNote', function (curNote) {
-            startNote(curNote);
-        });
+            this.startNote(curNote);
+        }.bind(this));
 
         player.on('startSet', function (curSet) {
             this.startSet(curSet);
