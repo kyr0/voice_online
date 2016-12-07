@@ -94,11 +94,6 @@ function Audio() {
             accompany = this.getNextPianoBuffer();
             accompany.volume.connect(audioContext.destination);
 
-            // DELETE
-            audioIn = accompany;
-            audioIn.connect(scriptNode);
-            scriptNode.connect(audioContext.destination);
-
             // On the following line `getDuration() * 0.05) / 1000` represents rampDownGainTime
             setTimeout(this.rampGainDown.bind(null, ((getDuration() * 0.05) / 1000), accompany), getDuration());
 
@@ -197,10 +192,18 @@ function Audio() {
 
 
     this.getTestInput = function () {
-        // audioIn = accompany; // always do this directly before osc.start()
-        // audioIn.connect(scriptNode);
-        // scriptNode.connect(audioContext.destination);
-    };
+        var load = require('audio-loader');
+        load(require('../../../test/fixtures/bad_practice.js')).then(
+            function (buffer, time) {
+                var testVoice = audioContext.createBufferSource();
+                testVoice.buffer = buffer;
+                testVoice.connect(audioContext.destination);
+                testVoice.connect(scriptNode);
+                scriptNode.connect(audioContext.destination);
+                testVoice.start(time || audioContext.currentTime);
+            }.bind(this)
+        );
+    }.bind(this);
 
 
     this.getSingleNoteTestInput = function () {
