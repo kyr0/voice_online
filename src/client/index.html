@@ -11,7 +11,17 @@
     <body>
 
         <div id="content"></div>
-        <script type="text/javascript" src="/static/js/main.bundle.js"></script>
+
+        {% block top %}
+        <script
+                async="async"
+                defer="defer"
+                type="text/javascript"
+                src="/static/js/main.bundle.js"
+                {% if user.is_authenticated %}data-authenticated="true"{% endif %}
+        >
+        </script>
+        {% endblock %}
 
     </body>
 </html>

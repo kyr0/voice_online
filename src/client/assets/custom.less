@@ -1,0 +1,73 @@
+@import "../../../node_modules/bootstrap/less/bootstrap.less";
+
+@text-color: #FFF;
+
+*:focus, *:focus:active {
+    outline-color: transparent;
+    outline: none !important;
+}
+
+body {
+    min-height: 100vh;
+    //@list: #726D82, #C2B2B7;
+    //background-image: svg-gradient(to top right, @list);
+    background-color: black;
+}
+
+.nooutline {
+    outline-color: transparent;
+    outline: none;
+}
+
+.noshadow {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+.lessons-panel {
+    .noshadow;
+    background-color: transparent;
+    color: @text-color;
+    a:link,
+    a:visited,
+    a:hover,
+    a:active {
+        color: @text-color;
+        text-decoration: none;
+    }
+}
+
+.navbar {
+    border-radius: 0;
+    border: 0;
+}
+
+
+// Sing styles
+.sing-btn-group {
+    width: -webkit-max-content;
+    width: -moz-max-content;
+    width: max-content;
+    .center-block;
+}
+
+.btn-transparent {
+    .btn;
+    background-color: transparent;
+}
+
+.btn-transparent:active {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -webkit-transition: none;
+    transition: none;
+}
+
+.sing-buttons {
+    .center-block;
+}
+
+.canvas-container canvas {
+    .center-block;
+}

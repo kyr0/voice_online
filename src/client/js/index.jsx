@@ -6,7 +6,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Router, Route, hashHistory, IndexRoute } from 'react-router';
 import { Provider } from 'react-redux';
-import Custom from '../custom.less';
+import Custom from '../assets/custom.less';
 
 import configureStore from './react/store/configureStore.babel';
 import App from './react/containers/App.babel';
