@@ -23,8 +23,8 @@ function isEmpty(obj) {
 }
 
 
-function isAuthenticated() {
-    return document.currentScript.dataset.authenticated === 'true';
+export function isAuthenticated() {
+    return document.scripts[0].getAttribute('data-authenticated') === 'true';
 }
 
 

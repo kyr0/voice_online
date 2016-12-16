@@ -216,7 +216,7 @@ module.exports = function(grunt) {
                     'mkdir -p ../source/lesson/static/js',  // for dev server
                     'mkdir -p ../source/lesson/static/assets',  // for dev server
                     'cp ./src/client/assets/* ../source/lesson/static/assets/',
-                    'cp ./src/client/index.html ../source/lesson/templates/paper.html',  // need to rename from paper
+                    'cp ./src/client/index.html ../source/lesson/templates/',
                     'cp ./export/js/* ../source/lesson/static/js/',
                 ].join('&&'),
             },
@@ -274,12 +274,10 @@ var loaders = [
 ];
 
 var watchFiles = [
-    './src/client/**/*.js*',
-    './src/client/**/*.less',
+    './src/client/**/*',
     './test/**/*',
     '!./test/**/static/js/*',
     '!./test/**/index.html',
-    '!./src/client/js/drawLesson.js',
 ];
 
 // http://jamesknelson.com/using-es6-in-the-browser-with-babel-6-and-webpack
