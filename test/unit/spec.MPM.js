@@ -1,14 +1,5 @@
-///**
-// * Created by jaboing on 2015-07-31.
-// */
-"use strict";
-
-var MPM = require("../../src/client/js/MPM.js");
-var buffers = require("../resources/audioBuffers.js");
-var helpers = require("../resources/testHelpers.js");
-for (var key in helpers) {
-    global[key] = helpers[key];
-}
+'use strict';
+var MPM = require('../../src/client/js/MPM.js');
 
 describe('MPM Object', function() {
     var sample48k = 48000;   // a sampleRate of 48000
@@ -22,13 +13,13 @@ describe('MPM Object', function() {
             this.mpm = new MPM(sample48k);
         });
 
-        it("sampleRate should equal the passed in parameter" + sample48k, function () {
+        it('sampleRate should equal the passed in parameter' + sample48k, function () {
             expect(this.mpm.__testonly__.sampleRate).to.equal(sample48k);
         });
-        it("bufferSize should equal DEFAULT_BUFFER_SIZE", function () {
+        it('bufferSize should equal DEFAULT_BUFFER_SIZE', function () {
             expect(this.mpm.__testonly__.bufferSize).to.equal(this.mpm.__testonly__.DEFAULT_BUFFER_SIZE);
         });
-        it("cutoff should equal DEFAULT_CUTOFF", function () {
+        it('cutoff should equal DEFAULT_CUTOFF', function () {
             expect(this.mpm.__testonly__.cutoff).to.equal(this.mpm.__testonly__.DEFAULT_CUTOFF);
         });
     });
@@ -38,15 +29,15 @@ describe('MPM Object', function() {
             this.mpm = new MPM(sample48k, buffer2kb, customCutoff);
         });
 
-        it("bufferSize should be same as the passed in parameter", function () {
+        it('bufferSize should be same as the passed in parameter', function () {
             expect(this.mpm.__testonly__.bufferSize).to.equal(buffer2kb);
         });
 
-        it("bufferSize should be same as the passed in parameter", function () {
+        it('bufferSize should be same as the passed in parameter', function () {
             expect(this.mpm.__testonly__.cutoff).to.equal(customCutoff);
         });
 
-        it("nsdf.length should be same as bufferSize", function () {
+        it('nsdf.length should be same as bufferSize', function () {
             expect(this.mpm.__testonly__.nsdfLength).to.equal(this.mpm.__testonly__.bufferSize);
         });
     });
@@ -59,67 +50,14 @@ describe('MPM Object', function() {
             this.mpm = new MPM(sample44k, this.bufferLength);
         });
 
-        it("should be undefined before detectPitch() is called", function () {
+        it('should be undefined before detectPitch() is called', function () {
             expect(allNSDFValuesAreUndefined(this.mpm)).to.equal(true);
         });
 
-        it("should be less than Abs value of +/- 1 when called with valid buffer", function () {
+        it('should be less than Abs value of +/- 1 when called with valid buffer', function () {
             var buffer = createMockBufferOfSize(50);
             this.mpm.__testonly__.normalizedSquareDifference(buffer);
             expect(allNSDFValuesAreLessThanAbsolute1(this.mpm)).to.equal(true);
-        });
-
-    });
-
-
-    describe('detectPitch()', function() {
-
-        beforeEach(function () {
-            this.mpm = new MPM(sample44k, buffers.oscBuffer.length);
-        });
-
-        it("should throw an error when called on buffer with NaN", function () {
-            var buffer = createMockBufferFullOfNaN();
-            //this.mpm.detectPitch(buffer);
-            var errMsg = catchError("detectPitch", buffer, this.mpm);
-            var expectedMsg = "peakPicking(): NSDF value at index";
-            expect(errMsg).to.have.string(expectedMsg);
-        });
-
-        it("should assign correct frequency to A2 buffer given 512 samples", function() {
-            var expectedA2Freq = 110;
-            expect(Math.round(this.mpm.detectPitch(buffers.noteBuffers.A2_512))).to.equal(expectedA2Freq);
-        });
-
-        describe('should put expected values in ', function() {
-            beforeEach(function () {
-                this.mpm.detectPitch(buffers.oscBuffer);
-            });
-
-            it("maxPositions[] given known input", function() {
-                var maxValue1 = 0.9998912511141909;
-                var maxValue2 = 0.9995046600818478;
-                var maxIndex1 = 100;
-                var maxIndex2 = 200;
-                expect(this.mpm.__testonly__.nsdf[maxIndex1]).to.equal(maxValue1);
-                expect(this.mpm.__testonly__.nsdf[maxIndex2]).to.equal(maxValue2);
-                expect(MPM.__testonly__.maxPositions.toString()).to.equal(maxIndex1 + "," + maxIndex2);
-            });
-
-            it("turningPointX/Y given known input", function() {
-                expect(MPM.__testonly__.turningPointX).to.equal(200.46002039225493);
-                expect(MPM.__testonly__.turningPointY).to.equal(1.0000240543039114);
-            });
-
-            it("turningPointX/Y if private function prabolicInterpolation() finds 1 in 3 consecutive index", function() {
-                var tauIndex = 34;
-                this.mpm.__testonly__.nsdf[tauIndex - 1] = 1;   // a
-                this.mpm.__testonly__.nsdf[tauIndex] = 1;       // b, tau index
-                this.mpm.__testonly__.nsdf[tauIndex + 1] = 1;   // c
-                this.mpm.__testonly__.prabolicInterpolation(tauIndex);
-                expect(MPM.__testonly__.turningPointX).to.equal(tauIndex);
-                expect(MPM.__testonly__.turningPointY).to.equal(1);
-            });
         });
 
     });
@@ -132,16 +70,6 @@ describe('MPM Object', function() {
         for (var i = 0; i < numFrames; i++) {
             // Math.random() is in [0; 1.0] audio needs to be in [-1.0; 1.0]
             mockBuffer[i] = Math.random() * 2 - 1;
-        }
-        return mockBuffer;
-    }
-
-    function createMockBufferFullOfNaN(){
-        var numFrames = 10;
-        var mockBuffer = new Array(numFrames);
-        // Fill the mock buffer with NaNs
-        for (var i = 0; i < numFrames; i++) {
-            mockBuffer[i] = 'Not A Number ' + i;
         }
         return mockBuffer;
     }

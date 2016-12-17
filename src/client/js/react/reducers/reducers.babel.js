@@ -14,8 +14,16 @@ import {
     GET_LESSONS_REQUEST,
     GET_LESSONS_SUCCESS,
     GET_LESSONS_FAILURE,
+    GET_INSTRUMENT_REQUEST,
+    GET_INSTRUMENT_SUCCESS,
+    GET_INSTRUMENT_FAILURE,
     SET_CURRENT_LESSON,
-} from '../actions/lessonActions.babel';
+    SET_IS_PLAYING,
+} from '../actions/singActions.babel';
+
+import {
+    SET_GRID_SIZE,
+} from '../actions/windowActions.babel';
 
 
 export const initialProfileState = { isRequesting: false, user: {} };
@@ -52,10 +60,14 @@ export function profile(state = initialProfileState, action) {
     }
 }
 
+
 export const initialSingState = {
+    currentLesson: { title: 'Loading...' },
+    isPlaying: false,
     isRequesting: false,
     lessons: { results: [] },
-    currentLesson: { title: 'Loading...' },
+    isRequestingInstrument: false,
+    instrumentBuffers: {},
 };
 export function sing(state = initialSingState, action) {
     switch (action.type) {
@@ -72,18 +84,52 @@ export function sing(state = initialSingState, action) {
         return Object.assign({}, state, {
             isRequesting: false,
         });
+    case GET_INSTRUMENT_REQUEST:
+        return Object.assign({}, state, {
+            isRequestingInstrument: true,
+        });
+    case GET_INSTRUMENT_SUCCESS:
+        return Object.assign({}, state, {
+            isRequestingInstrument: false,
+            instrumentBuffers: action.instrumentBuffers,
+        });
+    case GET_INSTRUMENT_FAILURE:
+        return Object.assign({}, state, {
+            isRequestingInstrument: false,
+        });
     case SET_CURRENT_LESSON:
         return Object.assign({}, state, {
             currentLesson: action.currentLesson,
+        });
+    case SET_IS_PLAYING:
+        return Object.assign({}, state, {
+            isPlaying: action.isPlaying,
         });
     default:
         return state;
     }
 }
 
+
+export const initialLayoutState = {
+    gridSize: '',
+};
+export function layout(state = initialLayoutState, action) {
+    switch (action.type) {
+    case SET_GRID_SIZE:
+        return Object.assign({}, state, {
+            gridSize: action.gridSize,
+        });
+    default:
+        return state;
+    }
+}
+
+
 const rootReducer = combineReducers({
     profile,
     sing,
+    layout,
     form: formReducer,
 });
 

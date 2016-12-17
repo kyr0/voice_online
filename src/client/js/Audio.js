@@ -2,15 +2,29 @@
 
 var MPM = require('./MPM.js');
 var Note = require('./Note.js');
+var NoteMaps = require('./NoteMaps.js');
 
+// TODO figure out "as needed" audio buffers, for instance buffers longer than 2 seconds
+// TODO make a way to destroy audioContext during tests AudioContext.close()
+/* TODO -- "An important point to note is that on iOS, Apple currently mutes
+   all sound output until the first time a sound is played during a user interaction event -
+   for example, calling playSound() inside a touch event handler. You may struggle with Web Audio
+   on iOS "not working" unless you circumvent this - in order to avoid problems like this, just
+   play a sound (it can even be muted by connecting to a Gain Node with zero gain) inside an early
+   UI event - e.g. "touch here to play"."
+*/
 
-function Audio () {
+function Audio() {
 
     var player = null;
+    var pianoBufferIdx = 0;
+    var instrumentBuffers = null;
     var audioContext = new (window.AudioContext || window.webkitAudioContext)();
     var bufferLength = 1024;
     var scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
     var mpm = new MPM(audioContext.sampleRate, bufferLength);
+    var note = new Note('A4', '1/4');  // these values are not important, only necessary // TODO refactor Note class
+    var nMaps = new NoteMaps();
 
     var accompany = null;
     var audioIn = null;
@@ -18,81 +32,145 @@ function Audio () {
     var currentNote = null;
     var currentChart = null;
 
+    this.pianoBufferList = [];  // will host all the piano sound buffers that will be used in this lesson
+    this.inputBuffer = null;
+    this.inputData = null;
+    this.resultObj = null;
 
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function (audioProcessingEvent) {
         // console.log('onaudioprocess');
-        // TODO fix the transition detection errors by averaging frames
-        var inputBuffer = audioProcessingEvent.inputBuffer;
-        var inputData = inputBuffer.getChannelData(0);
-        this.handleBuffer(inputData);
+        // TODO fix the note transition pitch detection errors by averaging frames
+        this.inputBuffer = audioProcessingEvent.inputBuffer;
+        this.inputData = this.inputBuffer.getChannelData(0);
+        this._handleBuffer(this.inputData);
     }.bind(this);
 
 
-    this.handleBuffer = function(buf) {
-        var resultObj = mpm.detectPitch(buf);  // this could return an array with frequency and probability, faster
-        var pitchFreq = resultObj.getPitchFrequency();
-        var probability = resultObj.getProbability();
-        this._processPitchResult(pitchFreq, probability);
+    this._handleBuffer = function (buf) {
+        // for speed perhaps mpm could return an array with pitch result, frequency, and probability
+        this.resultObj = mpm.detectPitch(buf);
+        this._processPitchResult(this.resultObj.getPitchFrequency(), this.resultObj.getProbability());
     }.bind(this);
 
 
-    this._processPitchResult = function(pitchFreq, probability) {
+    this._processPitchResult = function (pitchFreq, probability) {
         if (pitchFreq === -1 || probability < 0.95) {
-            window.pitchYAxisRatio = null;
-            player.pushScore(null);
-        }
-        else {
-            var noteObj = new Note(pitchFreq);
-            var noteName = noteObj.name;
+            player.pitchYAxisRatio = null;
+            player.pushScore(null);  // this has 3 layers of depth
+        } else {
+            var noteName = note.getClosestNoteFromPitch(pitchFreq);
             // The current chart is  used to show if the note is within
             // the visible bounds of the set that is playing.
             var relativeItvl = currentChart[noteName] + 1;
             if (relativeItvl) {
+                note.frequency = nMaps.getClosestFreqFromPitch(pitchFreq); // so we don't need a new Note object
+                var centsDiff = note.getCentsDiff(pitchFreq) / 100; // must be done after frequency is set on Note object
                 var offPitchAmt = currentNote.getCentsDiff(pitchFreq);
-                window.pitchYAxisRatio = relativeItvl + (noteObj.getCentsDiff(pitchFreq) / 100);
+                player.pitchYAxisRatio = relativeItvl + (centsDiff * -1);
                 player.pushScore(offPitchAmt);
-            }
-            else {
-                window.pitchYAxisRatio = null;
+            } else {
+                player.pitchYAxisRatio = null;
                 player.pushScore(null);
             }
         }
     };
 
 
-    function startNote(curNote) {
-        currentNote = curNote;
-        accompany.frequency.value = currentNote.frequency;
+    // XXX This should be removed once we have samples longer than 2 seconds
+    function getDuration() {
+        if (currentNote.durationInMilliseconds >= 2000) {
+            return 2000 * 0.95;
+        } else {
+            return currentNote.durationInMilliseconds;
+        }
     }
 
 
-    this.startSet = function(curSet) {
+    this.startNote = function (curNote) {
+        currentNote = curNote;
+
+        if (currentNote.name !== '-') {
+            accompany = this.getNextPianoBuffer();
+            accompany.volume.connect(audioContext.destination);
+
+            // On the following line `getDuration() * 0.05) / 1000` represents rampDownGainTime
+            setTimeout(this.rampGainDown.bind(null, ((getDuration() * 0.05) / 1000), accompany), getDuration());
+
+            accompany.start(0);  // note: on older systems, may have to use deprecated noteOn()
+        }
+    }.bind(this);
+
+
+    this.getNextPianoBuffer = function () {
+        pianoBufferIdx++;
+        console.log('Index: ' + pianoBufferIdx);
+        return this.pianoBufferList[pianoBufferIdx - 1];
+    }.bind(this);
+
+
+    this.createPianoBufferList = function (thePlayer) {
+        pianoBufferIdx = 0;
+        for (var setIdx = 0; setIdx < thePlayer.sets.length; setIdx++) {
+            for (var ntIdx = 0; ntIdx < thePlayer.sets[setIdx].noteList.length; ntIdx++) {
+                var ntName = thePlayer.sets[setIdx].noteList[ntIdx].name;
+                if (ntName !== '-') {
+                    this.pianoBufferList.push(audioContext.createBufferSource());
+                    var thisBuffer = this.pianoBufferList[this.pianoBufferList.length - 1];
+                    thisBuffer.buffer = instrumentBuffers[ntName];
+                    thisBuffer.volume = audioContext.createGain();
+                    thisBuffer.connect(thisBuffer.volume);
+                }
+            }
+        }
+    }.bind(this);
+
+
+    this.rampGainDown = function (durationInSeconds, accompany) {
+        var gainValue = 0.001;
+        accompany.volume.gain.exponentialRampToValueAtTime(gainValue, audioContext.currentTime + durationInSeconds);
+        setTimeout(this.stopNote.bind(null, accompany), audioContext.currentTime + durationInSeconds);
+    }.bind(this);
+
+
+    this.stopNote = function (accompany) {
+        accompany.stop();
+        accompany.disconnect();
+    };
+
+
+    this.startSet = function (curSet) {
         currentChart = curSet.chart;
     };
 
 
-    this.stopAudio = function() {
-        accompany.stop();
-        accompany.disconnect();
+    this.stopAudio = function () {
+        this.stopNote(accompany);
         scriptNode.disconnect();
+        this.pianoBufferList = [];
     };
 
 
-    this.startAudio = function(getSource) {
-        accompany = audioContext.createOscillator();  // must be new, can't call start 2x on same osc
-        accompany.start();
-        accompany.connect(audioContext.destination);
+    this.startAudio = function (getSource) {
+        // It's worth mentioning that startAudio() cannot be called unless
+        //  both this.player and this.instrumentBuffers have been set.
+        //  For more information see action - `setIsPlayingIfReady()`
+        this.createPianoBufferList(player);
         getSource();
     };
 
 
-    this.resetAudio = function(getSource, aPlayer) {
+    this.setInstrumentBuffers = function (buffers) {
+        instrumentBuffers = buffers;
+    };
+
+
+    this.setPlayer = function (getSource, aPlayer) {
         player = aPlayer;
 
         player.on('startNote', function (curNote) {
-            startNote(curNote);
-        });
+            this.startNote(curNote);
+        }.bind(this));
 
         player.on('startSet', function (curSet) {
             this.startSet(curSet);
@@ -107,18 +185,26 @@ function Audio () {
         }.bind(this));
 
         player.on('endExercise', function (aggNoteScore) {
-            this.stopAudio();
-            console.log("SCORE: " + aggNoteScore);
+            console.log('SCORE: ' + aggNoteScore);
         }.bind(this));
 
     }.bind(this);
 
 
     this.getTestInput = function () {
-        audioIn = accompany; // always do this directly before osc.start()
-        audioIn.connect(scriptNode);
-        scriptNode.connect(audioContext.destination);
-    };
+        var load = require('audio-loader');
+        load(require('../../../test/fixtures/bad_practice.js')).then(
+            function (buffer, time) {
+                var testVoice = audioContext.createBufferSource();
+                testVoice.buffer = buffer;
+                testVoice.connect(audioContext.destination);
+                testVoice.connect(scriptNode);
+                scriptNode.connect(audioContext.destination);
+                testVoice.start(time || audioContext.currentTime);
+            }.bind(this)
+        );
+    }.bind(this);
+
 
     this.getSingleNoteTestInput = function () {
         audioIn = audioContext.createOscillator(); // always do this directly before osc.start()
@@ -136,10 +222,10 @@ function Audio () {
                     'googEchoCancellation': 'false',
                     'googAutoGainControl': 'false',
                     'googNoiseSuppression': 'false',
-                    'googHighpassFilter': 'false'
+                    'googHighpassFilter': 'false',
                 },
-                'optional': []
-            }
+                'optional': [],
+            },
         };
 
         function initStream(stream) {

@@ -4,7 +4,8 @@ var NoteMaps = require('./NoteMaps.js');
 var InvalidDurationError = require('./customErrors.js').InvalidDurationError;
 
 
-function Note (nameOrFreq, noteDuration){
+function Note(nameOrFreq, noteDuration) {
+
     var that = this;
     var nMaps = new NoteMaps();
 
@@ -48,11 +49,9 @@ function Note (nameOrFreq, noteDuration){
 
         if (startFreq === endFreq){
             direction = 'none';
-        }
-        else if (startFreq < endFreq) {
+        } else if (startFreq < endFreq) {
             direction = 'up';
-        }
-        else {
+        } else {
             direction = 'down';
         }
 
@@ -63,12 +62,10 @@ function Note (nameOrFreq, noteDuration){
 
         if (direction === 'none') {
             return halfSteps;
-        }
-        else if (direction === 'down') {
+        } else if (direction === 'down') {
             stepTo = 'previousNote';
             reverseSteps = -1;
-        }
-        else {
+        } else {
             stepTo = 'nextNote';
         }
         while (traversalNote.name !== otherNtName){
@@ -76,14 +73,13 @@ function Note (nameOrFreq, noteDuration){
             if (traversalNote[stepTo] === null) {
                 throw new Error ('getDistanceToNote() did not encounter the end point of the interval. End Point: ' +
                     otherNtName);
-            }
-            else traversalNote = traversalNote[stepTo];
+            } else traversalNote = traversalNote[stepTo];
         }
         return halfSteps * reverseSteps;
     };
 
     // Returns the difference from expected pitch, rounded to the nearest cent
-    this.getCentsDiff = function(incomingPitch){
+    this.getCentsDiff = function (incomingPitch) {
 
         // Math.round instead of Math.floor allows pitch within .5 cent of
         //  intended note to be counted as 'perfect'
@@ -101,15 +97,14 @@ function Note (nameOrFreq, noteDuration){
         var noteNum = 12 * (Math.log(frequency / 440)/Math.log(2) );
         try {
             var name = nMaps.pitchArray[Math.round(noteNum) + 57].name;
-        }
-        catch (err){
-            throw new Error("The supplied frequency is invalid - " + frequency);
+        } catch (err){
+            throw new Error('The supplied frequency is invalid - ' + frequency);
         }
         return name;
     };
 
 
-    if (nameOrFreq === '-'){
+    if (nameOrFreq === '-') {
         this.name = nameOrFreq;
         this.duration = this.setNoteDuration(noteDuration);
         this.getPreviousNote = null;
@@ -118,12 +113,10 @@ function Note (nameOrFreq, noteDuration){
         this.transpose = function() { return nameOrFreq; };
         this.getCentsDiff = function() { return null; };
         this.getDistanceToNote = function() { return null; };
-    }
-    else {
+    } else {
         if (typeof nameOrFreq === 'number') {
             this.name = this.getClosestNoteFromPitch(nameOrFreq);
-        }
-        else {
+        } else {
             this.name = nMaps.validateNoteName(nameOrFreq);
         }
         this.duration = this.setNoteDuration(noteDuration);

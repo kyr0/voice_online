@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Implementation of The McLeod Pitch Method (MPM). It is described in the
@@ -21,10 +21,10 @@
  * friendly, laggard time domain."
  */
 
-var PitchDetectionResult = require("./PitchDetectionResult.js");
+var PitchDetectionResult = require('./PitchDetectionResult.js');
 
 
-function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
+function MPM(audioSampleRate, audioBufferSize, cutoffMPM) {
 
     this.DEFAULT_BUFFER_SIZE = 1024; // The expected size of an audio buffer (in samples).
     // note that this can be optimized if we know in advance the range of input freq that will
@@ -87,7 +87,7 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
         cutoff : _cutoff,
         DEFAULT_CUTOFF : _DEFAULT_CUTOFF,
         DEFAULT_BUFFER_SIZE : this.DEFAULT_BUFFER_SIZE,
-        nsdfLength : _nsdf.length
+        nsdfLength : _nsdf.length,
     };
     /* end-test-code */
 
@@ -114,7 +114,7 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
     this.__testonly__.normalizedSquareDifference = normalizedSquareDifference;
     /* end-test-code */
 
-    this.detectPitch = function(audioBuffer) {
+    this.detectPitch = function (audioBuffer) {
         var pitch;
 
         // Clear previous results (this is faster than setting length to 0)
@@ -232,10 +232,6 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
             _turningPointX = bValue + delta / (2 * bottom);
             _turningPointY = nsdfb - delta * delta / (8 * bottom);
         }
-        /* start-test-code */
-        module.exports.__testonly__.turningPointX = _turningPointX;
-        module.exports.__testonly__.turningPointY = _turningPointY;
-        /* end-test-code */
     }
 
     /* start-test-code */
@@ -264,7 +260,7 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
      * -1|    \/    \/            \/
      *   |
      *
-     * @param nsdf - The array to look for maximum values in. It should contain
+     * @param audioBuffer - The array to look for maximum values in. It should contain
      *   values between -1 and 1
      * @author Phillip McLeod
      */
@@ -290,8 +286,8 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
 
         while (pos < _nsdf.length - 1) {
             if (_nsdf[pos] < 0 || typeof _nsdf[pos] !== 'number') {
-                throw new Error("peakPicking(): NSDF value at index " + pos + " should be >= 0, was: " + _nsdf[pos] +
-                    "\n\nBuffer Input: [ " + audioBuffer + " ]\n");
+                throw new Error('peakPicking(): NSDF value at index ' + pos + ' should be >= 0, was: ' + _nsdf[pos] +
+                    '\n\nBuffer Input: [ ' + audioBuffer + ' ]\n');
             }
             if ((_nsdf[pos] > _nsdf[pos - 1]) && (_nsdf[pos] >= _nsdf[pos + 1])) {
                 if (curMaxPos === 0) {
@@ -318,7 +314,6 @@ function MPM (audioSampleRate, audioBufferSize, cutoffMPM) {
         if (curMaxPos > 0) { // if there was a maximum in the last part
             _maxPositions.push(curMaxPos); // add it to the vector of maxima
         }
-        module.exports.__testonly__ = { maxPositions : _maxPositions };
     }
 
     /* start-test-code */

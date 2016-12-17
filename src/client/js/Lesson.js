@@ -6,7 +6,7 @@ var Caption = require('./Caption.js');
 var CaptionDurationError = require('./customErrors').CaptionsTooLongError;
 
 // TODO this shit is ugly, let's refactor, exporting so many unnecessary functions for testing via `this`
-function Lesson (options_param) {
+function Lesson(options_param) {
 
     var that = this;
     this.title = 'Untitled';
@@ -39,13 +39,13 @@ function Lesson (options_param) {
         var currentDenom;
         for (var i = 0; i < objList.length; i++) {
             currentDenom = Number(_getDenominator(objList[i].duration));
-            if (currentDenom > highestDenom) {highestDenom = currentDenom;}
+            if (currentDenom > highestDenom) { highestDenom = currentDenom; }
         }
         return highestDenom;
     };
 
 
-    this._sumNumeratorToHighestDenominator = function(duration, highestDenom) {
+    this._sumNumeratorToHighestDenominator = function (duration, highestDenom) {
         var numerator = _getNumerator(duration);
         var denominator = _getDenominator(duration);
         while (denominator < highestDenom) {
@@ -141,13 +141,11 @@ function Lesson (options_param) {
     };
 
 
-    this._updateNotesWithPctCompleteAtNotesEnd = function (){
-        var lessonDuration = that.durationInMeasures;
+    this._updateNotesWithElapsedTimeAtNotesEnd = function (){
         var priorCombinedDuration = 0;
         for (var i = 0; i < that.noteList.length; i++){
-            var combinedDurationAtNotesEnd = that.noteList[i].durationInMeasures + priorCombinedDuration;
-            that.noteList[i].percentOnComplete = combinedDurationAtNotesEnd / lessonDuration;
-            priorCombinedDuration += that.noteList[i].durationInMeasures;
+            that.noteList[i].elapsedTimeAtNotesEnd = that.noteList[i].durationInMilliseconds + priorCombinedDuration;
+            priorCombinedDuration += that.noteList[i].durationInMilliseconds;
         }
     };
 
@@ -173,20 +171,20 @@ function Lesson (options_param) {
         }
     }
 
-    this.addNotes = function(newNotes) {
+    this.addNotes = function (newNotes) {
         var noteObjArr = this._createListOfNoteObjects(newNotes);
         Array.prototype.push.apply(this.noteList, noteObjArr);
         _updateLessonDuration();
         this.intervals = _updateIntervals(this.noteList);
         this._updateNotesWithRelativeInterval();
-        this._updateNotesWithPctCompleteAtNotesEnd();
         this._updateNotesWithDurationInMilliseconds();
+        this._updateNotesWithElapsedTimeAtNotesEnd();
         _updateSmallestNoteSize();
         _generateChart();
     };
 
 
-    this.addCaptions = function(newCaptions) {
+    this.addCaptions = function (newCaptions) {
         var text;
         var duration;
         for (var idx = 0; idx < newCaptions.length; idx++) {
@@ -231,25 +229,24 @@ function Lesson (options_param) {
     };
 
 
-    this.getLessonRange = function() {
+    this.getLessonRange = function () {
         var range = new Interval(this.lowestNote.name, this.highestNote.name);
         return range.halfsteps;
     };
 
 
     if (options_param) {
+        // bpm should appear above note/caption lists for duration measurements
+        if (options_param.bpm) {
+            this.bpm = options_param.bpm;
+        }
+
         if (options_param.noteList) {
             this.addNotes(options_param.noteList);
         }
 
         if (options_param.captionList) {
             this.addCaptions(options_param.captionList);
-        }
-
-        if (options_param.bpm) {
-            this.bpm = options_param.bpm;
-            _updateDurationInMilliseconds();
-            this._updateNotesWithDurationInMilliseconds();
         }
 
         if (options_param.title) {

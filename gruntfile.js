@@ -13,18 +13,12 @@ module.exports = function(grunt) {
             target: [
                 './src/**/*.babel.js',
                 './test/**/*.babel.js',
-            ]
+            ],
         },
 
         watch: {
             fast: {
-                files: [
-                    './src/client/**/*.js*',
-                    './test/**/*',
-                    '!./test/**/static/js/*',
-                    '!./test/**/index.html',
-                    '!./src/client/js/drawLesson.js',
-                ],
+                files: watchFiles,
                 tasks: [
                     'eslint',
                     'webpack:dev',
@@ -32,13 +26,7 @@ module.exports = function(grunt) {
                 ],
             },
             frontend: {
-                files: [
-                    './src/client/**/*.js*',
-                    './test/**/*',
-                    '!./test/**/static/js/*',
-                    '!./test/**/index.html',
-                    '!./src/client/js/drawLesson.js',
-                ],
+                files: watchFiles,
                 tasks: [
                     'eslint',
                     'webpack:dev',
@@ -47,13 +35,7 @@ module.exports = function(grunt) {
                 ],
             },
             fe_unit: {
-                files: [
-                    './src/client/**/*.js*',
-                    './test/**/*',
-                    '!./test/**/static/js/*',
-                    '!./test/**/index.html',
-                    '!./src/client/js/drawLesson.js',
-                ],
+                files: watchFiles,
                 // github.com/karma-runner/grunt-karma#karma-server-with-grunt-watch
                 tasks: [
                     'eslint',
@@ -67,7 +49,7 @@ module.exports = function(grunt) {
             backend: {
                 files: ['../source/**/*.py'],
                 tasks: ['shell:be_test'],
-            }
+            },
         },
 
         karma: {
@@ -84,7 +66,7 @@ module.exports = function(grunt) {
                     Chrome_allow_media: {
                         base: 'Chrome',
                         flags: ['--use-fake-ui-for-media-stream'],
-                    }
+                    },
                 },
                 webpackMiddleware: {
                     noInfo: true,
@@ -92,7 +74,7 @@ module.exports = function(grunt) {
                 webpack: {
                     devtool: 'inline-source-map',
                     module: {
-                        loaders: [ custom_babel_loader ],
+                        loaders: [ custom_babel_loader, loaders ],
                     },
                     externals: {
                         'cheerio': 'window',
@@ -108,7 +90,7 @@ module.exports = function(grunt) {
                 exclude: ['test/coverage/**/*', '*bundle*'],
                 reporters: ['progress'],
                 background: true,
-                singleRun: false
+                singleRun: false,
             },
             test: {
                 preprocessors: karma_preprocessors,
@@ -126,17 +108,17 @@ module.exports = function(grunt) {
                 browserNoActivityTimeout: 40000,
                 webpack: {
                     module: {
-                        loaders: [ custom_babel_loader ],
+                        loaders: [ custom_babel_loader, loaders ],
                         postLoaders: [
                             {
                                 test: /\.js$/,
                                 include: path.resolve('src/client/'),
                                 exclude: /(test|node_modules)\//,
                                 loader: 'istanbul-instrumenter',
-                            }
-                        ]
-                    }
-                }
+                            },
+                        ],
+                    },
+                },
             },
         },
 
@@ -157,43 +139,43 @@ module.exports = function(grunt) {
                     './src/client/js/index.jsx',
                 ],
                 output: {
-                    path: './test/integration/fixtures/static/js/',
+                    path: './export/js/',
                     filename: '[name].bundle.js',
                     // serve your source maps from a server that is only accessible to your development team
                     // sourceMapFilename: '[name].bundle.js.map'
                 },
                 module: {
-                    loaders: [ custom_babel_loader ],
+                    loaders: [ custom_babel_loader, loaders ],
                 },
                 resolve: {
-                    modulesDirectories: ['node_modules']
+                    modulesDirectories: ['node_modules'],
                 },
                 stats: {
                     modules: false,
                     reasons: false,
                     version: false,
-                    hash: false
+                    hash: false,
                 },
-                progress: true
+                progress: true,
             },
             dev: {
                 failOnError: false, // don't report error to grunt if webpack find errors
                 devtool: 'sourcemap',
-                debug: true
+                debug: true,
             },
             build: {
                 plugins: [
                     new webpack.optimize.DedupePlugin(),
                     new webpack.optimize.OccurenceOrderPlugin(),
                     new webpack.optimize.MinChunkSizePlugin({
-                        minChunkSize: 51200 // ~50kb
+                        minChunkSize: 51200, // ~50kb
                     }),
                     new webpack.optimize.UglifyJsPlugin({
                         mangle: true,
-                    })
+                    }),
                 ],
-                failOnError: true
-            }
+                failOnError: true,
+            },
         },
 
         shell: {
@@ -201,57 +183,53 @@ module.exports = function(grunt) {
                 // NOTE: when tox has multiple test configs, switch to `command: tox`, simple no options necessary
                 command: [
                     'source ../.tox/py34-postgresql/bin/activate',
-                    'python manage.py test'
+                    'python manage.py test',
                 ].join('&&'),
                 options: {
                     execOptions: {
-                        cwd: '../source'
-                    }
-                }
+                        cwd: '../source',
+                    },
+                },
             },
             killall: {
                 // Just in case it is running, wasted lots of time on this
                 command: [
                     'killall -9 node',
-                    'killall -9 python'
+                    'killall -9 python',
                 ].join(';'),
-                options: { failOnError: false }
+                options: { failOnError: false },
             },
             runserver: {
                 command: [
                     'source ../.tox/py34-postgresql/bin/activate',
-                    'python manage.py runserver'
+                    'python manage.py runserver',
                 ].join('&&'),
                 options: {
                     execOptions: {
-                        cwd: '../source'
-                    }
-                }
+                        cwd: '../source',
+                    },
+                },
             },
-            cp_static: {  // note that this is not responsible for bundles which are placed in BE by webpack
+            cp_static: {
                 command: [
                     'set -x',  // make the commands echo to stdout
                     'mkdir -p ../source/lesson/static/js',  // for dev server
-                    'mkdir -p ./test/integration/fixtures/static/js',  // fixture for test suite
-                    // for test suite
-                    'cp ./src/client/index.html ./test/integration/fixtures/index.html',  // in 2 repos
-                    'cp ./src/client/js/drawLesson.js ./test/integration/fixtures/static/js/',
-                    'cp ./src/dependencies/paper-full.min.js ./test/integration/fixtures/static/js/',
-                    // for dev
-                    'cp ./src/client/index.html ../source/lesson/templates/paper.html',
-                    'cp ./test/integration/fixtures/static/js/* ../source/lesson/static/js/'
-                ].join('&&')
-            }
+                    'mkdir -p ../source/lesson/static/assets',  // for dev server
+                    'cp ./src/client/assets/* ../source/lesson/static/assets/',
+                    'cp ./src/client/index.html ../source/lesson/templates/',
+                    'cp ./export/js/* ../source/lesson/static/js/',
+                ].join('&&'),
+            },
         },
 
         concurrent: {
             dev: {
                 tasks: ['shell:runserver', 'watch:fast'],
                 options: {
-                    logConcurrentOutput: true
-                }
-            }
-        }
+                    logConcurrentOutput: true,
+                },
+            },
+        },
 
     });
     grunt.registerTask('default', ['shell:killall', 'webpack:dev', 'shell:cp_static', 'karma:test', 'shell:be_test', 'concurrent:dev']);
@@ -263,6 +241,44 @@ module.exports = function(grunt) {
 
 };
 
+
+var loaders = [
+    {
+        test: /\.(less|css)$/,
+        loader: 'style-loader!css-loader!less-loader',
+    },
+    {
+        test: /\.png$/,
+        loader: 'url-loader?limit=100000',
+    },
+    {
+        test: /\.jpg$/,
+        loader: 'file-loader',
+    },
+    {
+        test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url?limit=10000&mimetype=application/font-woff',
+    },
+    {
+        test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url?limit=10000&mimetype=application/octet-stream',
+    },
+    {
+        test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'file',
+    },
+    {
+        test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url?limit=10000&mimetype=image/svg+xml',
+    },
+];
+
+var watchFiles = [
+    './src/client/**/*',
+    './test/**/*',
+    '!./test/**/static/js/*',
+    '!./test/**/index.html',
+];
 
 // http://jamesknelson.com/using-es6-in-the-browser-with-babel-6-and-webpack
 var custom_babel_loader = {
@@ -289,5 +305,5 @@ var karma_preprocessors = {
 };
 
 var karma_files = [
-    { src: 'test/**/spec.*.js' }
+    { src: 'test/**/spec.*.js' },
 ];

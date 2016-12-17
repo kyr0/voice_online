@@ -7,12 +7,12 @@ var User = require('../../src/client/js/User.js');
 var Lesson = require('../../src/client/js/Lesson.js');
 
 
-describe('Exercise', function() {
+describe('Exercise', function () {
 
     it('should throw error if user range is smaller than lesson range', function () {
         var aUser = new User('A2', 'E3');
         var aLesson = new Lesson({ noteList: [['A2', '1'], ['F3', '1']] });
-        var fn = function(){
+        var fn = function () {
             var dum = new Exercise(aUser, aLesson);
         };
         expect(fn).to.throw(InvalidRangeError);
@@ -36,48 +36,48 @@ describe('Exercise', function() {
         var aUser = new User('A2', 'A4');
         var aLesson = new Lesson({
             noteList: [['B2','1/8'],['A1','1/2'],['Db3','1/4'],['B2','1/32']],
-            captionList: [['One','1/8'],['-','1/2'],['Two','1/4'],['Three','1/32']]
+            captionList: [['One','1/8'],['-','1/2'],['Two','1/4'],['Three','1/32']],
         });
         var exercise = new Exercise(aUser, aLesson);
         var expected = {
             noteList: [
-                {name: 'B3', duration: '1/8'},
-                {name: 'A2', duration: '1/2'},
-                {name: 'Db4', duration: '1/4'},
-                {name: 'B3', duration: '1/32'}
+                { name: 'B3', duration: '1/8' },
+                { name: 'A2', duration: '1/2' },
+                { name: 'Db4', duration: '1/4' },
+                { name: 'B3', duration: '1/32' },
             ],
             captionList: [
-                {text: 'One', duration: '1/8'},
-                {text: '-', duration: '1/2'},
-                {text: 'Two', duration: '1/4'},
-                {text: 'Three', duration: '1/32'}
+                { text: 'One', duration: '1/8' },
+                { text: '-', duration: '1/2' },
+                { text: 'Two', duration: '1/4' },
+                { text: 'Three', duration: '1/32' },
             ]
         };
         compareLessonLists(exercise.sets[0], expected);
     });
 
-    it('should transpose all notes in Lesson correctly (final set)', function () {
+    it('should transpose all notes and captions in Lesson correctly (2nd set)', function () {
         var aUser = new User('A2', 'A4');
         var aLesson = new Lesson({
             noteList: [['B2','1/8'],['-','1/2'],['Db3','1/4'],['B2','1/32']],
-            captionList: [['','1/8'],['One','1/2'],['Two','1/4'],['Three','1/32']]
+            captionList: [['','1/8'],['One','1/2'],['Two','1/4'],['Three','1/32']],
         });
         var exercise = new Exercise(aUser, aLesson);
         var expected = {
             noteList: [
-                {name: 'G4', duration: '1/8'},
-                {name: '-', duration: '1/2'},
-                {name: 'A4', duration: '1/4'},
-                {name: 'G4', duration: '1/32'}
+                { name: 'Bb2', duration: '1/8' },
+                { name: '-', duration: '1/2' },
+                { name: 'C3', duration: '1/4' },
+                { name: 'Bb2', duration: '1/32' },
             ],
             captionList: [
-                {text: '', duration: '1/8'},
-                {text: 'One', duration: '1/2'},
-                {text: 'Two', duration: '1/4'},
-                {text: 'Three', duration: '1/32'}
-            ]
+                { text: '', duration: '1/8' },
+                { text: 'One', duration: '1/2' },
+                { text: 'Two', duration: '1/4' },
+                { text: 'Three', duration: '1/32' },
+            ],
         };
-        compareLessonLists(exercise.sets.pop(), expected);
+        compareLessonLists(exercise.sets[1], expected);
     });
 
     it('should have the right number of sets based on Lesson / User ranges (final set)', function () {
@@ -91,7 +91,7 @@ describe('Exercise', function() {
         var aUser = new User('A2', 'Ab4');
         var aLesson = new Lesson({ noteList: [['B2', '1'], ['-', '1']], bpm: 50, title: 'title' });
         this.exercise = new Exercise(aUser, aLesson);
-        _.forEach(this.exercise.sets, function(set) {
+        _.forEach(this.exercise.sets, function (set) {
             expect(set.bpm).to.equal(50);
             expect(set.title).to.equal('title');
         });
@@ -101,8 +101,8 @@ describe('Exercise', function() {
         var aUser = new User('A2', 'Ab4');
         var aLesson = new Lesson({ noteList: [['B2', '1'], ['-', '1']], bpm: 50, title: 'title' });
         this.exercise = new Exercise(aUser, aLesson);
-        _.forEach(this.exercise.sets, function(set) {
-            _.forEach(set.noteList, function(nt) {
+        _.forEach(this.exercise.sets, function (set) {
+            _.forEach(set.noteList, function (nt) {
                 expect(nt.transpose).to.be.truthy;
             });
         });
@@ -112,12 +112,12 @@ describe('Exercise', function() {
 
 
 function compareLessonLists(aSet, expected) {
-    for (var i = 0; i < aSet.noteList.length; i++) {
+    for (var i = 0; i < expected.noteList.length; i++) {
         expect(aSet.noteList[i].name).to.equal(expected.noteList[i].name);
-        expect(aSet.noteList[i].length).to.equal(expected.noteList[i].length);
+        expect(aSet.noteList[i].duration).to.equal(expected.noteList[i].duration);
     }
-    for (var j = 0; j < aSet.captionList.length; j++) {
+    for (var j = 0; j < expected.captionList.length; j++) {
         expect(aSet.captionList[j].text).to.equal(expected.captionList[j].text);
-        expect(aSet.captionList[j].length).to.equal(expected.captionList[j].length);
+        expect(aSet.captionList[j].duration).to.equal(expected.captionList[j].duration);
     }
 }

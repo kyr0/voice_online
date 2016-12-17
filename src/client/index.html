@@ -5,16 +5,23 @@
 
         <title>pvp</title>
         <meta charset="utf-8">
-
-        <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
-
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     </head>
 
     <body>
 
         <div id="content"></div>
-        <script type="text/javascript" src="/static/js/main.bundle.js"></script>
+
+        {% block top %}
+        <script id="main-script"
+                async="async"
+                defer="defer"
+                type="text/javascript"
+                src="/static/js/main.bundle.js"
+                {% if user.is_authenticated %}data-authenticated="true"{% endif %}
+        >
+        </script>
+        {% endblock %}
 
     </body>
 </html>

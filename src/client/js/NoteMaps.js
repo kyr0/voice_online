@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 
 /*
@@ -17,7 +17,7 @@ function NoteMaps() {
 
     // the raw data used to generate the stuff
     // TODO make sharps a possible choice
-    var _noteNames = ["C", "Db",    "D",   "Eb",    "E",    "F",   "Gb",    "G",   "Ab",    "A",   "Bb",    "B"];
+    var _noteNames = ['C', 'Db',    'D',   'Eb',    'E',    'F',   'Gb',    'G',   'Ab',    'A',   'Bb',    'B'];
     var _oct0 = [16.352, 17.324, 18.354, 19.445, 20.602, 21.827, 23.125, 24.500, 25.957, 27.500, 29.135, 30.868];
     var _oct1 = [32.703, 34.648, 36.708, 38.891, 41.203, 43.653, 46.249, 48.999, 51.913, 55.000, 58.270, 61.735];
     var _oct2 = [65.406, 69.296, 73.416, 77.782, 82.407, 87.307, 92.499, 97.999, 103.83, 110.00, 116.54, 123.47];
@@ -38,16 +38,15 @@ function NoteMaps() {
             if (typeof this.pitchMap[noteName].name !== 'undefined') {
                 return this.pitchMap[noteName].name;
             }
-        }
-        catch (err) {
-            throw new Error ("validateNoteName(): the supplied note name is invalid - " + noteName);
+        } catch (err) {
+            throw new Error ('validateNoteName(): the supplied note name is invalid - ' + noteName);
         }
     };
 
     // will loop through all notes and create the maps, arrays etc
     for (var octave = 0; octave < _notes2D.length; octave++) {
         for (var note = 0; note < _notes2D[octave].length; note++) {
-            var thisNotesName = _noteNames[note] + octave; // symbolic note eg "Ab4"
+            var thisNotesName = _noteNames[note] + octave; // symbolic note eg 'Ab4'
             var thisNotesFreq = _notes2D[octave][note];
 
             // pitch map is for convenient-yet-slow lookups
@@ -56,7 +55,7 @@ function NoteMaps() {
                 index : note + (12 * octave),
                 frequency : thisNotesFreq,
                 previousNote : getPreviousNote(octave, note, this.pitchMap),
-                nextNote : null
+                nextNote : null,
             };
             // Essentially this finds the nextNote property of the previous note and assigns it
             //   a reference to a note object (current)
@@ -73,7 +72,7 @@ function NoteMaps() {
 
             // use the frequency from pitchArray[x] to get the name for Note objects in pitchMap
             this.reverseMap[thisNotesFreq] = {
-                name : thisNotesName
+                name : thisNotesName,
             };
 
 
@@ -81,7 +80,7 @@ function NoteMaps() {
     }
 
     // returns a reference to the previous note object
-    function getPreviousNote (curOctave, curNoteNum, pitchMap){
+    function getPreviousNote(curOctave, curNoteNum, pitchMap){
         if (curOctave === 0 && curNoteNum === 0) return null;
         var prevNoteNum = (curNoteNum === 0) ? 11 : curNoteNum - 1;
         var prevOctave = (prevNoteNum === 11) ? curOctave - 1 : curOctave;
@@ -90,7 +89,7 @@ function NoteMaps() {
 
     // take a raw frequency and returns the on-key frequency of the nearest musical note
     // Note: this is faster than the getClosestNoteFromPitch method on the Note object
-    this.getClosestFreqFromPitch = function(frequency){
+    this.getClosestFreqFromPitch = function (frequency){
         var noteNum = 12 * (Math.log(frequency / 440)/Math.log(2) );
         return this.pitchArray[Math.round(noteNum) + 57].frequency;
     };

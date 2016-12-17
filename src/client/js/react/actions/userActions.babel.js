@@ -23,6 +23,11 @@ function isEmpty(obj) {
 }
 
 
+export function isAuthenticated() {
+    return document.getElementById('main-script').getAttribute('data-authenticated') === 'true';
+}
+
+
 /*
  GET USER
  */
@@ -61,7 +66,7 @@ function getUser() {
 
 export function getUserIfNeeded() {
     return (dispatch, getState) => {
-        if (isEmpty(getState().profile.user)) {
+        if (isEmpty(getState().profile.user) && isAuthenticated()) {
             return dispatch(getUser());
         }
     };
@@ -120,7 +125,7 @@ function shouldUpdateUser(user, new_user_data) {
 export function updateUserIfNeeded(new_user_data) {
     return (dispatch, getState) =>  {
         const user = getState().profile.user;
-        if (shouldUpdateUser(user, new_user_data)) {
+        if (shouldUpdateUser(user, new_user_data) && isAuthenticated()) {
             return dispatch(updateUser(new_user_data));
         }
     };
