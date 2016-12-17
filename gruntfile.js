@@ -215,6 +215,7 @@ module.exports = function(grunt) {
                     'set -x',  // make the commands echo to stdout
                     'mkdir -p ../source/lesson/static/js',  // for dev server
                     'mkdir -p ../source/lesson/static/assets',  // for dev server
+                    'mkdir -p ../source/lesson/templates',  // for dev server
                     'cp ./src/client/assets/* ../source/lesson/static/assets/',
                     'cp ./src/client/index.html ../source/lesson/templates/',
                     'cp ./export/js/* ../source/lesson/static/js/',
