@@ -66,15 +66,15 @@ Player.prototype.setListeners = function () {
         }
     });
 
-    this.on('startExercise', () => {
+    this.on('startExercise', function () {
         console.log('startExercise');
     });
 
-    this.on('stopExercise', () => {
+    this.on('stopExercise', function () {
         console.log('stopExercise');
     });
 
-    this.on('endExercise', () => {
+    this.on('endExercise', function () {
         console.log('endExercise');
         that.score = new Score(that._exercise);
         that.emit('stopExercise');
