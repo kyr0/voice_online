@@ -24,7 +24,7 @@ function isEmpty(obj) {
 
 
 export function isAuthenticated() {
-    return document.scripts[0].getAttribute('data-authenticated') === 'true';
+    return document.getElementById('main-script').getAttribute('data-authenticated') === 'true';
 }
 
 

@@ -32,17 +32,17 @@ describe('userActions', () => {
     const dummy_data = '{ "any_data": "we want" }';
 
     beforeEach(() => {
+        document.body.innerHTML = '<script id="main-script" data-authenticated="true"></script>';
         server = sinon.fakeServer.create();
         server.respondImmediately = true;
         state = cloneDeep(initialState);
     });
 
-    afterEach( () => {
+    afterEach(() => {
         server.restore();
         store = null;
         state = null;
     });
-
 
     it('should not dispatch a GET action if user exists', () => {
         state.profile.user = dummy_data;
