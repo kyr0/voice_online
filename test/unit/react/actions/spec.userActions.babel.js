@@ -40,7 +40,8 @@ describe('userActions', () => {
         profile: initialProfileState,
         auth: initialAuthState,
     };
-    const dummy_data = '{ "any_data": "we want" }';
+    const dummyData = '{ "any_data": "we want" }';
+    const dummyReload = () => {};
 
     beforeEach(() => {
         document.body.innerHTML = '<script id="main-script" data-authenticated="true"></script>';
@@ -68,7 +69,7 @@ describe('userActions', () => {
                 username: 'dummy',
                 password: 'dummy',
             };
-            store.dispatch(loginUser(mockCreds))
+            store.dispatch(loginUser(mockCreds, dummyReload))
                 .then(() => {
                     expect(store.getActions()[0].type).to.eql(LOGIN_USER_REQUEST);
                     expect(store.getActions()[1].type).to.eql(LOGIN_USER_SUCCESS);
@@ -106,7 +107,7 @@ describe('userActions', () => {
                 [200, {}, 'yay']
             );
             store = mockStore(state);
-            store.dispatch(logoutUser())
+            store.dispatch(logoutUser(dummyReload))
                 .then(() => {
                     expect(store.getActions()[0].type).to.eql(LOGOUT_USER_REQUEST);
                     expect(store.getActions()[1].type).to.eql(LOGOUT_USER_SUCCESS);
@@ -138,7 +139,7 @@ describe('userActions', () => {
     describe('getUserIfNeeded', () => {
 
         it('should not dispatch a GET action if user exists', () => {
-            state.profile.user = dummy_data;
+            state.profile.user = dummyData;
             store = mockStore(state);
             store.dispatch(getUserIfNeeded());
             expect(store.getActions()).to.eql([]);
@@ -148,12 +149,12 @@ describe('userActions', () => {
             server.respondWith(
                 'GET',
                 CURRENT_USER_URL,
-                dummy_data
+                dummyData
             );
             store = mockStore(state);
             const expectedActions = [
                 { type: GET_USER_REQUEST },
-                { type: GET_USER_SUCCESS, user: JSON.parse(dummy_data) },
+                { type: GET_USER_SUCCESS, user: JSON.parse(dummyData) },
             ];
             store.dispatch(getUserIfNeeded())
                 .then(() => {
@@ -185,9 +186,9 @@ describe('userActions', () => {
     describe('updateUserIfNeeded', () => {
 
         it('should not dispatch an UPDATE action if user is the same as new data', () => {
-            state.profile.user = dummy_data;
+            state.profile.user = dummyData;
             store = mockStore(state);
-            store.dispatch(updateUserIfNeeded(dummy_data));
+            store.dispatch(updateUserIfNeeded(dummyData));
             expect(store.getActions()).to.eql([]);
         });
 
@@ -197,12 +198,12 @@ describe('userActions', () => {
             server.respondWith(
                 'PUT',
                 CURRENT_USER_URL,
-                dummy_data
+                dummyData
             );
-            store.dispatch(updateUserIfNeeded(dummy_data))
+            store.dispatch(updateUserIfNeeded(dummyData))
                 .then(() => {
                     expect(store.getActions()[0].type).to.eql(UPDATE_USER_REQUEST);
-                    expect(store.getActions()[0].user).to.eql(dummy_data);
+                    expect(store.getActions()[0].user).to.eql(dummyData);
                     expect(store.getActions()[1].type).to.eql(UPDATE_USER_SUCCESS);
                     expect(store.getActions()[1].response).to.exist;
                     done();
@@ -218,10 +219,10 @@ describe('userActions', () => {
                 CURRENT_USER_URL,
                 [404, {}, 'dummy']
             );
-            store.dispatch(updateUserIfNeeded(dummy_data))
+            store.dispatch(updateUserIfNeeded(dummyData))
                 .then(() => {
                     expect(store.getActions()[0].type).to.eql(UPDATE_USER_REQUEST);
-                    expect(store.getActions()[0].user).to.eql(dummy_data);
+                    expect(store.getActions()[0].user).to.eql(dummyData);
                     expect(store.getActions()[1].type).to.eql(UPDATE_USER_FAILURE);
                     expect(store.getActions()[1].error).to.exist;
                     done();

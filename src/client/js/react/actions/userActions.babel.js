@@ -148,8 +148,8 @@ function loginUserRequest() {
 }
 
 
-function loginUserSuccess(response) {
-    location.reload();
+function loginUserSuccess(response, reload) {
+    reload();
     return {
         type: LOGIN_USER_SUCCESS,
         response,
@@ -165,11 +165,11 @@ function loginUserError(error) {
 }
 
 
-export function loginUser(credentials) {
+export function loginUser(credentials, reload = location.reload) {
     return dispatch => {
         dispatch(loginUserRequest());
         return axios.post(LOGIN_URL, credentials)
-            .then(response => dispatch(loginUserSuccess(response)))
+            .then(response => dispatch(loginUserSuccess(response, reload)))
             .catch(error => dispatch(loginUserError(error)));
     };
 }
@@ -184,8 +184,8 @@ function logoutUserRequest() {
 }
 
 
-function logoutUserSuccess(response) {
-    location.reload();
+function logoutUserSuccess(response, reload) {
+    reload();
     return {
         type: LOGOUT_USER_SUCCESS,
         response,
@@ -201,11 +201,11 @@ function logoutUserError(error) {
 }
 
 
-export function logoutUser() {
+export function logoutUser(reload = location.reload) {
     return dispatch => {
         dispatch(logoutUserRequest());
         return axios.post(LOGOUT_URL)
-            .then(response => dispatch(logoutUserSuccess(response)))
+            .then(response => dispatch(logoutUserSuccess(response, reload)))
             .catch(error => dispatch(logoutUserError(error)));
     };
 }
