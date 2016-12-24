@@ -66,7 +66,7 @@ describe('userActions', () => {
             store = mockStore(state);
             const mockCreds = {
                 username: 'dummy',
-                password: 'dummy'
+                password: 'dummy',
             };
             store.dispatch(loginUser(mockCreds))
                 .then(() => {
@@ -152,7 +152,7 @@ describe('userActions', () => {
             );
             store = mockStore(state);
             const expectedActions = [
-                { type: GET_USER_REQUEST},
+                { type: GET_USER_REQUEST },
                 { type: GET_USER_SUCCESS, user: JSON.parse(dummy_data) },
             ];
             store.dispatch(getUserIfNeeded())

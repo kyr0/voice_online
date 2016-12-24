@@ -5,7 +5,7 @@ import load  from 'audio-loader';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Navbar, NavItem, Nav } from 'react-bootstrap';
 
-import { getUserIfNeeded, isAuthenticated } from '../actions/userActions.babel';
+import { getUserIfNeeded, loginUser, logoutUser, isAuthenticated } from '../actions/userActions.babel';
 import { getInstrument, getLessons } from '../actions/singActions.babel';
 import LoginForm from '../components/LoginForm.babel';
 
@@ -14,6 +14,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.handleLoginSubmit = this.handleLoginSubmit.bind(this);
+        this.onLogout = this.onLogout.bind(this);
     }
 
     componentDidMount() {
@@ -24,12 +25,11 @@ class App extends Component {
     }
 
     handleLoginSubmit(loginData) {
-        console.log('Hey, I am logging in yeah!');
-        console.log(loginData);
+        this.props.dispatch(loginUser(loginData));
     }
 
     onLogout() {
-        location.reload();
+        this.props.dispatch(logoutUser());
     }
 
     render() {
@@ -54,7 +54,6 @@ class App extends Component {
                         ) : (
                             <Navbar.Form pullRight>
                                 <LoginForm  doSubmit={ this.handleLoginSubmit } />
-                                {/*<NavItem eventKey={2} onClick={this.onLogout} > Login </NavItem>*/}
                             </Navbar.Form>
                         )}
                 </Navbar>

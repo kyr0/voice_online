@@ -149,6 +149,7 @@ function loginUserRequest() {
 
 
 function loginUserSuccess(response) {
+    location.reload();
     return {
         type: LOGIN_USER_SUCCESS,
         response,
@@ -184,6 +185,7 @@ function logoutUserRequest() {
 
 
 function logoutUserSuccess(response) {
+    location.reload();
     return {
         type: LOGOUT_USER_SUCCESS,
         response,
