@@ -11,5 +11,6 @@ export const GRID_SIZES = {
     LG: 1200,
     MD: 992,
     SM: 768,
+    XS: 480,
 };
 
