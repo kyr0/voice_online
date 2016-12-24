@@ -1,5 +1,7 @@
 export const CURRENT_USER_URL = '/api/profile/current/';
 export const LESSONS_URL = '/api/lesson/';
+export const LOGIN_URL = '/rest-auth/login/';
+export const LOGOUT_URL = '/rest-auth/logout/';
 
 export const GRID_LG = 'LG';
 export const GRID_MD = 'MD';

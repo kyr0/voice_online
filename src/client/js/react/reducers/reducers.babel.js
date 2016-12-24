@@ -8,6 +8,12 @@ import {
     UPDATE_USER_REQUEST,
     UPDATE_USER_SUCCESS,
     UPDATE_USER_FAILURE,
+    LOGIN_USER_REQUEST,
+    LOGIN_USER_SUCCESS,
+    LOGIN_USER_FAILURE,
+    LOGOUT_USER_REQUEST,
+    LOGOUT_USER_SUCCESS,
+    LOGOUT_USER_FAILURE,
 } from '../actions/userActions.babel';
 
 import {
@@ -24,6 +30,39 @@ import {
 import {
     SET_GRID_SIZE,
 } from '../actions/windowActions.babel';
+
+
+export const initialAuthState = { isRequesting: false };
+export function auth(state = initialAuthState, action) {
+    switch (action.type) {
+    case LOGIN_USER_REQUEST:
+        return Object.assign({}, state, {
+            isRequesting: true,
+        });
+    case LOGIN_USER_SUCCESS:
+        return Object.assign({}, state, {
+            isRequesting: false,
+        });
+    case LOGIN_USER_FAILURE:
+        return Object.assign({}, state, {
+            isRequesting: false,
+        });
+    case LOGOUT_USER_REQUEST:
+        return Object.assign({}, state, {
+            isRequesting: true,
+        });
+    case LOGOUT_USER_SUCCESS:
+        return Object.assign({}, state, {
+            isRequesting: false,
+        });
+    case LOGOUT_USER_FAILURE:
+        return Object.assign({}, state, {
+            isRequesting: false,
+        });
+    default:
+        return state;
+    }
+}
 
 
 export const initialProfileState = { isRequesting: false, user: {} };
@@ -127,6 +166,7 @@ export function layout(state = initialLayoutState, action) {
 
 
 const rootReducer = combineReducers({
+    auth,
     profile,
     sing,
     layout,

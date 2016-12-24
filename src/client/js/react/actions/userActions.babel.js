@@ -1,6 +1,6 @@
 import { axios } from '../../lib/helpers';
 
-import { CURRENT_USER_URL } from '../../constants/constants.babel';
+import { CURRENT_USER_URL, LOGIN_URL, LOGOUT_URL } from '../../constants/constants.babel';
 
 
 export const GET_USER_REQUEST = 'GET_USER_REQUEST';
@@ -10,6 +10,14 @@ export const GET_USER_FAILURE = 'GET_USER_FAILURE';
 export const UPDATE_USER_REQUEST = 'UPDATE_USER_REQUEST';
 export const UPDATE_USER_SUCCESS = 'UPDATE_USER_SUCCESS';
 export const UPDATE_USER_FAILURE = 'UPDATE_USER_FAILURE';
+
+export const LOGIN_USER_REQUEST = 'LOGIN_USER_REQUEST';
+export const LOGIN_USER_SUCCESS = 'LOGIN_USER_SUCCESS';
+export const LOGIN_USER_FAILURE = 'LOGIN_USER_FAILURE';
+export const LOGOUT_USER_REQUEST = 'LOGOUT_USER_REQUEST';
+export const LOGOUT_USER_SUCCESS = 'LOGOUT_USER_SUCCESS';
+export const LOGOUT_USER_FAILURE = 'LOGOUT_USER_FAILURE';
+
 
 /*
  MISC
@@ -107,7 +115,6 @@ function updateUser(new_user_data) {
             .then(response => dispatch(updateUserSuccess(response)))
             .catch(error => dispatch(updateUserError(error)));
     };
-
 }
 
 
@@ -128,5 +135,75 @@ export function updateUserIfNeeded(new_user_data) {
         if (shouldUpdateUser(user, new_user_data) && isAuthenticated()) {
             return dispatch(updateUser(new_user_data));
         }
+    };
+}
+
+/*
+ *  LOGIN
+ */
+function loginUserRequest() {
+    return {
+        type: LOGIN_USER_REQUEST,
+    };
+}
+
+
+function loginUserSuccess(response) {
+    return {
+        type: LOGIN_USER_SUCCESS,
+        response,
+    };
+}
+
+
+function loginUserError(error) {
+    return {
+        type: LOGIN_USER_FAILURE,
+        error,
+    };
+}
+
+
+export function loginUser(credentials) {
+    return dispatch => {
+        dispatch(loginUserRequest());
+        return axios.post(LOGIN_URL, credentials)
+            .then(response => dispatch(loginUserSuccess(response)))
+            .catch(error => dispatch(loginUserError(error)));
+    };
+}
+
+/*
+ *  LOGOUT
+ */
+function logoutUserRequest() {
+    return {
+        type: LOGOUT_USER_REQUEST,
+    };
+}
+
+
+function logoutUserSuccess(response) {
+    return {
+        type: LOGOUT_USER_SUCCESS,
+        response,
+    };
+}
+
+
+function logoutUserError(error) {
+    return {
+        type: LOGOUT_USER_FAILURE,
+        error,
+    };
+}
+
+
+export function logoutUser() {
+    return dispatch => {
+        dispatch(logoutUserRequest());
+        return axios.post(LOGOUT_URL)
+            .then(response => dispatch(logoutUserSuccess(response)))
+            .catch(error => dispatch(logoutUserError(error)));
     };
 }

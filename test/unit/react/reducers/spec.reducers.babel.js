@@ -5,6 +5,12 @@ import {
     UPDATE_USER_REQUEST,
     UPDATE_USER_SUCCESS,
     UPDATE_USER_FAILURE,
+    LOGIN_USER_REQUEST,
+    LOGIN_USER_SUCCESS,
+    LOGIN_USER_FAILURE,
+    LOGOUT_USER_REQUEST,
+    LOGOUT_USER_SUCCESS,
+    LOGOUT_USER_FAILURE,
 } from '../../../../src/client/js/react/actions/userActions.babel';
 
 import {
@@ -21,6 +27,8 @@ import {
 import { SET_GRID_SIZE } from '../../../../src/client/js/react/actions/windowActions.babel';
 
 import {
+    auth,
+    initialAuthState,
     profile,
     initialProfileState,
     sing,
@@ -30,6 +38,50 @@ import {
 } from '../../../../src/client/js/react/reducers/reducers.babel';
 
 import { GRID_MD } from '../../../../src/client/js/constants/constants.babel.js';
+
+
+describe('auth reducer', () => {
+    it('should return initial state for unknown action', () => {
+        const newState = auth(initialAuthState, { type: 'BOGUS_REQUEST' });
+        expect(newState).to.eql(initialAuthState);
+    });
+
+    it('should set state for LOGIN_USER_REQUEST', () => {
+        const initialState = { isRequesting: false };
+        const newState = auth(initialState, { type: LOGIN_USER_REQUEST });
+        expect(newState).to.eql({ isRequesting: true });
+    });
+
+    it('should set state for LOGIN_USER_FAILURE', () => {
+        const initialState = { isRequesting: true };
+        const newState = auth(initialState, { type: LOGIN_USER_FAILURE });
+        expect(newState).to.eql({ isRequesting: false });
+    });
+
+    it('should set state for LOGIN_USER_SUCCESS', () => {
+        const initialState = { isRequesting: true };
+        const newState = auth(initialState, { type: LOGIN_USER_SUCCESS });
+        expect(newState).to.eql({ isRequesting: false });
+    });
+
+    it('should set state for LOGOUT_USER_REQUEST', () => {
+        const initialState = { isRequesting: false };
+        const newState = auth(initialState, { type: LOGOUT_USER_REQUEST });
+        expect(newState).to.eql({ isRequesting: true });
+    });
+
+    it('should set state for LOGOUT_USER_FAILURE', () => {
+        const initialState = { isRequesting: true };
+        const newState = auth(initialState, { type: LOGOUT_USER_FAILURE });
+        expect(newState).to.eql({ isRequesting: false });
+    });
+
+    it('should set state for LOGOUT_USER_SUCCESS', () => {
+        const initialState = { isRequesting: true };
+        const newState = auth(initialState, { type: LOGOUT_USER_SUCCESS });
+        expect(newState).to.eql({ isRequesting: false });
+    });
+});
 
 
 describe('profile reducer', () => {
@@ -44,7 +96,7 @@ describe('profile reducer', () => {
         expect(newState).to.eql({ isRequesting: true });
     });
 
-    it('should set state for GET_USER_FALIURE', () => {
+    it('should set state for GET_USER_FAILURE', () => {
         const initialState = { isRequesting: true };
         const newState = profile(initialState, { type: GET_USER_FAILURE });
         expect(newState).to.eql({ isRequesting: false });
@@ -96,7 +148,7 @@ describe('sing reducer', () => {
         expect(newState).to.eql({ isRequesting: true });
     });
 
-    it('should set state for GET_LESSONS_FALIURE', () => {
+    it('should set state for GET_LESSONS_FAILURE', () => {
         const initialState = { isRequesting: true };
         const newState = sing(initialState, { type: GET_LESSONS_FAILURE });
         expect(newState).to.eql({ isRequesting: false });
@@ -118,7 +170,7 @@ describe('sing reducer', () => {
         expect(newState).to.eql({ isRequestingInstrument: true });
     });
 
-    it('should set state for GET_INSTRUMENT_FALIURE', () => {
+    it('should set state for GET_INSTRUMENT_FAILURE', () => {
         const initialState = { isRequestingInstrument: true };
         const newState = sing(initialState, { type: GET_INSTRUMENT_FAILURE });
         expect(newState).to.eql({ isRequestingInstrument: false });

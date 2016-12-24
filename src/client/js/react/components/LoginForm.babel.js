@@ -5,20 +5,22 @@ import { Button, Form, FormControl, FormGroup, ControlLabel } from 'react-bootst
 
 export class LoginForm extends Component {
     render() {
-        const { handleSubmit, doSubmit } = this.props;
+        const { fields: { username, password }, handleSubmit, doSubmit } = this.props;
 
         return (
             <Form>
                 <FormGroup>
                     <ControlLabel>Username</ControlLabel>
                     {' '}
-                    <FormControl type="text" />
+                    <FormControl type="text" { ...username } />
                 </FormGroup>
+                {' '}
                 <FormGroup>
                     <ControlLabel>Password</ControlLabel>
                     {' '}
-                    <FormControl type="password" />
+                    <FormControl type="password" { ...password } />
                 </FormGroup>
+                {' '}
                 <Button
                     type="submit"
                     onClick={handleSubmit( data => {
