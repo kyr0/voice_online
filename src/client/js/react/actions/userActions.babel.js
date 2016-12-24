@@ -149,7 +149,7 @@ function loginUserRequest() {
 
 
 function loginUserSuccess(response, reload) {
-    reload();
+    reload(true);
     return {
         type: LOGIN_USER_SUCCESS,
         response,
@@ -165,7 +165,7 @@ function loginUserError(error) {
 }
 
 
-export function loginUser(credentials, reload = location.reload) {
+export function loginUser(credentials, reload = window.location.reload.bind(window.location)) {
     return dispatch => {
         dispatch(loginUserRequest());
         return axios.post(LOGIN_URL, credentials)
@@ -185,7 +185,7 @@ function logoutUserRequest() {
 
 
 function logoutUserSuccess(response, reload) {
-    reload();
+    reload(true);
     return {
         type: LOGOUT_USER_SUCCESS,
         response,
@@ -201,7 +201,7 @@ function logoutUserError(error) {
 }
 
 
-export function logoutUser(reload = location.reload) {
+export function logoutUser(reload = window.location.reload.bind(window.location)) {
     return dispatch => {
         dispatch(logoutUserRequest());
         return axios.post(LOGOUT_URL)
