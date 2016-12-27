@@ -34,25 +34,35 @@ function Lesson(options_param) {
     }
 
 
-    this._getHighestDenominator = function(objList) {
-        var highestDenom = 0;
+    this._getLowestCommonMultiple = function (objList) {
+        function gcd(a, b) {
+            return !b ? a : gcd(b, a % b);
+        }
+
+        function lcm(a, b) {
+            return (a * b) / gcd(a, b);
+        }
+
         var currentDenom;
+        var curLCM = 1;
+
         for (var i = 0; i < objList.length; i++) {
             currentDenom = Number(_getDenominator(objList[i].duration));
-            if (currentDenom > highestDenom) { highestDenom = currentDenom; }
+            curLCM = lcm(curLCM, currentDenom);
         }
-        return highestDenom;
+        return curLCM;
     };
 
 
-    this._sumNumeratorToHighestDenominator = function (duration, highestDenom) {
+    this._sumNumeratorToLowestCommonMultiple = function (duration, lcm) {
         var numerator = _getNumerator(duration);
         var denominator = _getDenominator(duration);
-        while (denominator < highestDenom) {
-            numerator *= 2;
-            denominator *= 2;
+        var multiple;
+
+        if (denominator !== lcm) {
+            multiple = lcm / denominator;
         }
-        return Number(numerator);
+        return Number(numerator * multiple);
     };
 
 
@@ -210,14 +220,13 @@ function Lesson(options_param) {
 
     var _updateLessonDuration = function () {
         var arrayOfNotes = that.noteList;
-        var highestDenom = that._getHighestDenominator(arrayOfNotes);
+        var lcm = that._getLowestCommonMultiple(arrayOfNotes);
         var numerator = 0;
         for (var i = 0; i < arrayOfNotes.length; i++) {
             var noteDuration = arrayOfNotes[i].duration;
-            // TODO handle odd time signatures eg. 5/7 and find common denominator
-            numerator += that._sumNumeratorToHighestDenominator(noteDuration, highestDenom);
+            numerator += that._sumNumeratorToLowestCommonMultiple(noteDuration, lcm);
         }
-        that.durationInMeasures =  numerator / highestDenom;
+        that.durationInMeasures =  numerator / lcm;
         _updateDurationInMilliseconds();
     };
 

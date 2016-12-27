@@ -109,8 +109,8 @@ describe('Lesson', function () {
         expect(this.lesson.bpm).to.equal(130);
     });
 
-    it('_sumNumeratorToHighestDenominator() should retrieve the converted numerator', function () {
-        expect(this.lesson._sumNumeratorToHighestDenominator('1/4', 32)).to.equal(8);
+    it('_sumNumeratorToLowestCommonMultiple() should retrieve the converted numerator', function () {
+        expect(this.lesson._sumNumeratorToLowestCommonMultiple('1/4', 32)).to.equal(8);
     });
 
     it('smallestNoteSize should return null with no notes in lesson', function () {
@@ -202,16 +202,16 @@ describe('Lesson', function () {
     describe('with multiple notes', function () {
         beforeEach(function () {
             this.createTheseNotes = [
-                {name: 'B2', duration: '1/8'},
-                {name: 'A1', duration: '1/2'},
-                {name: 'Db3', duration: '1/4'},
-                {name: 'B2', duration: '1/32'}
+                { name: 'B2', duration: '1/8' },
+                { name: 'A1', duration: '1/2' },
+                { name: 'Db3', duration: '1/4' },
+                { name: 'B2', duration: '1/32' },
             ];
             this.expectedList = [
-                {name: 'B2', duration: '1/8'},
-                {name: 'A1', duration: '1/2'},
-                {name: 'Db3', duration: '1/4'},
-                {name: 'B2', duration: '1/32'}
+                { name: 'B2', duration: '1/8' },
+                { name: 'A1', duration: '1/2' },
+                { name: 'Db3', duration: '1/4' },
+                { name: 'B2', duration: '1/32' },
             ];
             this.lesson.addNotes(this.createTheseNotes);
         });
@@ -239,8 +239,9 @@ describe('Lesson', function () {
             compareNoteLists(fromArray, this.expectedList);
         });
 
-        it('passed to _getHighestDenominator() should return the highest denominator', function () {
-            expect(this.lesson._getHighestDenominator(this.lesson.noteList)).to.equal(32);
+        it('passed to _getLowestCommonMultiple() should return the LCM', function () {
+            this.lesson.addNotes([{ name: 'B2', duration: '1/7' }]);
+            expect(this.lesson._getLowestCommonMultiple(this.lesson.noteList)).to.equal(224);
         });
 
         it('createListOfIntervalsFromNotes() should return an accurate list', function () {
