@@ -12,22 +12,29 @@ function Exercise(aUser, aLesson){
     var baseSet = null;
     var baseDistance = aLesson.lowestNote.getDistanceToNote(aUser.bottomNote);
 
-    function transposeLesson(distance, baseLesson){
+    function transposeLesson(distance){
+        var introSilenceDurationInMeasures = (aLesson.tempo * aLesson.introLengthInMeasures) +
+                                             '/' + aLesson.tempo;
+
         var newNotes = [];
-        for(var nt = 0; nt < baseLesson.noteList.length; nt++){
-            var newNoteName = baseLesson.noteList[nt].transpose(distance);
-            var noteDuration = baseLesson.noteList[nt].duration;
+        newNotes.push(['-', introSilenceDurationInMeasures]); // intro silence
+        for(var nt = 0; nt < aLesson.noteList.length; nt++){
+            var newNoteName = aLesson.noteList[nt].transpose(distance);
+            var noteDuration = aLesson.noteList[nt].duration;
             newNotes.push([newNoteName, noteDuration]);
         }
+
         var newCaps = [];
-        for(var cap = 0; cap < baseLesson.captionList.length; cap++) {
-            var newCapText = baseLesson.captionList[cap].text;
-            var newCapDuration = baseLesson.captionList[cap].duration;
+        newCaps.push(['', introSilenceDurationInMeasures]);
+        for(var cap = 0; cap < aLesson.captionList.length; cap++) {
+            var newCapText = aLesson.captionList[cap].text;
+            var newCapDuration = aLesson.captionList[cap].duration;
             newCaps.push([newCapText, newCapDuration]);
         }
+
         var newOptions = {
-            bpm: baseLesson.bpm,
-            title: baseLesson.title,
+            bpm: aLesson.bpm,
+            title: aLesson.title,
             noteList: newNotes,
             captionList: newCaps,
         };
@@ -41,12 +48,12 @@ function Exercise(aUser, aLesson){
         sets.push(baseSet);
         var setCount = baseSet.highestNote.getDistanceToNote(aUser.topNote) + 1;
         for (var aSet = 1; aSet < setCount; aSet++){
-            sets.push(transposeLesson(aSet, baseSet));
+            sets.push(transposeLesson(aSet + baseDistance));
         }
         return sets;
     }
 
-    baseSet = transposeLesson(baseDistance, aLesson);
+    baseSet = transposeLesson(baseDistance);
     this.sets = generateSets();
 }
 

@@ -19,6 +19,7 @@ function Lesson(options_param) {
     this.tempo = 4; // beats per measure
     this.durationInMeasures = 0;
     this.durationInMilliseconds = 0;
+    this.introLengthInMeasures = 1;
     this.smallestNoteSize = null;
     this.lowestNote = null;
     this.highestNote = null;
@@ -125,9 +126,11 @@ function Lesson(options_param) {
         Whenever notes are added the Note is made aware of how far away it
         is from the highest note in the lesson.
          */
-        for (var i = 0; i < this.noteList.length; i++) {
-            var itvl = new Interval(this.noteList[i].name, this.highestNote.name);
-            this.noteList[i].relativeInterval = itvl.halfsteps;
+        if (this.highestNote) {
+            for (var i = 0; i < this.noteList.length; i++) {
+                var itvl = new Interval(this.noteList[i].name, this.highestNote.name);
+                this.noteList[i].relativeInterval = itvl.halfsteps;
+            }
         }
     };
 
@@ -233,14 +236,15 @@ function Lesson(options_param) {
 
     var _updateDurationInMilliseconds = function () {
         var beatCount = that.durationInMeasures * that.tempo;
-        var minute = 60000;
-        that.durationInMilliseconds = beatCount * (minute / that.bpm);
+        that.durationInMilliseconds = beatCount * (60000 / that.bpm);
     };
 
 
     this.getLessonRange = function () {
-        var range = new Interval(this.lowestNote.name, this.highestNote.name);
-        return range.halfsteps;
+        if (this.lowestNote && this.highestNote) {
+            var range = new Interval(this.lowestNote.name, this.highestNote.name);
+            return range.halfsteps;
+        }
     };
 
 
