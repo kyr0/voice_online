@@ -5,7 +5,6 @@ var Note = require('./Note.js');
 var NoteMaps = require('./NoteMaps.js');
 
 // TODO figure out "as needed" audio buffers, for instance buffers longer than 2 seconds
-// TODO make a way to destroy audioContext during tests AudioContext.close()
 /* TODO -- "An important point to note is that on iOS, Apple currently mutes
    all sound output until the first time a sound is played during a user interaction event -
    for example, calling playSound() inside a touch event handler. You may struggle with Web Audio
@@ -104,7 +103,6 @@ function Audio() {
 
     this.getNextPianoBuffer = function () {
         pianoBufferIdx++;
-        console.log('Index: ' + pianoBufferIdx);
         return this.pianoBufferList[pianoBufferIdx - 1];
     }.bind(this);
 
@@ -145,10 +143,12 @@ function Audio() {
 
 
     this.stopAudio = function () {
-        this.stopNote(accompany);
-        scriptNode.disconnect();
+        if (currentNote.name !== '-') {
+            this.stopNote(accompany);
+            scriptNode.disconnect();
+        }
         this.pianoBufferList = [];
-    };
+    }.bind(this);
 
 
     this.startAudio = function (getSource) {
