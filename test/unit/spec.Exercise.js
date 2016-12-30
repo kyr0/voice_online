@@ -41,17 +41,19 @@ describe('Exercise', function () {
         var exercise = new Exercise(aUser, aLesson);
         var expected = {
             noteList: [
+                { name: '-', duration: '4/4' },
                 { name: 'B3', duration: '1/8' },
                 { name: 'A2', duration: '1/2' },
                 { name: 'Db4', duration: '1/4' },
                 { name: 'B3', duration: '1/32' },
             ],
             captionList: [
+                { text: '', duration: '4/4' },
                 { text: 'One', duration: '1/8' },
                 { text: '-', duration: '1/2' },
                 { text: 'Two', duration: '1/4' },
                 { text: 'Three', duration: '1/32' },
-            ]
+            ],
         };
         compareLessonLists(exercise.sets[0], expected);
     });
@@ -65,12 +67,14 @@ describe('Exercise', function () {
         var exercise = new Exercise(aUser, aLesson);
         var expected = {
             noteList: [
+                { name: '-', duration: '4/4' },
                 { name: 'Bb2', duration: '1/8' },
                 { name: '-', duration: '1/2' },
                 { name: 'C3', duration: '1/4' },
                 { name: 'Bb2', duration: '1/32' },
             ],
             captionList: [
+                { text: '', duration: '4/4' },
                 { text: '', duration: '1/8' },
                 { text: 'One', duration: '1/2' },
                 { text: 'Two', duration: '1/4' },

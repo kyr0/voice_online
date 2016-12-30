@@ -55,12 +55,12 @@ describe('Player Object', function() {
         var doCheckStatus = function (){
             this.player.checkStatus(this.player.nextEventTime);
         }.bind(this);
-        _.times(10, doCheckStatus);
+        _.times(15, doCheckStatus);
         expect(this.startExerciseEvents).to.equal(1);
         expect(this.startSetEvents).to.equal(5);
         expect(this.endSetEvents).to.equal(5);
-        expect(this.startNoteEvents).to.equal(10);
-        expect(this.endNoteEvents).to.equal(10);
+        expect(this.startNoteEvents).to.equal(15);
+        expect(this.endNoteEvents).to.equal(15);
         expect(this.endExerciseEvents).to.equal(1);
         expect(this.stopExerciseEvents).to.equal(1);
     });
