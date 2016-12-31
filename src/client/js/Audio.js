@@ -28,7 +28,7 @@ function Audio() {
     var accompany = null;
     var audioIn = null;
 
-    var currentNote = null;
+    this.currentNote = null;
     var currentChart = null;
 
     this.pianoBufferList = [];  // will host all the piano sound buffers that will be used in this lesson
@@ -65,7 +65,7 @@ function Audio() {
             if (relativeItvl) {
                 note.frequency = nMaps.getClosestFreqFromPitch(pitchFreq); // so we don't need a new Note object
                 var centsDiff = note.getCentsDiff(pitchFreq) / 100; // must be done after frequency is set on Note object
-                var offPitchAmt = currentNote.getCentsDiff(pitchFreq);
+                var offPitchAmt = this.currentNote.getCentsDiff(pitchFreq);
                 player.pitchYAxisRatio = relativeItvl + (centsDiff * -1);
                 player.pushScore(offPitchAmt);
             } else {
@@ -73,23 +73,23 @@ function Audio() {
                 player.pushScore(null);
             }
         }
-    };
+    }.bind(this);
 
 
     // XXX This should be removed once we have samples longer than 2 seconds
     function getDuration() {
-        if (currentNote.durationInMilliseconds >= 2000) {
+        if (this.currentNote.durationInMilliseconds >= 2000) {
             return 2000 * 0.95;
         } else {
-            return currentNote.durationInMilliseconds;
+            return this.currentNote.durationInMilliseconds;
         }
     }
 
 
     this.startNote = function (curNote) {
-        currentNote = curNote;
+        this.currentNote = curNote;
 
-        if (currentNote.name !== '-') {
+        if (this.currentNote.name !== '-') {
             accompany = this.getNextPianoBuffer();
             accompany.volume.connect(audioContext.destination);
 
@@ -143,7 +143,7 @@ function Audio() {
 
 
     this.stopAudio = function () {
-        if (currentNote.name !== '-') {
+        if (this.currentNote.name !== '-') {
             this.stopNote(accompany);
             scriptNode.disconnect();
         }

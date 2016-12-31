@@ -29,6 +29,7 @@ describe('Audio', function () {
     it('should clear all audio buffers when an Exercise is stopped', function () {
         this.audio.stopNote = function () {};  // stub out stopNote()
         this.audio.pianoBufferList = 'dummy';  // dummy setting for pianoBufferList
+        this.audio.currentNote = { name: 'not -' };
         this.audio.stopAudio();                // action under test
         expect(this.audio.pianoBufferList).to.deep.equal([]);
     });
