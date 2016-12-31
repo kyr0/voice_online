@@ -15,6 +15,7 @@ import {
     SET_IS_PLAYING,
 
     // actionCreators
+    _getLessonById,
     getLessons,
     getInstrument,
     setCurrentLesson,
@@ -80,9 +81,9 @@ describe('singActions', () => {
     const initialState = { sing: initialSingState, profile: initialProfileState };
     const dummy_lesson_data = {
         results: [
-            { url: '1', title: 'dummy title 1' },
-            { url: '2', title: 'dummy title 2' },
-            { url: '3', title: 'dummy title 3' },
+            { url: '/1/', title: 'dummy title 1' },
+            { url: '/2/', title: 'dummy title 2' },
+            { url: '/3/', title: 'dummy title 3' },
         ],
     };
     const dummy_profile_data = { 'some_dummy': 'user data' };
@@ -98,42 +99,68 @@ describe('singActions', () => {
         server.restore();
     });
 
-    it('should create an action to GET lessons request successful response', (done) => {
-        server.respondWith(
-            'GET',
-            LESSONS_URL,
-            JSON.stringify(dummy_lesson_data)
-        );
-        store = mockStore(state);
-        const expectedActions = [
-            { type: GET_LESSONS_REQUEST },
-            { type: SET_CURRENT_LESSON, currentLesson: dummy_lesson_data.results[0] },
-            { type: GET_LESSONS_SUCCESS, lessons: dummy_lesson_data },
-        ];
-        store.dispatch(getLessons())
-            .then(() => {
-                expect(store.getActions()).to.eql(expectedActions);
-                done();
-            })
-            .catch(done);
+
+    describe('_getLessonById', () => {
+        it('should return the correct lesson', () => {
+            const lessons = [
+                { url: 'http://localhost:8000/api/lesson/9/' },
+                { url: 'http://localhost:8000/api/lesson/12/' },
+                { url: 'http://localhost:8000/api/lesson/15/' },
+            ];
+            let lesson = _getLessonById(lessons, '12');
+            expect(lesson).to.eql(lessons[1]);
+        });
+
+        it('should throw an error when specific lesson not found', () => {
+            const lessons = [];
+            const fn = () => {
+                _getLessonById(lessons, 1);
+            };
+            expect(fn).to.throw(Error, /Unable to find/);
+        });
     });
 
-    it('should create an action to GET lessons request failure response', (done) => {
-        server.respondWith(
-            'GET',
-            LESSONS_URL,
-            [404, {}, 'dummy error']
-        );
-        store = mockStore(state);
-        store.dispatch(getLessons())
-            .then(() => {
-                expect(store.getActions()[0].type).to.eql(GET_LESSONS_REQUEST);
-                expect(store.getActions()[1].type).to.eql(GET_LESSONS_FAILURE);
-                expect(store.getActions()[1].error).to.exist;
-                done();
-            })
-            .catch(done);
+
+    describe('getLessons', () => {
+
+        it('should create an action to GET lessons request successful response', (done) => {
+            server.respondWith(
+                'GET',
+                LESSONS_URL,
+                JSON.stringify(dummy_lesson_data)
+            );
+            store = mockStore(state);
+            const expectedActions = [
+                { type: GET_LESSONS_REQUEST },
+                { type: SET_CURRENT_LESSON, currentLesson: dummy_lesson_data.results[0] },
+                { type: GET_LESSONS_SUCCESS, lessons: dummy_lesson_data },
+            ];
+            store.dispatch(getLessons())
+                .then(() => {
+                    expect(store.getActions()).to.eql(expectedActions);
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('should create an action to GET lessons request failure response', (done) => {
+            server.respondWith(
+                'GET',
+                LESSONS_URL,
+                [404, {}, 'dummy error']
+            );
+            store = mockStore(state);
+            store.dispatch(getLessons())
+                .then(() => {
+                    expect(store.getActions()[0].type).to.eql(GET_LESSONS_REQUEST);
+                    expect(store.getActions()[1].type).to.eql(GET_LESSONS_FAILURE);
+                    expect(store.getActions()[1].error).to.exist;
+                    done();
+                })
+                .catch(done);
+        });
     });
+
 
     it('should create an action to set currentLesson', () => {
         let expected_data = { notEmpty: null };

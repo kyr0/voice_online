@@ -19,7 +19,7 @@ import { initialSingState, initialProfileState } from '../reducers/reducers.babe
 /*
  * MISC LESSON MGMT
  */
-function getLessonById(lessonList, lessonId) {
+export function _getLessonById(lessonList, lessonId) {
     if (!lessonId) {
         return lessonList[0];
     }
@@ -30,7 +30,7 @@ function getLessonById(lessonList, lessonId) {
             return lesson;
         }
     }
-    throw 'Unable to find lesson with URL ID: ' + lessonId;
+    throw new Error('Unable to find lesson with URL ID: ' + lessonId);
 }
 
 
@@ -65,7 +65,7 @@ export function getLessons(lessonId) {
         return axios(LESSONS_URL)
             .then(response => response.data)
             .then(lessons => {
-                dispatch(setCurrentLesson(getLessonById(lessons.results, lessonId)));
+                dispatch(setCurrentLesson(_getLessonById(lessons.results, lessonId)));
                 dispatch(receiveLessons(lessons));
             })
             .catch(error => dispatch(getLessonsError(error)));
