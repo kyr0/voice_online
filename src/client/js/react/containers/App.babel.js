@@ -18,9 +18,10 @@ class App extends Component {
     }
 
     componentDidMount() {
-        const { dispatch } = this.props;
+        const { dispatch, params } = this.props;
+        const lessonId = params.lessonId;
         dispatch(getUserIfNeeded());
-        dispatch(getLessons());
+        dispatch(getLessons(lessonId));
         dispatch(getInstrument(load));
     }
 

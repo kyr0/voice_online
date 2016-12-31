@@ -17,6 +17,24 @@ import { initialSingState, initialProfileState } from '../reducers/reducers.babe
 
 
 /*
+ * MISC LESSON MGMT
+ */
+function getLessonById(lessonList, lessonId) {
+    if (!lessonId) {
+        return lessonList[0];
+    }
+
+    for (const lesson of lessonList) {
+        let curId = lesson.url.split('/').reverse()[1];
+        if (curId === lessonId) {
+            return lesson;
+        }
+    }
+    throw 'Unable to find lesson with URL ID: ' + lessonId;
+}
+
+
+/*
  * LESSON API REQUESTS
  */
 function getLessonsRequest() {
@@ -41,13 +59,13 @@ function getLessonsError(error) {
 }
 
 
-export function getLessons() {
+export function getLessons(lessonId) {
     return dispatch => {
         dispatch(getLessonsRequest());
         return axios(LESSONS_URL)
             .then(response => response.data)
             .then(lessons => {
-                dispatch(setCurrentLesson(lessons.results[0]));
+                dispatch(setCurrentLesson(getLessonById(lessons.results, lessonId)));
                 dispatch(receiveLessons(lessons));
             })
             .catch(error => dispatch(getLessonsError(error)));

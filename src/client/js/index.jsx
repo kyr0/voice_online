@@ -21,6 +21,7 @@ render((
             <Route path="/" component={App}>
                 <IndexRoute component={Sing} />
                 <Route path="/sing" component={Sing}/>
+                <Route path="/sing/lesson/:lessonId" component={Sing}/>
                 <Route path="/profile" component={Profile}/>
             </Route>
         </Router>
