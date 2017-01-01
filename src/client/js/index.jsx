@@ -4,7 +4,7 @@ import 'babel-polyfill';
 
 import React from 'react';
 import { render } from 'react-dom';
-import { Router, Route, hashHistory, IndexRoute } from 'react-router';
+import { Router, Route, browserHistory, IndexRoute } from 'react-router';
 import { Provider } from 'react-redux';
 import Custom from '../assets/custom.less';
 
@@ -17,7 +17,7 @@ const store = configureStore();
 
 render((
     <Provider store={store}>
-        <Router history={hashHistory}>
+        <Router history={browserHistory}>
             <Route path="/" component={App}>
                 <IndexRoute component={Sing} />
                 <Route path="/sing" component={Sing}/>
