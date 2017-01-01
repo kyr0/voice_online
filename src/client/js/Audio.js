@@ -77,11 +77,11 @@ function Audio() {
 
 
     // XXX This should be removed once we have samples longer than 2 seconds
-    function getDuration() {
-        if (this.currentNote.durationInMilliseconds >= 2000) {
+    function getDuration(curNote) {
+        if (curNote.durationInMilliseconds >= 2000) {
             return 2000 * 0.95;
         } else {
-            return this.currentNote.durationInMilliseconds;
+            return curNote.durationInMilliseconds;
         }
     }
 
@@ -94,7 +94,8 @@ function Audio() {
             accompany.volume.connect(audioContext.destination);
 
             // On the following line `getDuration() * 0.05) / 1000` represents rampDownGainTime
-            setTimeout(this.rampGainDown.bind(null, ((getDuration() * 0.05) / 1000), accompany), getDuration());
+            setTimeout(this.rampGainDown.bind(null,
+                ((getDuration(this.currentNote) * 0.05) / 1000), accompany), getDuration(this.currentNote));
 
             accompany.start(0);  // note: on older systems, may have to use deprecated noteOn()
         }
