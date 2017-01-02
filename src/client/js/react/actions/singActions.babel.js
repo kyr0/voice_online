@@ -1,6 +1,6 @@
 import { isEqual } from 'lodash';
+import { push } from 'react-router-redux';
 import { axios } from '../../lib/helpers';
-
 
 import { LESSONS_URL } from '../../constants/constants.babel';
 
@@ -19,13 +19,17 @@ import { initialSingState, initialProfileState } from '../reducers/reducers.babe
 /*
  * MISC LESSON MGMT
  */
-export function _getLessonById(lessonList, lessonId) {
+export function getIdFromLesson(lesson) {
+    return lesson.url.split('/').reverse()[1];
+}
+
+export function getLessonById(lessonList, lessonId) {
     if (!lessonId) {
         return lessonList[0];
     }
 
     for (const lesson of lessonList) {
-        let curId = lesson.url.split('/').reverse()[1];
+        let curId = getIdFromLesson(lesson);
         if (curId === lessonId) {
             return lesson;
         }
@@ -65,7 +69,7 @@ export function getLessons(lessonId) {
         return axios(LESSONS_URL)
             .then(response => response.data)
             .then(lessons => {
-                dispatch(setCurrentLesson(_getLessonById(lessons.results, lessonId)));
+                dispatch(setCurrentLesson(getLessonById(lessons.results, lessonId)));
                 dispatch(receiveLessons(lessons));
             })
             .catch(error => dispatch(getLessonsError(error)));
@@ -113,7 +117,13 @@ export function getInstrument(load) {
  * CURRENT LESSON RELATED
  */
 export function setCurrentLesson(currentLesson) {
-    return (dispatch) =>  {
+    return (dispatch, getState) =>  {
+        const lessonId = getIdFromLesson(currentLesson);
+        const curLocation = (getState().routing.locationBeforeTransitions.pathname);
+        // TODO test this
+        if (/^\/sing/.test(curLocation)) {
+            dispatch(push('/sing/lesson/' + lessonId));
+        }
         dispatch(setIsPlayingIfReady(false));
         dispatch({
             type: SET_CURRENT_LESSON,

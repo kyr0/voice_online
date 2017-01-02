@@ -1,9 +1,18 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { replace } from 'react-router-redux';
 
+import { initialSingState } from '../reducers/reducers.babel';
 import SingPage from '../components/SingPage.babel';
 
-import { setCurrentLesson, nextLesson, previousLesson, setIsPlayingIfReady } from '../actions/singActions.babel';
+import {
+    setCurrentLesson,
+    nextLesson,
+    previousLesson,
+    setIsPlayingIfReady,
+    getIdFromLesson,
+    getLessonById,
+} from '../actions/singActions.babel';
 import { updateGridSizeIfNeeded } from '../actions/windowActions.babel';
 
 export class Sing extends Component {
@@ -17,9 +26,30 @@ export class Sing extends Component {
         this.handleNextLessonSelect = this.handleNextLessonSelect.bind(this);
     }
 
+    componentDidMount() {
+
+    }
+
     componentWillMount() {
+        const { currentLesson, dispatch } = this.props;
+        if (currentLesson !== initialSingState.currentLesson) {
+            const lessonId = getIdFromLesson(currentLesson);
+            dispatch(replace('/sing/lesson/' + lessonId));
+        }
+
         this.handleResize();
         window.addEventListener('resize', this.handleResize);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const { params } = nextProps;
+        const newLessonId = params.lessonId;
+        const curLessonId = this.props.params.lessonId;
+        // Set current lesson using URL when user clicks browser back/forward
+        // TODO test this
+        if (curLessonId !== newLessonId && newLessonId !== undefined) {
+            this.props.dispatch(setCurrentLesson(getLessonById(this.props.lessons, newLessonId)));
+        }
     }
 
     componentWillUnmount() {

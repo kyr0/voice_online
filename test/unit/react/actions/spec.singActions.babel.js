@@ -15,7 +15,7 @@ import {
     SET_IS_PLAYING,
 
     // actionCreators
-    _getLessonById,
+    getLessonById,
     getLessons,
     getInstrument,
     setCurrentLesson,
@@ -100,21 +100,21 @@ describe('singActions', () => {
     });
 
 
-    describe('_getLessonById', () => {
+    describe('getLessonById', () => {
         it('should return the correct lesson', () => {
             const lessons = [
                 { url: 'http://localhost:8000/api/lesson/9/' },
                 { url: 'http://localhost:8000/api/lesson/12/' },
                 { url: 'http://localhost:8000/api/lesson/15/' },
             ];
-            let lesson = _getLessonById(lessons, '12');
+            let lesson = getLessonById(lessons, '12');
             expect(lesson).to.eql(lessons[1]);
         });
 
         it('should throw an error when specific lesson not found', () => {
             const lessons = [];
             const fn = () => {
-                _getLessonById(lessons, 1);
+                getLessonById(lessons, 1);
             };
             expect(fn).to.throw(Error, /Unable to find/);
         });
