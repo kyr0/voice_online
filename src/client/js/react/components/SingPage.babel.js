@@ -17,7 +17,7 @@ export default class Sing extends Component {
             doPlayLessonSelect,
             doNextLessonSelect,
         } = this.props;
-        const playButtonUrl = isPlaying ? 'static/assets/stop.png' : 'static/assets/play.png';
+        const playButtonUrl = isPlaying ? '/static/assets/stop.png' : '/static/assets/play.png';
 
         return (
             <Grid fluid={true}>
@@ -32,13 +32,13 @@ export default class Sing extends Component {
                 </Col></Row><Row><Col>
                     <div className="sing-btn-group">
                         <Button bsClass="btn-transparent" onClick={ doPreviousLessonSelect }>
-                            <Image src="static/assets/previous.png" circle responsive />
+                            <Image src="/static/assets/previous.png" circle responsive />
                         </Button>
                         <Button bsClass="btn-transparent" onClick={ doPlayLessonSelect }>
                             <Image src={ playButtonUrl } circle responsive />
                         </Button>
                         <Button bsClass="btn-transparent" onClick={ doNextLessonSelect }>
-                            <Image src="static/assets/next.png" circle responsive />
+                            <Image src="/static/assets/next.png" circle responsive />
                         </Button>
                     </div>
                 </Col></Row>
