@@ -6,6 +6,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Router, Route, browserHistory, IndexRoute } from 'react-router';
 import { Provider } from 'react-redux';
+import { syncHistoryWithStore } from 'react-router-redux';
 import Custom from '../assets/custom.less';
 
 import configureStore from './react/store/configureStore.babel';
@@ -14,10 +15,11 @@ import Sing from './react/containers/Sing.babel';
 import Profile from './react/containers/Profile.babel';
 
 const store = configureStore();
+const history = syncHistoryWithStore(browserHistory, store);
 
 render((
     <Provider store={store}>
-        <Router history={browserHistory}>
+        <Router history={history}>
             <Route path="/" component={App}>
                 <IndexRoute component={Sing} />
                 <Route path="/sing" component={Sing}/>

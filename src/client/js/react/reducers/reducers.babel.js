@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
+import { routerReducer } from 'react-router-redux';
 
 import {
     GET_USER_REQUEST,
@@ -171,6 +172,7 @@ const rootReducer = combineReducers({
     sing,
     layout,
     form: formReducer,
+    routing: routerReducer,
 });
 
 export default rootReducer;
