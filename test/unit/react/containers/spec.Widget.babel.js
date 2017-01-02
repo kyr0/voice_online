@@ -35,7 +35,7 @@ describe('Widget container', () => {
     let Lesson;
     let Player;
 
-    const buildSubject = () => {
+    const shallowSubject = () => {
         const props = {
             gridSize,
             user,
@@ -71,7 +71,7 @@ describe('Widget container', () => {
 
     beforeEach(() => {
         dummyString = 'does not matter';
-        dummyObject = {};
+        dummyObject = { dummy: 'object' };
         gridSize = initialLayoutState.gridSize;
         user = initialProfileState.user;
         currentLesson = initialSingState.currentLesson;
@@ -83,7 +83,11 @@ describe('Widget container', () => {
             this.setPlayer = function () {};
         };
         Audio = function () {
+            this.bufferToggle = 0;
             this.setPlayer = function () {};
+            this.setInstrumentBuffers = function () {
+                this.bufferToggle++;
+            };
         };
         User = function () {};
         Lesson = function () {};
@@ -103,8 +107,32 @@ describe('Widget container', () => {
             sandbox.restore();
         });
 
+
+        it('should not attempt to set instrument buffers on mount unless they already exist', () => {
+            subject = mountSubject();
+            expect(subject.instance().audio.bufferToggle).to.eql(0);
+        });
+
+        it('should set instrument buffers on mount if they already exist', () => {
+            instrumentBuffers = dummyObject;
+            subject = mountSubject();
+            expect(subject.instance().audio.bufferToggle).to.eql(1);
+        });
+
+        it('should not try to set instrument buffers on prop update unless they are new buffers', () => {
+            subject = mountSubject();
+            subject.setProps({ gridSize: dummyString });
+            expect(subject.instance().audio.bufferToggle).to.eql(0);
+        });
+
+        it('should set instrument buffers on prop update if they are new buffers', () => {
+            subject = mountSubject();
+            subject.setProps({ instrumentBuffers: dummyObject });
+            expect(subject.instance().audio.bufferToggle).to.eql(1);
+        });
+
         it('should update canvas.width when appropriate nextProp', () => {
-            subject = buildSubject();
+            subject = shallowSubject();
             subject.setProps({ gridSize: dummyString });
             expect(Widget.prototype.createCanvas).to.have.been.calledOnce;
             expect(Widget.prototype.createPlayer).to.have.been.calledWith(initialProfileState.user, initialSingState.currentLesson);
@@ -113,7 +141,7 @@ describe('Widget container', () => {
         it('should not call setEndExerciseListener on user update only', () => {
             Widget.prototype.createCanvas.restore();
             Widget.prototype.createPlayer.restore();
-            subject = buildSubject();
+            subject = shallowSubject();
             subject.setProps({ user: dummyObject });
             expect(Widget.prototype.setEndExerciseListener).not.to.have.been.called;
         });
@@ -121,7 +149,7 @@ describe('Widget container', () => {
         it('should not call setEndExerciseListener on lesson update only', () => {
             Widget.prototype.createCanvas.restore();
             Widget.prototype.createPlayer.restore();
-            subject = buildSubject();
+            subject = shallowSubject();
             subject.setProps({ currentLesson: dummyObject });
             expect(Widget.prototype.setEndExerciseListener).not.to.have.been.called;
         });
@@ -168,7 +196,7 @@ describe('Widget container', () => {
             isPlaying = true;
             user = dummyObject;
             const stubPlayer = { stop: sinon.stub() };
-            subject = buildSubject();
+            subject = shallowSubject();
             subject.instance().player = stubPlayer;
 
             // Act
@@ -182,7 +210,7 @@ describe('Widget container', () => {
             // Arrange
             Widget.prototype.setEndExerciseListener.restore();
             const fakePlayer = new EventEmitter();
-            subject = buildSubject();
+            subject = shallowSubject();
             subject.instance().player = fakePlayer;
             subject.instance().setEndExerciseListener();
             // Act

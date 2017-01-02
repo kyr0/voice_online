@@ -15,9 +15,13 @@ import Player from '../../Player';
 export class Widget extends Component {
 
     componentDidMount() {
-        const { gridSize, user, currentLesson } = this.props;
+        const { gridSize, user, currentLesson, instrumentBuffers } = this.props;
         this.audio = this.props.Audio ? new this.props.Audio() : new Audio();
         this.createCanvas(gridSize);
+
+        if (instrumentBuffers !== initialSingState.instrumentBuffers) {
+            this.audio.setInstrumentBuffers(instrumentBuffers);
+        }
 
         if (user !== initialProfileState.user && currentLesson !== initialSingState.currentLesson) {
             this.createPlayer(user, currentLesson);
@@ -32,7 +36,6 @@ export class Widget extends Component {
         const isPlayingProp = this.props.isPlaying;
         const instrumentBuffersProp = this.props.instrumentBuffers;
 
-        // TODO add test for this condition
         if (instrumentBuffers !== instrumentBuffersProp) {
             this.audio.setInstrumentBuffers(instrumentBuffers);
         }
