@@ -78,7 +78,15 @@ describe('singActions', () => {
     let server;
     let store;
     let state;
-    const initialState = { sing: initialSingState, profile: initialProfileState };
+    const initialState = {
+        sing: initialSingState,
+        profile: initialProfileState,
+        routing: {
+            locationBeforeTransitions: {
+                pathname: {},
+            },
+        },
+    };
     const dummy_lesson_data = {
         results: [
             { url: '/1/', title: 'dummy title 1' },
@@ -163,7 +171,7 @@ describe('singActions', () => {
 
 
     it('should create an action to set currentLesson', () => {
-        let expected_data = { notEmpty: null };
+        let expected_data = { url: '/112/' };
         state.sing.currentLesson = dummy_lesson_data;
         store = mockStore(state);
         store.dispatch(setCurrentLesson(expected_data));
