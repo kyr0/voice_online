@@ -120,7 +120,6 @@ export function setCurrentLesson(currentLesson) {
     return (dispatch, getState) =>  {
         const lessonId = getIdFromLesson(currentLesson);
         const curLocation = (getState().routing.locationBeforeTransitions.pathname);
-        // TODO test this
         if (/^\/sing/.test(curLocation)) {
             dispatch(push('/sing/lesson/' + lessonId));
         }

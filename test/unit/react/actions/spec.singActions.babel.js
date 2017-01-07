@@ -170,93 +170,107 @@ describe('singActions', () => {
     });
 
 
-    it('should create an action to set currentLesson', () => {
-        let expected_data = { url: '/112/' };
-        state.sing.currentLesson = dummy_lesson_data;
-        store = mockStore(state);
-        store.dispatch(setCurrentLesson(expected_data));
-        expect(store.getActions()[0].type).to.eql(SET_CURRENT_LESSON);
-        expect(store.getActions()[0].currentLesson).to.eql(expected_data);
+    describe('setCurrentLesson', () => {
+
+        it('should create an action to set currentLesson', () => {
+            let expected_data = { url: '/112/' };
+            state.sing.currentLesson = dummy_lesson_data;
+            store = mockStore(state);
+            store.dispatch(setCurrentLesson(expected_data));
+            expect(store.getActions()[0].type).to.eql(SET_CURRENT_LESSON);
+            expect(store.getActions()[0].currentLesson).to.eql(expected_data);
+        });
+
+        it('should create an action to set the location', () => {
+            let expected_data = { url: '/112/' };
+            state.routing.locationBeforeTransitions.pathname = '/sing/lesson';
+            store = mockStore(state);
+            store.dispatch(setCurrentLesson(expected_data));
+            expect(store.getActions()[0].type).to.eql('@@router/CALL_HISTORY_METHOD');
+        });
+
+        it('should create an action to SET_IS_PLAYING->false if it is true during currentLesson switch', () => {
+            state.sing.isPlaying = true;
+            store = mockStore(state);
+            store.dispatch(setCurrentLesson(dummy_lesson_data.results[0]));
+            expect(store.getActions()[0].type).to.eql(SET_IS_PLAYING);
+            expect(store.getActions()[0].isPlaying).to.eql(false);
+        });
+
+        it('should create an action to set currentLesson to next item', () => {
+            state.sing.currentLesson = dummy_lesson_data.results[1];
+            state.sing.lessons.results = dummy_lesson_data.results;
+            store = mockStore(state);
+            store.dispatch(nextLesson());
+            expect(store.getActions()[0].type).to.eql(SET_CURRENT_LESSON);
+            expect(store.getActions()[0].currentLesson).to.eql(dummy_lesson_data.results[2]);
+        });
+
+        it('should have nextLesson go to first idx when current is last lesson', () => {
+            state.sing.currentLesson = dummy_lesson_data.results[2];
+            state.sing.lessons.results = dummy_lesson_data.results;
+            store = mockStore(state);
+            store.dispatch(nextLesson());
+            expect(store.getActions()[0].currentLesson).to.eql(dummy_lesson_data.results[0]);
+        });
+
+        it('should create an action to set currentLesson to previous item', () => {
+            state.sing.currentLesson = dummy_lesson_data.results[1];
+            state.sing.lessons.results = dummy_lesson_data.results;
+            store = mockStore(state);
+            store.dispatch(previousLesson());
+            expect(store.getActions()[0].type).to.eql(SET_CURRENT_LESSON);
+            expect(store.getActions()[0].currentLesson).to.eql(dummy_lesson_data.results[0]);
+        });
+
+        it('should have previousLesson go to last idx when current is first lesson', () => {
+            state.sing.currentLesson = dummy_lesson_data.results[0];
+            state.sing.lessons.results = dummy_lesson_data.results;
+            store = mockStore(state);
+            store.dispatch(previousLesson());
+            expect(store.getActions()[0].currentLesson).to.eql(dummy_lesson_data.results[2]);
+        });
     });
 
-    it('should create an action to set currentLesson to next item', () => {
-        state.sing.currentLesson = dummy_lesson_data.results[1];
-        state.sing.lessons.results = dummy_lesson_data.results;
-        store = mockStore(state);
-        store.dispatch(nextLesson());
-        expect(store.getActions()[0].type).to.eql(SET_CURRENT_LESSON);
-        expect(store.getActions()[0].currentLesson).to.eql(dummy_lesson_data.results[2]);
-    });
+    describe('setIsPlayingIfReady', () => {
 
-    it('should create an action to set currentLesson to previous item', () => {
-        state.sing.currentLesson = dummy_lesson_data.results[1];
-        state.sing.lessons.results = dummy_lesson_data.results;
-        store = mockStore(state);
-        store.dispatch(previousLesson());
-        expect(store.getActions()[0].type).to.eql(SET_CURRENT_LESSON);
-        expect(store.getActions()[0].currentLesson).to.eql(dummy_lesson_data.results[0]);
-    });
+        it('should not set isPlaying if no user in state', () => {
+            state.sing.currentLesson = dummy_lesson_data.results[0];
+            state.sing.instrumentBuffers = 'dummy';
+            store = mockStore(state);
+            store.dispatch(setIsPlayingIfReady(true));
+            expect(store.getActions()).to.eql([]);
+        });
 
-    it('should have nextLesson go to first idx when current is last lesson', () => {
-        state.sing.currentLesson = dummy_lesson_data.results[2];
-        state.sing.lessons.results = dummy_lesson_data.results;
-        store = mockStore(state);
-        store.dispatch(nextLesson());
-        expect(store.getActions()[0].currentLesson).to.eql(dummy_lesson_data.results[0]);
-    });
+        it('should not set isPlaying if no currentLesson in state', () => {
+            state.profile.user = dummy_profile_data;
+            state.sing.instrumentBuffers = 'dummy';
+            store = mockStore(state);
+            store.dispatch(setIsPlayingIfReady(true));
+            expect(store.getActions()).to.eql([]);
+        });
 
-    it('should have previousLesson go to last idx when current is first lesson', () => {
-        state.sing.currentLesson = dummy_lesson_data.results[0];
-        state.sing.lessons.results = dummy_lesson_data.results;
-        store = mockStore(state);
-        store.dispatch(previousLesson());
-        expect(store.getActions()[0].currentLesson).to.eql(dummy_lesson_data.results[2]);
-    });
+        it('should not set isPlaying if no instrumentBuffers in state', () => {
+            state.sing.currentLesson = dummy_lesson_data.results[0];
+            state.profile.user = dummy_profile_data;
+            store = mockStore(state);
+            store.dispatch(setIsPlayingIfReady(true));
+            expect(store.getActions()).to.eql([]);
+        });
 
-    it('should create an action to SET_IS_PLAYING->false if it is true during currentLesson switch', () => {
-        state.sing.isPlaying = true;
-        store = mockStore(state);
-        store.dispatch(setCurrentLesson(dummy_lesson_data.results[0]));
-        expect(store.getActions()[0].type).to.eql(SET_IS_PLAYING);
-        expect(store.getActions()[0].isPlaying).to.eql(false);
-    });
+        it('should set isPlaying true if user and currentLesson are set', () => {
+            state.sing.currentLesson = dummy_lesson_data.results[0];
+            state.profile.user = dummy_profile_data;
+            state.sing.instrumentBuffers = 'dummy';
+            store = mockStore(state);
+            store.dispatch(setIsPlayingIfReady(true));
+            expect(store.getActions()[0].isPlaying).to.eql(true);
+        });
 
-    it('should not set isPlaying if no user in state', () => {
-        state.sing.currentLesson = dummy_lesson_data.results[0];
-        state.sing.instrumentBuffers = 'dummy';
-        store = mockStore(state);
-        store.dispatch(setIsPlayingIfReady(true));
-        expect(store.getActions()).to.eql([]);
-    });
-
-    it('should not set isPlaying if no currentLesson in state', () => {
-        state.profile.user = dummy_profile_data;
-        state.sing.instrumentBuffers = 'dummy';
-        store = mockStore(state);
-        store.dispatch(setIsPlayingIfReady(true));
-        expect(store.getActions()).to.eql([]);
-    });
-
-    it('should not set isPlaying if no instrumentBuffers in state', () => {
-        state.sing.currentLesson = dummy_lesson_data.results[0];
-        state.profile.user = dummy_profile_data;
-        store = mockStore(state);
-        store.dispatch(setIsPlayingIfReady(true));
-        expect(store.getActions()).to.eql([]);
-    });
-
-    it('should set isPlaying true if user and currentLesson are set', () => {
-        state.sing.currentLesson = dummy_lesson_data.results[0];
-        state.profile.user = dummy_profile_data;
-        state.sing.instrumentBuffers = 'dummy';
-        store = mockStore(state);
-        store.dispatch(setIsPlayingIfReady(true));
-        expect(store.getActions()[0].isPlaying).to.eql(true);
-    });
-
-    it('should not create an action if the state will be unchanged', () => {
-        store = mockStore(state);
-        store.dispatch(setIsPlayingIfReady(initialSingState.isPlaying));
-        expect(store.getActions()).to.eql([]);
+        it('should not create an action if the state will be unchanged', () => {
+            store = mockStore(state);
+            store.dispatch(setIsPlayingIfReady(initialSingState.isPlaying));
+            expect(store.getActions()).to.eql([]);
+        });
     });
 });
