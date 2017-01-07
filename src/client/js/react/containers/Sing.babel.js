@@ -46,7 +46,6 @@ export class Sing extends Component {
         const newLessonId = params.lessonId;
         const curLessonId = this.props.params.lessonId;
         // Set current lesson using URL when user clicks browser back/forward
-        // TODO test this
         if (curLessonId !== newLessonId && newLessonId !== undefined) {
             this.props.dispatch(setCurrentLesson(getLessonById(this.props.lessons, newLessonId)));
         }

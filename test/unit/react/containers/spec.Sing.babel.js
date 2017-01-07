@@ -18,6 +18,7 @@ describe('Sing container', () => {
     let currentLesson;
     let isPlaying;
     let dispatch;
+    let params;
     let dummyString;
     let dummyObject;
 
@@ -27,6 +28,7 @@ describe('Sing container', () => {
             currentLesson,
             isPlaying,
             dispatch,
+            params,
         };
         return shallow(<Sing {...props} />);
     };
@@ -37,6 +39,8 @@ describe('Sing container', () => {
         lessons = initialSingState.lessons.results;
         currentLesson = initialSingState.currentLesson;
         isPlaying = initialSingState.isPlaying;
+        dispatch = sinon.spy();
+        params = {};
         sandbox = sinon.sandbox.create();
         sandbox.stub(window, 'addEventListener');
         sandbox.stub(window, 'removeEventListener');
@@ -51,6 +55,14 @@ describe('Sing container', () => {
         subject = buildSubject();
         expect(Sing.prototype.handleResize).to.have.been.calledOnce;
         expect(window.addEventListener).to.have.been.calledOnce;
+    });
+
+    it('should ', () => {
+        const newParamProp = { lessonId: '12' };
+        lessons = [{ url: '/12/' }];
+        subject = buildSubject();
+        subject.setProps({ params: newParamProp });
+        expect(dispatch).to.have.been.calledOnce;
     });
 
     it('should remove the event listener on unmount', () => {
