@@ -198,4 +198,3 @@ export function setIsPlayingIfReady(isPlaying) {
         dispatch(setIsPlaying(isPlaying));
     };
 }
-

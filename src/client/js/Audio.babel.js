@@ -13,12 +13,12 @@ var NoteMaps = require('./NoteMaps.js');
    UI event - e.g. "touch here to play"."
 */
 
-function Audio() {
+function Audio(audioCtx = window.myAudioContext) {
 
     var player = null;
     var pianoBufferIdx = 0;
     var instrumentBuffers = null;
-    var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    var audioContext = audioCtx;
     var bufferLength = 1024;
     var scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
     var mpm = new MPM(audioContext.sampleRate, bufferLength);

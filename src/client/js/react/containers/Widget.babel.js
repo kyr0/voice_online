@@ -6,7 +6,7 @@ import { initialLayoutState, initialSingState, initialProfileState } from '../re
 import { GRID_SIZES } from '../../constants/constants.babel';
 import { setIsPlayingIfReady } from '../actions/singActions.babel';
 import Canvas from '../../Canvas.babel';
-import Audio from '../../Audio';
+import Audio from '../../Audio.babel';
 import User from '../../User';
 import Lesson  from '../../Lesson';
 import Player from '../../Player';

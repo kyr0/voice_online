@@ -17,6 +17,13 @@ import Profile from './react/containers/Profile.babel';
 const store = configureStore();
 const history = syncHistoryWithStore(browserHistory, store);
 
+
+if ( !window.AudioContext && !window.webkitAudioContext ) {
+    console.error('Web Audio API not supported in this browser');
+} else {
+    window.myAudioContext = new ( window.AudioContext || window.webkitAudioContext )();
+}
+
 render((
     <Provider store={store}>
         <Router history={history}>
