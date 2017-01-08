@@ -7,9 +7,13 @@ export default class LessonList extends Component {
     constructor(props) {
         super(props);
         this.handleClick = this.handleClick.bind(this);
+        this.state = {
+            panelIsOpen: false,
+        };
     }
 
     handleClick(currentLesson) {
+        this.setState({ open: !this.state.panelIsOpen });
         const { doLessonSelect } = this.props;
         doLessonSelect(currentLesson);
     }
@@ -23,7 +27,15 @@ export default class LessonList extends Component {
     render() {
         const { lessons, currentLesson } = this.props;
         return (
-            <Panel bsClass="lessons-panel" collapsible ref={this.panelRef} id='lessons-dropdown' header={currentLesson.title}>
+            <Panel
+                bsClass="lessons-panel"
+                collapsible
+                expanded={this.state.panelIsOpen}
+                onClick={() => this.setState({ panelIsOpen: !this.state.panelIsOpen })}
+                ref={this.panelRef}
+                id='lessons-dropdown'
+                header={currentLesson.title}
+            >
                     <ListGroup fill>
                     { lessons.map(
                         (lesson, idx) =>
