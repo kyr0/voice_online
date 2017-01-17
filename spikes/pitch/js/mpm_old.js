@@ -90,7 +90,7 @@ MPM.prototype.getPitch = function(audioBuffer) {   // double array
     //
 	//	if (nsdf[tau] > SMALL_CUTOFF) {
 	//		// calculates turningPointX and Y
-	//		prabolicInterpolation(tau);
+	//		parabolicInterpolation(tau);
 	//		// store the turning points
 	//		ampEstimates.add(turningPointY);
 	//		periodEstimates.add(turningPointX);
@@ -152,7 +152,7 @@ module.exports = MPM;
 
 
 
-	private void prabolicInterpolation(final int tau) {
+	private void parabolicInterpolation(final int tau) {
 		final double nsdfa = nsdf[tau - 1];
 		final double nsdfb = nsdf[tau];
 		final double nsdfc = nsdf[tau + 1];
