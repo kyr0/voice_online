@@ -54,17 +54,16 @@ function NoteMaps() {
                 name : thisNotesName,
                 index : note + (12 * octave),
                 frequency : thisNotesFreq,
-                previousNote : getPreviousNote(octave, note, this.pitchMap),
-                nextNote : null,
+                previousNoteName : getPreviousNoteName(octave, note, this.pitchMap),
+                nextNoteName : null,
             };
-            // Essentially this finds the nextNote property of the previous note and assigns it
-            //   a reference to a note object (current)
+            // Essentially this finds the nextNote of the previous note and uses the name property
             if (!(octave === 0 && note === 0)) { // don't need to set the note before C0
                 var prevNoteNum = (note === 0) ? 11 : note - 1;
                 var prevOctave = (prevNoteNum === 11) ? octave - 1 : octave;
                 //var nextNoteNum = (note === 11) ? 0 : note + 1;
                 //var nextOctave = (nextNoteNum === 0) ? octave + 1 : octave;
-                this.pitchMap[_noteNames[prevNoteNum] + prevOctave].nextNote = this.pitchMap[_noteNames[note] + octave];
+                this.pitchMap[_noteNames[prevNoteNum] + prevOctave].nextNoteName = this.pitchMap[_noteNames[note] + octave].name;
             }
 
             // pitchArray is used with root-finding algorithm Brent's Method (arrays are fast)
@@ -74,17 +73,15 @@ function NoteMaps() {
             this.reverseMap[thisNotesFreq] = {
                 name : thisNotesName,
             };
-
-
         }
     }
 
     // returns a reference to the previous note object
-    function getPreviousNote(curOctave, curNoteNum, pitchMap){
+    function getPreviousNoteName(curOctave, curNoteNum, pitchMap){
         if (curOctave === 0 && curNoteNum === 0) return null;
         var prevNoteNum = (curNoteNum === 0) ? 11 : curNoteNum - 1;
         var prevOctave = (prevNoteNum === 11) ? curOctave - 1 : curOctave;
-        return pitchMap[_noteNames[prevNoteNum] + prevOctave];
+        return pitchMap[_noteNames[prevNoteNum] + prevOctave].name;
     }
 
     // take a raw frequency and returns the on-key frequency of the nearest musical note

@@ -121,8 +121,8 @@ function Note(nameOrFreq, noteDuration) {
         }
         this.duration = this.setNoteDuration(noteDuration);
         var _noteObj = nMaps.pitchMap[this.name];
-        this.getPreviousNote = function () { return new Note(_noteObj.previousNote.name) };
-        this.getNextNote = function () { return new Note(_noteObj.nextNote.name) };
+        this.getPreviousNote = function () { return new Note(_noteObj.previousNoteName) };
+        this.getNextNote = function () { return new Note(_noteObj.nextNoteName) };
         this.frequency = _noteObj.frequency;
     }
 }
