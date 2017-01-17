@@ -63,17 +63,17 @@ function Note(nameOrFreq, noteDuration) {
         if (direction === 'none') {
             return halfSteps;
         } else if (direction === 'down') {
-            stepTo = 'previousNote';
+            stepTo = 'previousNoteName';
             reverseSteps = -1;
         } else {
-            stepTo = 'nextNote';
+            stepTo = 'nextNoteName';
         }
         while (traversalNote.name !== otherNtName){
             halfSteps += 1;
             if (traversalNote[stepTo] === null) {
                 throw new Error ('getDistanceToNote() did not encounter the end point of the interval. End Point: ' +
                     otherNtName);
-            } else traversalNote = traversalNote[stepTo];
+            } else traversalNote = nMaps.pitchMap[traversalNote[stepTo]];
         }
         return halfSteps * reverseSteps;
     };
