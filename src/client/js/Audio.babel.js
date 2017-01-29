@@ -192,28 +192,28 @@ function Audio(audioCtx = window.myAudioContext) {
     }.bind(this);
 
 
-    this.getTestInput = function () {
-        var load = require('audio-loader');
-        load(require('../../../test/fixtures/bad_practice.js')).then(
-            function (buffer, time) {
-                var testVoice = audioContext.createBufferSource();
-                testVoice.buffer = buffer;
-                testVoice.connect(audioContext.destination);
-                testVoice.connect(scriptNode);
-                scriptNode.connect(audioContext.destination);
-                testVoice.start(time || audioContext.currentTime);
-            }.bind(this)
-        );
-    }.bind(this);
-
-
-    this.getSingleNoteTestInput = function () {
-        audioIn = audioContext.createOscillator(); // always do this directly before osc.start()
-        audioIn.start();
-        audioIn.frequency.value = 369.99;
-        audioIn.connect(scriptNode);
-        scriptNode.connect(audioContext.destination);
-    };
+    // this.getTestInput = function () {
+    //     var load = require('audio-loader');
+    //     load(require('../../../test/fixtures/bad_practice.js')).then(
+    //         function (buffer, time) {
+    //             var testVoice = audioContext.createBufferSource();
+    //             testVoice.buffer = buffer;
+    //             testVoice.connect(audioContext.destination);
+    //             testVoice.connect(scriptNode);
+    //             scriptNode.connect(audioContext.destination);
+    //             testVoice.start(time || audioContext.currentTime);
+    //         }.bind(this)
+    //     );
+    // }.bind(this);
+    //
+    //
+    // this.getSingleNoteTestInput = function () {
+    //     audioIn = audioContext.createOscillator(); // always do this directly before osc.start()
+    //     audioIn.start();
+    //     audioIn.frequency.value = 369.99;
+    //     audioIn.connect(scriptNode);
+    //     scriptNode.connect(audioContext.destination);
+    // };
 
 
     this.getUserInput = function () {
