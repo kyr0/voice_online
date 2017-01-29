@@ -117,11 +117,10 @@ function MPM(audioSampleRate, audioBufferSize, cutoffMPM) {
     this.detectPitch = function (audioBuffer) {
         var pitch;
 
-        // Clear previous results (this is faster than setting length to 0)
-        // http://www.2ality.com/2012/12/clear-array.html
-        _maxPositions = [];
-        _periodEstimates = [];
-        _ampEstimates = [];
+        // Clear previous results without creating new arrays for Garbage Collection
+        _maxPositions.length = 0;
+        _periodEstimates.length = 0;
+        _ampEstimates.length = 0;
 
         // 1. Calculate the normalized square difference for each Tau value.
         normalizedSquareDifference(audioBuffer);
@@ -138,7 +137,7 @@ function MPM(audioSampleRate, audioBufferSize, cutoffMPM) {
 
             if (_nsdf[tau] > _SMALL_CUTOFF) {
                 // calculates turningPointX and Y
-                prabolicInterpolation(tau);
+                parabolicInterpolation(tau);
                 // store the turning points
                 _ampEstimates.push(_turningPointY);
                 _periodEstimates.push(_turningPointX);
@@ -218,7 +217,7 @@ function MPM(audioSampleRate, audioBufferSize, cutoffMPM) {
      * @param tau
      *            The delay tau, b value in the drawing is the tau value.
      */
-    function prabolicInterpolation(tau) {
+    function parabolicInterpolation(tau) {
         var nsdfa = _nsdf[tau - 1];
         var nsdfb = _nsdf[tau];
         var nsdfc = _nsdf[tau + 1];
@@ -235,7 +234,7 @@ function MPM(audioSampleRate, audioBufferSize, cutoffMPM) {
     }
 
     /* start-test-code */
-    this.__testonly__.prabolicInterpolation = prabolicInterpolation;
+    this.__testonly__.parabolicInterpolation = parabolicInterpolation;
     /* end-test-code */
 
 
