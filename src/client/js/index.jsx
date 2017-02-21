@@ -17,7 +17,7 @@ import Profile from './react/containers/Profile.babel';
 const store = configureStore();
 const history = syncHistoryWithStore(browserHistory, store);
 
-
+// There must only ever be one AudioContext instance, so we create it here
 if ( !window.AudioContext && !window.webkitAudioContext ) {
     console.error('Web Audio API not supported in this browser');
 } else {

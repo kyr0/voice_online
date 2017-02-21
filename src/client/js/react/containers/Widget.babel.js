@@ -100,7 +100,7 @@ export class Widget extends Component {
             });
             this.player = this.props.Player ? new this.props.Player() : new Player(user, lesson);
             this.canvas.setPlayer(this.player);
-            this.audio.setPlayer(this.audio.getUserInput, this.player);
+            this.audio.setPlayer(this.audio.getTestInput, this.player);
             // TODO refactor the event strings into constants
             this.setEndExerciseListener();
         }

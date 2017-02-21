@@ -192,21 +192,23 @@ function Audio(audioCtx = window.myAudioContext) {
     }.bind(this);
 
 
-    // this.getTestInput = function () {
-    //     var load = require('audio-loader');
-    //     load(require('../../../test/fixtures/bad_practice.js')).then(
-    //         function (buffer, time) {
-    //             var testVoice = audioContext.createBufferSource();
-    //             testVoice.buffer = buffer;
-    //             testVoice.connect(audioContext.destination);
-    //             testVoice.connect(scriptNode);
-    //             scriptNode.connect(audioContext.destination);
-    //             testVoice.start(time || audioContext.currentTime);
-    //         }.bind(this)
-    //     );
-    // }.bind(this);
-    //
-    //
+    this.getTestInput = function () {
+        var load = require('audio-loader');
+        // Bad practice is for 120-bps Major & Minor Octave Yaw @ F3->G5
+        // https://www.browserling.com/tools/file-to-base64
+        load(require('../../../test/fixtures/bad_practice.js')).then(
+            function (buffer, time) {
+                var testVoice = audioContext.createBufferSource();
+                testVoice.buffer = buffer;
+                testVoice.connect(audioContext.destination);
+                testVoice.connect(scriptNode);
+                scriptNode.connect(audioContext.destination);
+                testVoice.start(time || audioContext.currentTime);
+            }.bind(this)
+        );
+    }.bind(this);
+
+
     // this.getSingleNoteTestInput = function () {
     //     audioIn = audioContext.createOscillator(); // always do this directly before osc.start()
     //     audioIn.start();
@@ -216,43 +218,43 @@ function Audio(audioCtx = window.myAudioContext) {
     // };
 
 
-    this.getUserInput = function () {
-        var options = {
-            'audio': {
-                'mandatory': {
-                    'googEchoCancellation': 'false',
-                    'googAutoGainControl': 'false',
-                    'googNoiseSuppression': 'false',
-                    'googHighpassFilter': 'false',
-                },
-                'optional': [],
-            },
-        };
-
-        function initStream(stream) {
-            audioIn = audioContext.createMediaStreamSource(stream);
-            audioIn.connect(scriptNode);
-            scriptNode.connect(audioContext.destination);
-        }
-
-        function error() {
-            alert('Stream generation failed.');
-        }
-
-        try {
-            // TODO update this to use the most recent with polyfill for older browser versions
-            // - https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-            navigator.getUserMedia = (
-                navigator.getUserMedia ||
-                navigator.webkitGetUserMedia ||
-                navigator.mozGetUserMedia ||
-                navigator.msGetUserMedia );
-            navigator.getUserMedia(options, initStream, error);
-        } catch (e) {
-            alert('getUserMedia threw exception :' + e);
-        }
-
-    };
+    // this.getUserInput = function () {
+    //     var options = {
+    //         'audio': {
+    //             'mandatory': {
+    //                 'googEchoCancellation': 'false',
+    //                 'googAutoGainControl': 'false',
+    //                 'googNoiseSuppression': 'false',
+    //                 'googHighpassFilter': 'false',
+    //             },
+    //             'optional': [],
+    //         },
+    //     };
+    //
+    //     function initStream(stream) {
+    //         audioIn = audioContext.createMediaStreamSource(stream);
+    //         audioIn.connect(scriptNode);
+    //         scriptNode.connect(audioContext.destination);
+    //     }
+    //
+    //     function error() {
+    //         alert('Stream generation failed.');
+    //     }
+    //
+    //     try {
+    //         // TODO update this to use the most recent with polyfill for older browser versions
+    //         // - https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
+    //         navigator.getUserMedia = (
+    //             navigator.getUserMedia ||
+    //             navigator.webkitGetUserMedia ||
+    //             navigator.mozGetUserMedia ||
+    //             navigator.msGetUserMedia );
+    //         navigator.getUserMedia(options, initStream, error);
+    //     } catch (e) {
+    //         alert('getUserMedia threw exception :' + e);
+    //     }
+    //
+    // };
 
 }
 
