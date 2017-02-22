@@ -218,43 +218,43 @@ function Audio(audioCtx = window.myAudioContext) {
     // };
 
 
-    // this.getUserInput = function () {
-    //     var options = {
-    //         'audio': {
-    //             'mandatory': {
-    //                 'googEchoCancellation': 'false',
-    //                 'googAutoGainControl': 'false',
-    //                 'googNoiseSuppression': 'false',
-    //                 'googHighpassFilter': 'false',
-    //             },
-    //             'optional': [],
-    //         },
-    //     };
-    //
-    //     function initStream(stream) {
-    //         audioIn = audioContext.createMediaStreamSource(stream);
-    //         audioIn.connect(scriptNode);
-    //         scriptNode.connect(audioContext.destination);
-    //     }
-    //
-    //     function error() {
-    //         alert('Stream generation failed.');
-    //     }
-    //
-    //     try {
-    //         // TODO update this to use the most recent with polyfill for older browser versions
-    //         // - https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-    //         navigator.getUserMedia = (
-    //             navigator.getUserMedia ||
-    //             navigator.webkitGetUserMedia ||
-    //             navigator.mozGetUserMedia ||
-    //             navigator.msGetUserMedia );
-    //         navigator.getUserMedia(options, initStream, error);
-    //     } catch (e) {
-    //         alert('getUserMedia threw exception :' + e);
-    //     }
-    //
-    // };
+    this.getUserInput = function () {
+        var options = {
+            'audio': {
+                'mandatory': {
+                    'googEchoCancellation': 'false',
+                    'googAutoGainControl': 'false',
+                    'googNoiseSuppression': 'false',
+                    'googHighpassFilter': 'false',
+                },
+                'optional': [],
+            },
+        };
+
+        function initStream(stream) {
+            audioIn = audioContext.createMediaStreamSource(stream);
+            audioIn.connect(scriptNode);
+            scriptNode.connect(audioContext.destination);
+        }
+
+        function error() {
+            alert('Stream generation failed.');
+        }
+
+        try {
+            // TODO update this to use the most recent with polyfill for older browser versions
+            // - https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
+            navigator.getUserMedia = (
+                navigator.getUserMedia ||
+                navigator.webkitGetUserMedia ||
+                navigator.mozGetUserMedia ||
+                navigator.msGetUserMedia );
+            navigator.getUserMedia(options, initStream, error);
+        } catch (e) {
+            alert('getUserMedia threw exception :' + e);
+        }
+
+    };
 
 }
 
