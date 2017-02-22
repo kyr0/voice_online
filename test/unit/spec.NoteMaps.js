@@ -45,11 +45,11 @@ describe('NoteMaps', function() {
     });
 
     it("pitchMap's lowest member C0 should have previousNote set to null", function () {
-        expect(this.nMaps.pitchMap["C0"].previousNote).to.be.null;
+        expect(this.nMaps.pitchMap["C0"].previousNoteName).to.be.null;
     });
 
     it("pitchMap's highest member B8 should have nextNote set to null", function () {
-        expect(this.nMaps.pitchMap["B8"].nextNote).to.be.null;
+        expect(this.nMaps.pitchMap["B8"].nextNoteName).to.be.null;
     });
 
     it("pitchArray's highest note B8 should exist", function () {
