@@ -91,6 +91,21 @@ function MPM(audioSampleRate, audioBufferSize, cutoffMPM) {
     };
     /* end-test-code */
 
+    // void xcorr_timedomain(void *signala, void *signalb, void *result, int N)
+    // {
+    //     for (int tau = 0; tau < 2*N-1; ++tau) {
+    //     complex acf = 0 + 0*I;
+    //     for (int i = 0; i < N; ++i) {
+    //         const int signala_idx = (i+tau)%(2*N-1);
+    //         const complex conjb = conj(((complex*)signalb)[i]);
+    //         const double factor = (signala_idx >= N) ?
+    //             ((complex*)signala)[signala_idx-N] : 1.0;
+    //         acf += factor * conjb;
+    //     }
+    //     ((complex*)result)[tau] = acf;
+    // }
+    //     return;
+    // }
 
     /*
      * Implements the normalized square difference function. See section 4 (and
@@ -98,10 +113,10 @@ function MPM(audioSampleRate, audioBufferSize, cutoffMPM) {
      * optimized by using an FFT. The results should remain the same.
      */
     function normalizedSquareDifference(audioBuffer) {
-        for (var tau = 0; tau < audioBuffer.length; tau++) {
+        for (var tau = 0; tau < bufferSize; tau++) {
             var acf = 0;
             var divisorM = 0;
-            for (var i = 0; i < audioBuffer.length - tau; i++) {
+            for (var i = 0; i < bufferSize - tau; i++) {
                 acf += audioBuffer[i] * audioBuffer[i + tau];
                 divisorM += audioBuffer[i] * audioBuffer[i] + audioBuffer[i + tau] * audioBuffer[i + tau];
             }
@@ -269,12 +284,12 @@ function MPM(audioSampleRate, audioBufferSize, cutoffMPM) {
         var curMaxPos = 0;
 
         // find the first negative zero crossing
-        while (pos < (_nsdf.length - 1) / 3 && _nsdf[pos] > 0) {
+        while (pos < (bufferSize - 1) / 3 && _nsdf[pos] > 0) {
             pos++;
         }
 
         // loop over all the values below zero
-        while (pos < _nsdf.length - 1 && _nsdf[pos] <= 0) {
+        while (pos < bufferSize - 1 && _nsdf[pos] <= 0) {
             pos++;
         }
 
@@ -283,11 +298,7 @@ function MPM(audioSampleRate, audioBufferSize, cutoffMPM) {
             pos = 1;
         }
 
-        while (pos < _nsdf.length - 1) {
-            if (_nsdf[pos] < 0 || typeof _nsdf[pos] !== 'number') {
-                throw new Error('peakPicking(): NSDF value at index ' + pos + ' should be >= 0, was: ' + _nsdf[pos] +
-                    '\n\nBuffer Input: [ ' + audioBuffer + ' ]\n');
-            }
+        while (pos < bufferSize - 1) {
             if ((_nsdf[pos] > _nsdf[pos - 1]) && (_nsdf[pos] >= _nsdf[pos + 1])) {
                 if (curMaxPos === 0) {
                     // the first max (between zero crossings)
@@ -299,13 +310,13 @@ function MPM(audioSampleRate, audioBufferSize, cutoffMPM) {
             }
             pos++;
             // a negative zero crossing
-            if ((pos < _nsdf.length - 1) && (_nsdf[pos] <= 0)) {
+            if ((pos < bufferSize - 1) && (_nsdf[pos] <= 0)) {
                 // if there was a maximum add it to the list of maxima
                 if (curMaxPos > 0) {
                     _maxPositions.push(curMaxPos);
                     curMaxPos = 0; // clear the maximum position, so we start looking for new ones
                 }
-                while ((pos < _nsdf.length - 1) && (_nsdf[pos] <= 0)) {
+                while ((pos < bufferSize - 1) && (_nsdf[pos] <= 0)) {
                     pos++; // loop over all the values below zero
                 }
             }

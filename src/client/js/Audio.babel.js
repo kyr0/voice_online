@@ -1,8 +1,8 @@
 'use strict';
 
-var MPM = require('./MPM.js');
-var Note = require('./Note.js');
-var NoteMaps = require('./NoteMaps.js');
+let MPM = require('./MPM.js');
+let Note = require('./Note.js');
+let NoteMaps = require('./NoteMaps.js');
 
 // TODO figure out "as needed" audio buffers, for instance buffers longer than 2 seconds
 /* TODO -- "An important point to note is that on iOS, Apple currently mutes
@@ -15,57 +15,64 @@ var NoteMaps = require('./NoteMaps.js');
 
 function Audio(audioCtx = window.myAudioContext) {
 
-    var player = null;
-    var pianoBufferIdx = 0;
-    var instrumentBuffers = null;
-    var audioContext = audioCtx;
-    var bufferLength = 1024;
-    var scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
-    var mpm = new MPM(audioContext.sampleRate, bufferLength);
-    var note = new Note('A4', '1/4');  // these values are not important, only necessary // TODO refactor Note class
-    var nMaps = new NoteMaps();
+    let player = null;
+    let pianoBufferIdx = 0;
+    let instrumentBuffers = null;
+    let audioContext = audioCtx;
+    let bufferLength = 256;
+    let scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
+    let mpm = new MPM(audioContext.sampleRate, bufferLength);
+    let note = new Note('A4', '1/4');  // these values are not important, only necessary // TODO refactor Note class
+    let nMaps = new NoteMaps();
+    let daddyBuffer = new Float32Array(bufferLength * 4);
+    let prevFrameBufferView = new Float32Array(daddyBuffer, bufferLength);  // view of last 3/4 of buffer
 
-    var accompany = null;
-    var audioIn = null;
+    let accompany = null;
+    let audioIn = null;
 
     this.currentNote = null;
-    var currentChart = null;
+    let currentChart = null;
 
     this.pianoBufferList = [];  // will host all the piano sound buffers that will be used in this lesson
-    this.inputBuffer = null;
-    this.inputData = null;
+    let inputBuffer = null;
+    let inputData = null;
     this.resultObj = null;
 
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function (audioProcessingEvent) {
         // console.log('onaudioprocess');
         // TODO fix the note transition pitch detection errors by averaging frames
-        this.inputBuffer = audioProcessingEvent.inputBuffer;
-        this.inputData = this.inputBuffer.getChannelData(0);
-        this._handleBuffer(this.inputData);
+        inputBuffer = audioProcessingEvent.inputBuffer;
+        inputData = inputBuffer.getChannelData(0);
+        daddyBuffer.set(prevFrameBufferView);  // shift contents 1/4 to the left
+        daddyBuffer.set(inputData, bufferLength * 3); // add the new data to the last 1/4
+        this._handleBuffer(daddyBuffer);
     }.bind(this);
 
 
     this._handleBuffer = function (buf) {
-        // for speed perhaps mpm could return an array with pitch result, frequency, and probability
+        // TODO *****************************
+        // TODO mpm should return an array with pitch result, frequency, and probability NO OBJECT
+        // TODO *****************************
         this.resultObj = mpm.detectPitch(buf);
         this._processPitchResult(this.resultObj.getPitchFrequency(), this.resultObj.getProbability());
     }.bind(this);
 
 
     this._processPitchResult = function (pitchFreq, probability) {
-        if (pitchFreq === -1 || probability < 0.95) {
+        console.log(pitchFreq + ' &&  ' + probability);
+        if (pitchFreq === -1) {
             player.pitchYAxisRatio = null;
             player.pushScore(null);  // this has 3 layers of depth
         } else {
-            var noteName = note.getClosestNoteFromPitch(pitchFreq);
+            let noteName = note.getClosestNoteFromPitch(pitchFreq);
             // The current chart is  used to show if the note is within
             // the visible bounds of the set that is playing.
-            var relativeItvl = currentChart[noteName] + 1;
+            let relativeItvl = currentChart[noteName] + 1;
             if (relativeItvl) {
                 note.frequency = nMaps.getClosestFreqFromPitch(pitchFreq); // so we don't need a new Note object
-                var centsDiff = note.getCentsDiff(pitchFreq) / 100; // must be done after frequency is set on Note object
-                var offPitchAmt = this.currentNote.getCentsDiff(pitchFreq);
+                let centsDiff = note.getCentsDiff(pitchFreq) / 100; // must be done after frequency is set on Note object
+                let offPitchAmt = this.currentNote.getCentsDiff(pitchFreq);
                 player.pitchYAxisRatio = relativeItvl + (centsDiff * -1);
                 player.pushScore(offPitchAmt);
             } else {
@@ -110,12 +117,12 @@ function Audio(audioCtx = window.myAudioContext) {
 
     this.createPianoBufferList = function (thePlayer) {
         pianoBufferIdx = 0;
-        for (var setIdx = 0; setIdx < thePlayer.sets.length; setIdx++) {
-            for (var ntIdx = 0; ntIdx < thePlayer.sets[setIdx].noteList.length; ntIdx++) {
-                var ntName = thePlayer.sets[setIdx].noteList[ntIdx].name;
+        for (let setIdx = 0; setIdx < thePlayer.sets.length; setIdx++) {
+            for (let ntIdx = 0; ntIdx < thePlayer.sets[setIdx].noteList.length; ntIdx++) {
+                let ntName = thePlayer.sets[setIdx].noteList[ntIdx].name;
                 if (ntName !== '-') {
                     this.pianoBufferList.push(audioContext.createBufferSource());
-                    var thisBuffer = this.pianoBufferList[this.pianoBufferList.length - 1];
+                    let thisBuffer = this.pianoBufferList[this.pianoBufferList.length - 1];
                     thisBuffer.buffer = instrumentBuffers[ntName];
                     thisBuffer.volume = audioContext.createGain();
                     thisBuffer.connect(thisBuffer.volume);
@@ -126,7 +133,7 @@ function Audio(audioCtx = window.myAudioContext) {
 
 
     this.rampGainDown = function (durationInSeconds, accompany) {
-        var gainValue = 0.001;
+        let gainValue = 0.001;
         accompany.volume.gain.exponentialRampToValueAtTime(gainValue, audioContext.currentTime + durationInSeconds);
         setTimeout(this.stopNote.bind(null, accompany), audioContext.currentTime + durationInSeconds);
     }.bind(this);
@@ -193,12 +200,12 @@ function Audio(audioCtx = window.myAudioContext) {
 
 
     this.getTestInput = function () {
-        var load = require('audio-loader');
+        let load = require('audio-loader');
         // Bad practice is for 120-bps Major & Minor Octave Yaw @ F3->G5
         // https://www.browserling.com/tools/file-to-base64
         load(require('../../../test/fixtures/bad_practice.js')).then(
             function (buffer, time) {
-                var testVoice = audioContext.createBufferSource();
+                let testVoice = audioContext.createBufferSource();
                 testVoice.buffer = buffer;
                 testVoice.connect(audioContext.destination);
                 testVoice.connect(scriptNode);
@@ -219,7 +226,7 @@ function Audio(audioCtx = window.myAudioContext) {
 
 
     this.getUserInput = function () {
-        var options = {
+        let options = {
             'audio': {
                 'mandatory': {
                     'googEchoCancellation': 'false',
