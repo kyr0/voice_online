@@ -19,13 +19,14 @@ function Audio(audioCtx = window.myAudioContext) {
     let pianoBufferIdx = 0;
     let instrumentBuffers = null;
     let audioContext = audioCtx;
-    let bufferLength = 256;
+    // let bufferLength = 256;
+    let bufferLength = 1024;
     let scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
     let mpm = new MPM(audioContext.sampleRate, bufferLength);
     let note = new Note('A4', '1/4');  // these values are not important, only necessary // TODO refactor Note class
     let nMaps = new NoteMaps();
-    let daddyBuffer = new Float32Array(bufferLength * 4);
-    let prevFrameBufferView = new Float32Array(daddyBuffer, bufferLength);  // view of last 3/4 of buffer
+    // let daddyBuffer = new Float32Array(bufferLength * 4);
+    // let prevFrameBufferVisew = new Float32Array(daddyBuffer, bufferLength);  // view of last 3/4 of buffer
 
     let accompany = null;
     let audioIn = null;
@@ -34,19 +35,22 @@ function Audio(audioCtx = window.myAudioContext) {
     let currentChart = null;
 
     this.pianoBufferList = [];  // will host all the piano sound buffers that will be used in this lesson
-    let inputBuffer = null;
-    let inputData = null;
+    // let inputBuffer = null;
+    // let inputData = null;
     this.resultObj = null;
 
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function (audioProcessingEvent) {
         // console.log('onaudioprocess');
         // TODO fix the note transition pitch detection errors by averaging frames
-        inputBuffer = audioProcessingEvent.inputBuffer;
-        inputData = inputBuffer.getChannelData(0);
-        daddyBuffer.set(prevFrameBufferView);  // shift contents 1/4 to the left
-        daddyBuffer.set(inputData, bufferLength * 3); // add the new data to the last 1/4
-        this._handleBuffer(daddyBuffer);
+        this.inputBuffer = audioProcessingEvent.inputBuffer;
+        this.inputData = this.inputBuffer.getChannelData(0);
+        this._handleBuffer(this.inputData);
+        // inputBuffer = audioProcessingEvent.inputBuffer;
+        // inputData = inputBuffer.getChannelData(0);
+        // daddyBuffer.set(prevFrameBufferView);  // shift contents 1/4 to the left
+        // daddyBuffer.set(inputData, bufferLength * 3); // add the new data to the last 1/4
+        // this._handleBuffer(daddyBuffer);
     }.bind(this);
 
 
@@ -60,7 +64,7 @@ function Audio(audioCtx = window.myAudioContext) {
 
 
     this._processPitchResult = function (pitchFreq, probability) {
-        console.log(pitchFreq + ' &&  ' + probability);
+        // console.log(pitchFreq + ' &&  ' + probability);
         if (pitchFreq === -1) {
             player.pitchYAxisRatio = null;
             player.pushScore(null);  // this has 3 layers of depth
