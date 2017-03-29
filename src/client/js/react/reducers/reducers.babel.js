@@ -66,7 +66,7 @@ export function auth(state = initialAuthState, action) {
 }
 
 
-export const initialProfileState = { isRequesting: false, user: {} };
+export const initialProfileState = { isRequesting: false, user: { 'lower_range': 'F3', 'upper_range': 'G5' } };
 export function profile(state = initialProfileState, action) {
     switch (action.type) {
     case GET_USER_REQUEST:

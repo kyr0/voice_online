@@ -23,7 +23,7 @@ export class Widget extends Component {
             this.audio.setInstrumentBuffers(instrumentBuffers);
         }
 
-        if (user !== initialProfileState.user && currentLesson !== initialSingState.currentLesson) {
+        if (currentLesson !== initialSingState.currentLesson) {
             this.createPlayer(user, currentLesson);
         }
     }
@@ -90,7 +90,7 @@ export class Widget extends Component {
     }
 
     createPlayer(userData, currentLessonData) {
-        if (userData !== initialProfileState.user && currentLessonData !== initialSingState.currentLesson) {
+        if (currentLessonData !== initialSingState.currentLesson) {
             const user = this.props.User ? new this.props.User() : new User(userData.lower_range, userData.upper_range);
             const lesson = this.props.Lesson ? new this.props.Lesson() : new Lesson({
                 title: currentLessonData.title,
