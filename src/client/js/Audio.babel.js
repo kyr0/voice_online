@@ -19,8 +19,10 @@ function Audio(audioCtx = window.myAudioContext) {
     let pianoBufferIdx = 0;
     let instrumentBuffers = null;
     let audioContext = audioCtx;
-    // let bufferLength = 256;
     let bufferLength = 1024;
+    let analyserNode = audioContext.createAnalyser();
+    analyserNode.fftSize = bufferLength * 2;
+    var dataArray = new Float32Array(bufferLength);
     let scriptNode = audioContext.createScriptProcessor(bufferLength, 1, 1);
     let mpm = new MPM(audioContext.sampleRate, bufferLength);
     let note = new Note('A4', '1/4');  // these values are not important, only necessary // TODO refactor Note class
@@ -42,7 +44,8 @@ function Audio(audioCtx = window.myAudioContext) {
     // When the buffer is full of frames this event is executed
     scriptNode.onaudioprocess = function (audioProcessingEvent) {
         // console.log('onaudioprocess');
-        // TODO fix the note transition pitch detection errors by averaging frames
+        analyserNode.getFloatFrequencyData(dataArray);
+        console.log(dataArray);
         this.inputBuffer = audioProcessingEvent.inputBuffer;
         this.inputData = this.inputBuffer.getChannelData(0);
         this._handleBuffer(this.inputData);
@@ -244,7 +247,8 @@ function Audio(audioCtx = window.myAudioContext) {
 
         function initStream(stream) {
             audioIn = audioContext.createMediaStreamSource(stream);
-            audioIn.connect(scriptNode);
+            audioIn.connect(analyserNode);
+            analyserNode.connect(scriptNode);
             scriptNode.connect(audioContext.destination);
         }
 
