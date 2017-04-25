@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { initialLayoutState, initialSingState, initialProfileState } from '../reducers/reducers.babel';
+import { initialLayoutState, initialSingState } from '../reducers/reducers.babel';
 import { GRID_SIZES } from '../../constants/constants.babel';
 import { setIsPlayingIfReady } from '../actions/singActions.babel';
 import Canvas from '../../Canvas.babel';

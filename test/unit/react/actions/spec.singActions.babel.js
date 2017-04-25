@@ -234,12 +234,12 @@ describe('singActions', () => {
 
     describe('setIsPlayingIfReady', () => {
 
-        it('should not set isPlaying if no user in state', () => {
+        it('should set isPlaying even if no user in state', () => {
             state.sing.currentLesson = dummy_lesson_data.results[0];
             state.sing.instrumentBuffers = 'dummy';
             store = mockStore(state);
             store.dispatch(setIsPlayingIfReady(true));
-            expect(store.getActions()).to.eql([]);
+            expect(store.getActions()[0].isPlaying).to.eql(true);
         });
 
         it('should not set isPlaying if no currentLesson in state', () => {

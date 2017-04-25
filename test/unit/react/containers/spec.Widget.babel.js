@@ -146,22 +146,23 @@ describe('Widget container', () => {
             expect(Widget.prototype.setEndExerciseListener).not.to.have.been.called;
         });
 
-        it('should not call setEndExerciseListener on lesson update only', () => {
+        it('should call setEndExerciseListener when only lesson updated', () => {
             Widget.prototype.createCanvas.restore();
             Widget.prototype.createPlayer.restore();
-            subject = shallowSubject();
-            subject.setProps({ currentLesson: dummyObject });
-            expect(Widget.prototype.setEndExerciseListener).not.to.have.been.called;
+            let dummyLesson = { notes: [{ duration: '1/8', name: 'A4' }] };
+            subject = mountSubject();
+            subject.setProps({ currentLesson: dummyLesson });
+            expect(Widget.prototype.setEndExerciseListener).to.have.been.calledOnce;
         });
 
-        it('should call setEndExerciseListener when user and currentLesson have both been updated', () => {
+        it('should call setEndExerciseListener when user or currentLesson have been updated', () => {
             Widget.prototype.createCanvas.restore();
             Widget.prototype.createPlayer.restore();
             let dummyLesson = { notes: [{ duration: '1/8', name: 'A4' }] };
             subject = mountSubject();
             subject.setProps({ currentLesson: dummyLesson });
             subject.setProps({ user: { lower_range: 'A4', upper_range: 'A5' } });
-            expect(Widget.prototype.setEndExerciseListener).to.have.been.calledOnce;
+            expect(Widget.prototype.setEndExerciseListener).to.have.been.calledTwice;
         });
 
         it('should call createCanvas but not createPlayer with initial state on componentDidMount', () => {
