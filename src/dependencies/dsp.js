@@ -543,13 +543,15 @@ FFT.prototype.inverse = function(real, imag) {
 // lookup tables don't really gain us any speed, but they do increase
 // cache footprint, so don't use them in here
 
-// also we don't use sepearate arrays for real/imaginary parts
+// also we don't use separate arrays for real/imaginary parts
 
 // this one a little more than twice as fast as the one in FFT
 // however I only did the forward transform
 
 // the rest of this was translated from C, see http://www.jjj.de/fxt/
 // this is the real split radix FFT
+// NOTE TO SELF: Fast Hartley Transform has lower dynamic memory requirements than split radix
+//   and slightly better computational performance.  See 'A General Comparison of FFT Algorithms'
 
 function RFFT(bufferSize, sampleRate) {
   FourierTransform.call(this, bufferSize, sampleRate);
@@ -826,6 +828,10 @@ RFFT.prototype.forward = function(buffer) {
 
   return spectrum;
 };
+
+
+module.exports = RFFT;
+
 
 function Sampler(file, bufferSize, sampleRate, playStart, playEnd, loopStart, loopEnd, loopMode) {
   this.file = file;
