@@ -1,6 +1,7 @@
 import { axios } from '../../lib/helpers';
 
 import { CURRENT_USER_URL, LOGIN_URL, LOGOUT_URL } from '../../constants/constants.babel';
+import { initialProfileState } from '../reducers/reducers.babel';
 
 
 export const GET_USER_REQUEST = 'GET_USER_REQUEST';
@@ -17,18 +18,6 @@ export const LOGIN_USER_FAILURE = 'LOGIN_USER_FAILURE';
 export const LOGOUT_USER_REQUEST = 'LOGOUT_USER_REQUEST';
 export const LOGOUT_USER_SUCCESS = 'LOGOUT_USER_SUCCESS';
 export const LOGOUT_USER_FAILURE = 'LOGOUT_USER_FAILURE';
-
-
-/*
- MISC
- */
-function isEmpty(obj) {
-    let anObj = obj;
-    if (obj == null) {
-        anObj = {};
-    }
-    return Object.keys(anObj).length === 0;
-}
 
 
 export function isAuthenticated() {
@@ -74,7 +63,8 @@ function getUser() {
 
 export function getUserIfNeeded() {
     return (dispatch, getState) => {
-        if (isEmpty(getState().profile.user) && isAuthenticated()) {
+        if ((JSON.stringify(getState().profile.user) === JSON.stringify(initialProfileState.user)) && isAuthenticated())
+        {
             return dispatch(getUser());
         }
     };
