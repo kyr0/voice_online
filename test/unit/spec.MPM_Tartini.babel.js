@@ -9,7 +9,7 @@ describe('MPM Tartini', () => {
     });
 
     it('should...', () => {
-        console.log(buffers['C0_1024']);
+        calculateAnalysisData(buffers.noteBuffers.A4_1024);
     });
 
 });
