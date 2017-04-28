@@ -23,13 +23,17 @@ const STEP_SIZE = BUFFER_SIZE / 2;
 const DB_FLOOR = -150;
 const DO_EQL_LOUD = true;
 
-let fft = new RFFT(STEP_SIZE, RATE);
+let fft = new RFFT(BUFFER_SIZE, RATE);
+
 let analysisData = [];
 let prevAnalysisData = [];
 let nsdfMaxPositions = []; // TODO set the default size
 let dataTime = [];  // array of floats size 'n'
 let dataHann = [];  // array of floats size 'n'
-let dataFFT = [];  // array of floats size 'n'
+let dataFFT = [];  // array of floats size 'n / 2'
+let fftData1 = []; // array of floats size 'n / 2'
+let fftData2 = []; // array of floats size 'n / 2'
+
 let hanningCoeff = [];  // array of floats size 'n'
 
 let hanningScalar = 0;
@@ -95,14 +99,16 @@ let linearToDB = function (element) {
 };
 
 
-export function calculateAnalysisData(inputBuffer) {
+export default function calculateAnalysisData(inputBuffer) {
     dataTime = inputBuffer;
 
     // TODO equal loudness bit
 
     maxIntensityDB = linearToDB(getAbsMaxElement(dataTime));  // TODO this inline
 
-    // Apply a Hanning Window to the input
+    /////////////////////////////////////////
+    // Apply a Hanning Window to the input //
+    /////////////////////////////////////////
     hanningScalar = 0;
     for (let i = 0; i < BUFFER_SIZE; i++) {
         hanningCoeff[i] = 0.5 * (1 - Math.cos(TWO_PI * i / (BUFFER_SIZE - 1)));
@@ -110,12 +116,39 @@ export function calculateAnalysisData(inputBuffer) {
         hanningScalar += hanningCoeff[i];
     }
     hanningScalar *= 0.5; // Normalise the FFT coefficients by dividing the sum of the Hanning window / 2
+    console.log(dataHann);
 
-    // Do the channel data FFT
+    /////////////////////////////
+    // Do the channel data FFT //
+    /////////////////////////////
     dataFFT = fft.forward(dataHann);
+    let logSize = Math.log10(STEP_SIZE);
 
+    //Adjust the coefficents, both real and imaginary part by same amount
+    let sqValue;
+    const logBase = 100;
+    for(let j = 1; j < STEP_SIZE; j++) {
+        sqValue = Math.pow(dataFFT[j], 2) + Math.pow(dataFFT[BUFFER_SIZE - j], 2);  // THIS IS WHERE I STOPPED
+        fftData2[j] = logBaseN(logBase, 1.0 + 2.0 * sqrt(sqValue) / STEP_SIZE * (logBase - 1.0));
+        if(sqValue > 0) {
+            ch->get_fft_data1()[j] = bound(log10(sqValue) / 2.0 - logSize, gdata->dBFloor(), 0.0);
+        }
+        else
+        {
+            ch->get_fft_data1()[j] = gdata->dBFloor();
+        }
+    }
+    sqValue = sq(dataFFT[0]) + sq(dataFFT[nDiv2]);
+    ch->get_fft_data2()[0] = logBaseN(logBase, 1.0 + 2.0 * sqrt(sqValue) / double(nDiv2) * (logBase - 1.0));
+    if(sqValue > 0.0)
+    {
+        ch->get_fft_data1()[0] = bound(log10(sqValue) / 2.0 - logSize, gdata->dBFloor(), 0.0);
+    }
+    else
+    {
+        ch->get_fft_data1()[0] = gdata->dBFloor();
+    }
 
-    // prevDataTime = dataTime;  // possibly set the other previous precomputed bits if/when needed
 }
 
 
