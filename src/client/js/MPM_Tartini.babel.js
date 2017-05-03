@@ -23,48 +23,23 @@ const STEP_SIZE = BUFFER_SIZE / 2;
 const DB_FLOOR = -150;
 const DO_EQL_LOUD = true;
 
-let fft = new RFFT(BUFFER_SIZE, RATE);
+let fft = new RFFT(BUFFER_SIZE);
 
 let analysisData = [];
 let prevAnalysisData = [];
 let nsdfMaxPositions = []; // TODO set the default size
-let dataTime = [];  // array of floats size 'n'
-let dataHann = [];  // array of floats size 'n'
-let dataFFT = [];  // array of floats size 'n / 2'
-let fftData1 = []; // array of floats size 'n / 2'
-let fftData2 = []; // array of floats size 'n / 2'
+let dataTime = new Float32Array(BUFFER_SIZE);
+let dataHann = new Float32Array(BUFFER_SIZE);
+let dataFFT = new Float32Array(STEP_SIZE);
+let fftData1 = new Float32Array(STEP_SIZE);
+let fftData2 = new Float32Array(STEP_SIZE);
+let autoCorrData = new Float32Array(BUFFER_SIZE + STEP_SIZE);
+let nsdfData = [];
 
-let hanningCoeff = [];  // array of floats size 'n'
+    let hanningCoeff = [];  // array of floats size 'n'
 
 let hanningScalar = 0;
 let maxIntensityDB = 0;
-let isFirstTimeThrough = true;
-
-
-let init = function (curBuf) {
-    //Initialize the hanningCoeff aka Hanning windowing function
-    dataTime = curBuf;
-
-};
-
-
-// let init = function (curBuf) {
-//    // Initialize the hanningCoeff aka Hanning windowing function
-    // dataTime = curBuf;
-    // hanningScalar = 0;
-    // for (let j = 0; j < BUFFER_SIZE; j++) {
-    //     hanningCoeff[j] = (1.0 - Math.cos(j + 1) / (BUFFER_SIZE + 1) * TWO_PI) / 2.0;
-    //     hanningScalar += hanningCoeff[j];
-    // }
-//    // Normalise the FFT coefficients by dividing the sum of the Hanning window / 2
-    // hanningScalar /= 2;
-// };
-
-// function (dataArr) {
-//     for (let j = 0; j < BUFFER_SIZE; j++) {
-//         dataArr[j] *= hanningCoeff[j];
-//     }
-// };
 
 
 let getAbsMaxElement = function (arr) {
@@ -85,8 +60,8 @@ let getAbsMaxElement = function (arr) {
 
 let bound = function (value, lowerBound, upperBound) {
     //this way will deal with NAN, setting it to lowerBound
-    if(value < lowerBound) return lowerBound;
-    if(value > upperBound) return upperBound;
+    if (value < lowerBound) return lowerBound;
+    if (value > upperBound) return upperBound;
     return value;
 };
 
@@ -106,6 +81,7 @@ export default function calculateAnalysisData(inputBuffer) {
 
     maxIntensityDB = linearToDB(getAbsMaxElement(dataTime));  // TODO this inline
 
+
     /////////////////////////////////////////
     // Apply a Hanning Window to the input //
     /////////////////////////////////////////
@@ -116,37 +92,39 @@ export default function calculateAnalysisData(inputBuffer) {
         hanningScalar += hanningCoeff[i];
     }
     hanningScalar *= 0.5; // Normalise the FFT coefficients by dividing the sum of the Hanning window / 2
-    console.log(dataHann);
+
 
     /////////////////////////////
     // Do the channel data FFT //
     /////////////////////////////
     dataFFT = fft.forward(dataHann);
+
     let logSize = Math.log10(STEP_SIZE);
 
-    //Adjust the coefficents, both real and imaginary part by same amount
+    //Adjust the coefficients, both real and imaginary parts by same amount
     let sqValue;
     const logBase = 100;
-    for(let j = 1; j < STEP_SIZE; j++) {
-        sqValue = Math.pow(dataFFT[j], 2) + Math.pow(dataFFT[BUFFER_SIZE - j], 2);  // THIS IS WHERE I STOPPED
-        fftData2[j] = logBaseN(logBase, 1.0 + 2.0 * sqrt(sqValue) / STEP_SIZE * (logBase - 1.0));
-        if(sqValue > 0) {
-            ch->get_fft_data1()[j] = bound(log10(sqValue) / 2.0 - logSize, gdata->dBFloor(), 0.0);
-        }
-        else
-        {
-            ch->get_fft_data1()[j] = gdata->dBFloor();
+
+    for (let j = 1; j < STEP_SIZE; j++) {  // zero index handled after for loop individually
+        sqValue = Math.pow(dataFFT[j], 2) + Math.pow(dataFFT[BUFFER_SIZE - j], 2);
+        fftData2[j] =  Math.log(1 + 2 * Math.sqrt(sqValue) / STEP_SIZE * (logBase - 1)) / Math.log(logBase);
+        if (sqValue > 0) {
+            fftData1[j] = Math.log10(sqValue) / 2 - logSize;
+            if (fftData1[j] < DB_FLOOR) fftData1[j] = DB_FLOOR;
+            if (fftData1[j] > 0) fftData1[j] = 0;
+        } else {
+            fftData1[j] = DB_FLOOR;
         }
     }
-    sqValue = sq(dataFFT[0]) + sq(dataFFT[nDiv2]);
-    ch->get_fft_data2()[0] = logBaseN(logBase, 1.0 + 2.0 * sqrt(sqValue) / double(nDiv2) * (logBase - 1.0));
-    if(sqValue > 0.0)
-    {
-        ch->get_fft_data1()[0] = bound(log10(sqValue) / 2.0 - logSize, gdata->dBFloor(), 0.0);
-    }
-    else
-    {
-        ch->get_fft_data1()[0] = gdata->dBFloor();
+
+    sqValue = Math.pow(dataFFT[0], 2) + Math.pow(dataFFT[STEP_SIZE], 2);
+    fftData2[0] = Math.log(1 + 2 * Math.sqrt(sqValue) / STEP_SIZE * (logBase - 1)) / Math.log(logBase);
+    if (sqValue > 0) {
+        fftData1[0] = Math.log10(sqValue) / 2 - logSize;
+        if (fftData1[0] < DB_FLOOR) fftData1[0] = DB_FLOOR;
+        if (fftData1[0] > 0) fftData1[0] = 0;
+    } else {
+        fftData1[0] = DB_FLOOR;
     }
 
 }
