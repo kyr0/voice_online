@@ -115,20 +115,20 @@ function RFFT(bufferSize) {
 // trans[n-1]   = im[1] 
 
 RFFT.prototype.forward = function(buffer) {
-  var n         = this.bufferSize, 
+  var n         = this.bufferSize,
       spectrum  = this.spectrum,
-      x         = this.trans, 
+      x         = this.trans,
       TWO_PI    = 2*Math.PI,
       sqrt      = Math.sqrt,
       i         = n >>> 1,
       bSi       = 2 / n,
-      n2, n4, n8, nn, 
-      t1, t2, t3, t4, 
-      i1, i2, i3, i4, i5, i6, i7, i8, 
+      n2, n4, n8, nn,
+      t1, t2, t3, t4,
+      i1, i2, i3, i4, i5, i6, i7, i8,
       st1, cc1, ss1, cc3, ss3,
-      e, 
+      e,
       a,
-      rval, ival, mag; 
+      rval, ival, mag;
 
   this.reverseBinPermute(x, buffer);
 
@@ -296,5 +296,79 @@ RFFT.prototype.forward = function(buffer) {
 
   return spectrum;
 };
+
+
+function IRFFT(hcBuff) {
+    let n           = hcBuff.size,
+        n2          = 2 * n,
+        realData    = new Float32Array(n2),
+        m           = Math.log(n) / Math.log(2), // N=2^M
+        e           = 6.283185307179586 / n2,
+        j = 1,
+        k,
+        n4, n8,
+        is, id, i1,
+        x1, x2, x3, x4,
+        t1, t2,
+        ss1, ss3, sd1, sd3,
+        cc1, cc3, cd1, cd3;
+        jn, 
+
+    realData.set(hcBuff);  // copy half-complex data in then work 'in-place'
+
+    for (k = 0; k < m; k++) {
+        n2 /= 2;
+        n4 = n2 / 4;
+        irStage();
+
+        function irStage() {
+            x1 = 0;
+            x2 = n4;
+            x3 = n4 * 2;
+            x4 = n4 * 3;
+
+            n8 = n4 / 2;
+            is = 0;
+            id = 2 * n2;
+
+            do {
+                for (i1 = is; i1 < n; i1 += id) {
+                    t1 = realData[x1 + i1] - realData[x3 + i1];
+                    realData[x1 + i1] = realData[x1 + i1] + realData[x3 + i1];
+                    realData[x2 + i1] = 2 * realData[x2 + i1];
+                    t2 = 2 * realData[x4 + i1];
+                    realData[x4 + i1] = t1 + t2;
+                    realData[x3 + i1] = t1 - t2;
+                }
+
+                is = 2 * id - n2;
+                id = 4 * id;
+
+            } while (is < n);
+
+            if (n4 - 1 <= 0) {
+                return;
+            }
+
+            ss1 = Math.sin(e);
+            sd1 = ss1;
+            sd3 = 3 * sd1 - 4 * Math.pow(sd1, 3);
+            ss3 = sd3;
+            cc1 = Math.cos(e);
+            cd1 = cc1;
+            cd3 = 4 * Math.pow(cd1, 3) - 3 * cd1;
+            cc3 = cd3;
+
+            do {
+                j++; // j = 2 to start
+                is = 0;
+                id = 2 * n2;
+                jn = n4 - 2 * j + 2
+
+            } while (j <= n8)
+        }
+    }
+
+}
 
 module.exports = RFFT;
