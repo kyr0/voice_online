@@ -33,7 +33,6 @@ function RFFT(bufferSize) {
   this.spectrum   = new Float32Array(bufferSize/2);
   this.trans = new Float32Array(bufferSize);
   this.itrans = new Float32Array(bufferSize);
-  this.reverseTable = new Uint32Array(bufferSize);
 
   // don't use a lookup table to do the permute, use this instead
   this.reverseBinPermute = function (dest, source) {
@@ -96,40 +95,6 @@ function RFFT(bufferSize) {
             i++;
         } while (i < halfSize);
   };
-
-  this.generateReverseTable = function () {
-    var bufferSize  = this.bufferSize,
-        halfSize    = bufferSize >>> 1,
-        nm1         = bufferSize - 1,
-        i = 1, r = 0, h;
-
-    this.reverseTable[0] = 0;
-
-    do {
-      r += halfSize;
-
-      this.reverseTable[i] = r;
-      this.reverseTable[r] = i;
-
-      i++;
-
-      h = halfSize << 1;
-      while (h = h >> 1, !((r ^= h) & h));
-
-      if (r >= i) {
-        this.reverseTable[i] = r;
-        this.reverseTable[r] = i;
-
-        this.reverseTable[nm1-i] = nm1-r;
-        this.reverseTable[nm1-r] = nm1-i;
-      }
-      i++;
-    } while (i < halfSize);
-
-    this.reverseTable[nm1] = nm1;
-  };
-
-  this.generateReverseTable();
 }
 
 
@@ -168,14 +133,6 @@ RFFT.prototype.forward = function(buffer) {
       rval, ival, mag;
 
   this.reverseBinPermute(x, buffer);
-
-  /*
-  var reverseTable = this.reverseTable;
-
-  for (var k = 0, len = reverseTable.length; k < len; k++) {
-    x[k] = buffer[reverseTable[k]];
-  }
-  */
 
   for (var ix = 0, id = 4; ix < n; id *= 4) {
     for (var i0 = ix; i0 < n; i0 += id) {
