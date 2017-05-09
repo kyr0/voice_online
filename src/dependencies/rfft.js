@@ -1,20 +1,12 @@
-/* 
- *  DSP.js - a comprehensive digital signal processing  library for javascript
- * 
- *  Created by Corban Brook <corbanbrook@gmail.com> on 2010-01-01.
- *  Copyright 2010 Corban Brook. All rights reserved.
+/*
+ *  RFFT Originally found in DSP.js, IRFFT was on a PR of the repo and needed some fixing.
  *
- */
-
-/**
- * RFFT is a class for calculating the Discrete Fourier Transform of a signal
- * with the Fast Fourier Transform algorithm.
+ *  RFFT is a class for calculating the Discrete Fourier Transform of a signal
+ *  with the Fast Fourier Transform algorithm.
  *
- * This method currently only contains a forward transform but is highly optimized.
+ *  @param {Number} bufferSize The size of the sample buffer to be computed. Must be power of 2
  *
- * @param {Number} bufferSize The size of the sample buffer to be computed. Must be power of 2
- *
- * @constructor
+ *  @constructor
  */
 
 // lookup tables don't really gain us any speed, but they do increase
@@ -30,12 +22,11 @@
 
 function RFFT(bufferSize) {
   this.bufferSize = bufferSize;
-  this.spectrum   = new Float32Array(bufferSize/2);
   this.trans = new Float32Array(bufferSize);
   this.itrans = new Float32Array(bufferSize);
 
   // don't use a lookup table to do the permute, use this instead
-  this.reverseBinPermute = function (dest, source) {
+  this._reverseBinPermute = function (dest, source) {
     var bufferSize  = this.bufferSize,
         halfSize    = bufferSize >>> 1,
         nm1         = bufferSize - 1,
@@ -67,7 +58,7 @@ function RFFT(bufferSize) {
 
   // don't use a lookup table to do the permute, use this instead
   // the inverse transform needs to do this in place so we have this
-  this.reverseBinPermuteInPlace = function (buf) {
+  this._reverseBinPermuteInPlace = function (buf) {
         var bufferSize  = this.bufferSize,
             halfSize    = bufferSize >>> 1,
             nm1         = bufferSize - 1,
@@ -118,7 +109,6 @@ function RFFT(bufferSize) {
 
 RFFT.prototype.forward = function(buffer) {
   var n         = this.bufferSize,
-      spectrum  = this.spectrum,
       x         = this.trans,
       TWO_PI    = 2*Math.PI,
       sqrt      = Math.sqrt,
@@ -132,7 +122,7 @@ RFFT.prototype.forward = function(buffer) {
       a,
       rval, ival, mag;
 
-  this.reverseBinPermute(x, buffer);
+  this._reverseBinPermute(x, buffer);
 
   for (var ix = 0, id = 4; ix < n; id *= 4) {
     for (var i0 = ix; i0 < n; i0 += id) {
@@ -279,18 +269,7 @@ RFFT.prototype.forward = function(buffer) {
     }
   }
 
-  // NOTE: for extra speed we could split this step out since 'trans' is available
-  // however I did not since that wouldn't match the API of the others
-  while (--i) {
-    rval = x[i];
-    ival = x[n-i-1];
-    mag = bSi * sqrt(rval * rval + ival * ival);
-    spectrum[i] = mag;
-  }
-
-  spectrum[0] = bSi * x[0];
-
-  return spectrum;
+  return this.trans;
 };
 
 
@@ -437,7 +416,7 @@ RFFT.prototype.inverse = function(buffer) {
         ix = 2*(id-1);
     }
 
-    this.reverseBinPermuteInPlace(x);
+    this._reverseBinPermuteInPlace(x);
     return x;
 };
 

@@ -13,7 +13,7 @@
 // k = (n + 1) / 2 ????
 // "size" = n + k
 
-import RFFT from '../../dependencies/dsp.js';
+import RFFT from '../../dependencies/rfft.js';
 
 const TWO_PI = 2 * Math.PI;
 const HALF_PI = Math.PI * 0.5;

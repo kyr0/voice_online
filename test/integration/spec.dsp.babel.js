@@ -1,6 +1,8 @@
-import RFFT from '../../src/dependencies/dsp.js';
+import RFFT from '../../src/dependencies/rfft.js';
 import buffers from '../fixtures/audioBuffers.js';
 
+// How to test FFT input / outputs values:
+// https://dsp.stackexchange.com/questions/633
 
 describe('DSP.js', () => {
 
@@ -9,7 +11,7 @@ describe('DSP.js', () => {
         const myMap = new Map(Object.entries(buffers.noteBuffers));
 
         myMap.forEach( (buff, key) => {
-            let fft = new RFFT(buff.length, 44100);
+            let fft = new RFFT(buff.length);
             fft.forward(buff);
             fft.scale_trans();
             let inv = fft.inverse(fft.trans);
