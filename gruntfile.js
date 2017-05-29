@@ -7,6 +7,9 @@ module.exports = function(grunt) {
     var webpack = require('webpack');  // for plugins
     require('load-grunt-tasks')(grunt);
 
+    // Take a file path from cmd line, or run all tests
+    var test_files = grunt.option('test') ? { src: grunt.option('test') } : karma_files;
+
     grunt.initConfig({
 
         eslint: {
@@ -94,8 +97,14 @@ module.exports = function(grunt) {
             },
             test: {
                 preprocessors: karma_preprocessors,
-                files: karma_files,
+                files: test_files,
                 exclude: ['test/coverage/**/*', '*bundle*'],
+                reporters: ['progress'],
+            },
+            bench: {
+                browserNoActivityTimeout: 1000000,
+                preprocessors: { 'test/**/bench.*.babel.js': ['webpack', 'sourcemap'] },
+                files: { src: 'test/benchmark/bench.*.js' },
                 reporters: ['progress'],
             },
             coverage: {
@@ -182,7 +191,7 @@ module.exports = function(grunt) {
             be_test: {
                 // NOTE: when tox has multiple test configs, switch to `command: tox`, simple no options necessary
                 command: [
-                    'source ../.tox/py34-postgresql/bin/activate',
+                    'source ../.tox/py36-postgresql/bin/activate',
                     'python manage.py test',
                 ].join('&&'),
                 options: {
@@ -201,7 +210,7 @@ module.exports = function(grunt) {
             },
             runserver: {
                 command: [
-                    'source ../.tox/py34-postgresql/bin/activate',
+                    'source ../.tox/py36-postgresql/bin/activate',
                     'python manage.py runserver',
                 ].join('&&'),
                 options: {
@@ -236,6 +245,7 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['shell:killall', 'webpack:dev', 'shell:cp_static', 'karma:test', 'shell:be_test', 'concurrent:dev']);
     grunt.registerTask('dev', ['shell:killall', 'webpack:dev', 'shell:cp_static', 'concurrent:dev']);
     grunt.registerTask('fe_unit', ['shell:killall', 'karma:test']);
+    grunt.registerTask('fe_bench', ['shell:killall', 'karma:bench']);
     grunt.registerTask('coverage', ['karma:coverage']);
     grunt.registerTask('build', ['webpack:build', 'shell:cp_static']);
     grunt.registerTask('test', ['karma:test', 'shell:be_test']);
